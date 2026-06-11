@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Esto le dice a Apache que ignore carpetas o archivos que sí existen
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Esto envía todo lo demás al index.php
+RewriteRule ^(.*)$ index.php [L,QSA]

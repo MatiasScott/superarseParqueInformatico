@@ -1,0 +1,75 @@
+/* 🛠️ Soporte para Alpine.js */
+[x-cloak] { display: none !important; }
+
+/* 🎚️ Barra de desplazamiento (Scrollbar) adaptada a la paleta pastel clara */
+::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px;
+}
+::-webkit-scrollbar-track { 
+    background: #f1f5f9; /* Gris azulado muy claro y limpio */
+}
+::-webkit-scrollbar-thumb { 
+    background: #cbd5e1; /* Gris pastel suave para el indicador */
+    border-radius: 10px; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Se oscurece sutilmente al pasar el mouse */
+}
+
+/* 🏷️ Títulos de categorías en el Menú */
+.menu-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #64748b; /* Gris pizarra medio para excelente lectura */
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    opacity: 0.85;
+}
+
+/* 🔘 Ítems del Menú (Por defecto) */
+.menu-item {
+    display: flex;
+    align-items: center; /* Corregido de 'items-center' a 'align-items' */
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155; /* Texto oscuro suave para alta legibilidad sobre fondo claro */
+    transition: all 0.25s ease;
+}
+
+/* ✨ Efecto Hover (Pasar el mouse) con toque verde/celeste sutil */
+.menu-item:hover {
+    background-color: rgba(14, 165, 233, 0.08); /* Fondo celeste pastel muy suave */
+    color: #0369a1; /* Azul corporativo intermedio */
+    transform: translateX(2px); /* Desplazamiento estético hacia la derecha */
+}
+
+/* 🎯 Ítem Activo (Seleccionado) usando el Azul InfoPark Premium */
+.menu-item.active {
+    background-image: linear-gradient(135deg, #0052cc, #1d4ed8); /* Degradado azul de tu logo */
+    color: #ffffff !important;
+    box-shadow: 0 8px 16px -4px rgba(0, 82, 204, 0.25); /* Sombra suave azulada */
+    font-weight: 700;
+}
+
+/* 🎨 Ajuste dinámico para los iconos dentro del ítem seleccionado */
+.menu-item.active i {
+    color: #ffffff !important;
+}
+
+/* 🧩 Iconos del Menú */
+.menu-item i {
+    font-size: 1.25rem;
+    color: #475569; /* Gris azulado para los iconos en reposo */
+    transition: color 0.2s;
+}
+
+/* Si pasas el mouse, el icono también cambia de color */
+.menu-item:hover i {
+    color: #0ea5e9; /* Icono cambia a celeste brillante */
+}
