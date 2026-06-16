@@ -31,14 +31,16 @@ class AuditoriaModel {
                 $ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
             }
 
+            $usuarioId = self::resolverUsuarioIdAuditoria();
+
             $stmt = $db->prepare($sql);
             return $stmt->execute([
                 strtoupper($accion),
                 $tabla,
                 $registro_id,
-                $anterior ? json_encode($anterior, JSON_UNESCAPED_UNICODE) : null,
-                $nuevo ? json_encode($nuevo, JSON_UNESCAPED_UNICODE) : null,
-                $_SESSION['usuario_id'] ?? 3, // ID de respaldo si no hay sesión activa
+                $anterior ? json_encode($anterior, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) : null,
+                $nuevo ? json_encode($nuevo, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) : null,
+                $usuarioId,
                 $ip,
                 date('Y-m-d H:i:s')
             ]);
@@ -46,6 +48,21 @@ class AuditoriaModel {
             error_log("Fallo crítico escribiendo auditoría: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Obtiene un usuario válido para auditoría sin romper FK.
+     */
+    private static function resolverUsuarioIdAuditoria(): ?int {
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['usuario_id'])) {
+            $id = filter_var($_SESSION['usuario_id'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($id !== false) {
+                return (int)$id;
+            }
+        }
+
+        // Si no hay sesión activa o no hay usuario válido, registrar como sistema (NULL).
+        return null;
     }
 
     /**

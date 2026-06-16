@@ -3,6 +3,7 @@
 namespace App\Models\Equipos;
 
 use App\Helpers\Database;
+use App\Models\Auditoria\AuditoriaModel;
 
 class Equipo {
 
@@ -204,6 +205,8 @@ class Equipo {
             if ($estadoId === $idEstadoMantenimiento) {
                 $this->crearOrdenMantenimientoAutomatica($idNuevoEquipo, $data['descripcion']);
             }
+
+            AuditoriaModel::registrar('INSERT', 'equipos', (int)$idNuevoEquipo, null, $this->find($idNuevoEquipo) ?: $data);
         }
 
         return $result;
@@ -249,6 +252,8 @@ class Equipo {
             if ($estadoId === $idEstadoMantenimiento && (int)($equipoAntes['estado_id'] ?? 0) !== $idEstadoMantenimiento) {
                 $this->crearOrdenMantenimientoAutomatica($id, $data['descripcion']);
             }
+
+            AuditoriaModel::registrar('UPDATE', 'equipos', (int)$id, $equipoAntes, $this->find($id) ?: $data);
         }
 
         return $result;
@@ -312,10 +317,10 @@ class Equipo {
                 $stmtEquipo = $this->db->prepare("UPDATE equipos SET estado_id = ? WHERE id = ?");
                 $result = $stmtEquipo->execute([$idEliminado, $id]);
 
-                // 4. Registro opcional en tu sistema de auditoría si lo requieres
-                // if ($result && class_exists('\App\Models\Auditoria\AuditoriaModel')) {
-                //     \App\Models\Auditoria\AuditoriaModel::registrar('DELETE_LOGICO', 'equipos', $id, $equipoAntes, null);
-                // }
+                // 4. Registro forense del borrado lógico
+                if ($result) {
+                    AuditoriaModel::registrar('DELETE', 'equipos', (int)$id, $equipoAntes, ['estado_id' => (int)$idEliminado]);
+                }
 
                 return $result;
                 

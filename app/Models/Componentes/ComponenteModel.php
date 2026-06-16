@@ -3,6 +3,7 @@
 namespace App\Models\Componentes;
 
 use App\Helpers\Database;
+use App\Models\Auditoria\AuditoriaModel;
 
 class ComponenteModel {
 
@@ -16,13 +17,20 @@ class ComponenteModel {
     /**
      * LISTAR TODOS LOS COMPONENTES (CON FILTRO OPCIONAL)
      * 🛡️ MODIFICADO: Excluye componentes con borrado lógico (estado = 'Eliminado')
-     */
+        $result = $stmt->execute([
     public function getAll($equipo_id = null)
     {
         $sql = "
             SELECT 
                 c.id,
                 c.equipo_id,
+
+        if ($result) {
+            $idNuevo = (int)$this->db->lastInsertId();
+            AuditoriaModel::registrar('INSERT', 'componentes_equipo', $idNuevo, null, $this->find($idNuevo) ?: $data);
+        }
+
+        return $result;
                 c.tipo_componente AS tipo,
                 c.marca_modelo,
                 c.capacidad_detalle AS descripcion,
@@ -40,7 +48,8 @@ class ComponenteModel {
 
         $sql .= " ORDER BY c.id DESC ";
 
-        $stmt = $this->db->prepare($sql);
+        $antes = $this->find($id);
+        $result = $stmt->execute([
         
         if ($equipo_id) {
             $stmt->execute([$equipo_id]);
@@ -48,6 +57,12 @@ class ComponenteModel {
             $stmt->execute();
         }
 
+
+        if ($result && $antes) {
+            AuditoriaModel::registrar('UPDATE', 'componentes_equipo', (int)$id, $antes, $this->find($id) ?: $data);
+        }
+
+        return $result;
         return $stmt->fetchAll();
     }
 
@@ -57,12 +72,21 @@ class ComponenteModel {
     {
         $stmt = $this->db->prepare("
             SELECT 
+            $antes = $this->find($id);
+
                 id,
                 equipo_id,
                 tipo_componente AS tipo,
                 marca_modelo,
                 capacidad_detalle AS descripcion,
-                CASE WHEN estado = 'Malo' THEN 'Dañado' ELSE estado END AS estado
+
+            $result = $stmt->execute([$id]);
+
+            if ($result && $antes) {
+                AuditoriaModel::registrar('DELETE', 'componentes_equipo', (int)$id, $antes, ['estado' => 'Eliminado']);
+            }
+
+            return $result;
             FROM componentes_equipo
             WHERE id = ?
         ");
