@@ -21,7 +21,7 @@ class MantenimientoController {
         // 💡 CLAVE: Indica al layout que pinte de azul la sección "Órdenes de Soporte"
         $activePage = 'mantenimientos';
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function guardar() {
@@ -63,7 +63,7 @@ class MantenimientoController {
         // 💡 CLAVE: Incluso al editar una orden, el menú de mantenimientos debe seguir azul
         $activePage = 'mantenimientos';
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function actualizar() {

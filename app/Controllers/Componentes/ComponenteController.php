@@ -26,7 +26,7 @@ class ComponenteController {
         ob_start();
         require_once ROOT . 'Views/componentes/index.php'; 
         $content = ob_get_clean();
-        require_once ROOT . 'Views/layouts/main.php';
+        require_once ROOT . 'Views/Layouts/main.php';
     }
 
     // GUARDAR EN LOTE
@@ -94,7 +94,7 @@ class ComponenteController {
         ob_start();
         require_once ROOT . 'Views/componentes/crear.php';
         $content = ob_get_clean();
-        require_once ROOT . 'Views/layouts/main.php';
+        require_once ROOT . 'Views/Layouts/main.php';
     }
 
     // FORM EDITAR
@@ -109,7 +109,7 @@ class ComponenteController {
         ob_start();
         require_once ROOT . 'Views/componentes/editar.php';
         $content = ob_get_clean();
-        require_once ROOT . 'Views/layouts/main.php';
+        require_once ROOT . 'Views/Layouts/main.php';
     }
 
     // ELIMINAR (BORRADO LÓGICO PASIVO)

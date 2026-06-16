@@ -43,6 +43,6 @@ class DashboardController
         $content = ob_get_clean();
 
         // Cargar el diseño principal
-        require_once ROOT . 'Views/layouts/main.php';
+        require_once ROOT . 'Views/Layouts/main.php';
     }
 }

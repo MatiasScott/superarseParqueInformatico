@@ -23,6 +23,6 @@ class HistorialController {
         $content = ob_get_clean();
 
         // Inyectamos el contenido en la plantilla principal de la app
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 }

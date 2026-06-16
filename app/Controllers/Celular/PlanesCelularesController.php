@@ -32,7 +32,7 @@ class PlanesCelularesController {
         require_once __DIR__ . '/../../Views/celular/planes_celulares.php';
         $content = ob_get_clean();
         
-        include __DIR__ . '/../../Views/layouts/main.php';
+        include __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     /**

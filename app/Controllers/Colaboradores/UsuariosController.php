@@ -28,7 +28,7 @@ class UsuariosController {
         require_once __DIR__ . '/../../Views/colaboradores/usuarios.php';
         $content = ob_get_clean();
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     /**
@@ -92,7 +92,7 @@ class UsuariosController {
         ob_start();
         require_once __DIR__ . '/../../Views/colaboradores/permisos.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function guardarPermisos() {

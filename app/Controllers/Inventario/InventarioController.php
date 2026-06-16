@@ -33,6 +33,6 @@ class InventarioController {
         $content = ob_get_clean();
 
         // 🚀 UBICACIÓN: Subimos dos niveles aquí también para renderizar el contenedor maestro
-        include __DIR__ . '/../../Views/layouts/main.php';
+        include __DIR__ . '/../../Views/Layouts/main.php';
     }
 }

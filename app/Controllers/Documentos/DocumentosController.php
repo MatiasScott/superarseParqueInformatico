@@ -24,7 +24,7 @@ class DocumentoController {
         // 💡 CLAVE: Avisamos al layout que pinte de azul la sección "Documentos Adjuntos"
         $activePage = 'documentos';
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     /**

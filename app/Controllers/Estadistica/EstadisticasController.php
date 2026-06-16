@@ -66,7 +66,7 @@ class EstadisticasController {
         $content = ob_get_clean();
 
         $activePage = 'estadisticas';
-        require __DIR__ . '/../../Views/layouts/main.php';
+        require __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function exportarPdf() {

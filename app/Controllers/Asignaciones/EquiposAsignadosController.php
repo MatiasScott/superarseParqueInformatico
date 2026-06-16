@@ -26,6 +26,6 @@ class EquiposAsignadosController {
         include __DIR__ . '/../../Views/asignaciones/equipos_asignados.php'; 
         $content = ob_get_clean();
 
-        include __DIR__ . '/../../Views/layouts/main.php';
+        include __DIR__ . '/../../Views/Layouts/main.php';
     }
 }

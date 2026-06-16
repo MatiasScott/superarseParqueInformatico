@@ -18,6 +18,6 @@ class BajasController {
         // 💡 CORRECCIÓN INTEGRAL: Coincide exactamente con la línea 19 de tu main.php
         $activePage = 'equipos-baja'; 
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 }

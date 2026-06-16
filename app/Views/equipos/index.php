@@ -4,6 +4,14 @@ $totalEquipos = $totalEquipos ?? 0;
 $estados = $estados ?? [];
 $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador
 
+$idEstadoDisponible = 1;
+foreach ($estados as $estadoTmp) {
+    if (isset($estadoTmp['nombre']) && mb_strtolower(trim((string)$estadoTmp['nombre']), 'UTF-8') === 'disponible') {
+        $idEstadoDisponible = (int)($estadoTmp['id'] ?? 1);
+        break;
+    }
+}
+
 $canCreateEquipos = sessionHasPermission('equipos', 'crear');
 $canEditEquipos = sessionHasPermission('equipos', 'editar');
 $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
@@ -234,7 +242,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
             method="POST"
             class="space-y-5">
             
-            <input type="hidden" name="estado_id" value="1">
+            <input type="hidden" name="estado_id" value="<?= $idEstadoDisponible ?>">
 
             <div class="grid grid-cols-2 gap-4">
                 <div>

@@ -93,9 +93,10 @@ function eliminarFilaComponente(idFila) {
 
 function filtrarPorEquipo() {
     const idEquipo = document.getElementById('filtro-equipo').value;
+    const base = typeof window.APP_BASE_PATH === 'string' ? window.APP_BASE_PATH : '';
     if (idEquipo) {
-        window.location.href = `/componentes?equipo_id=${idEquipo}`;
+        window.location.href = `${base}/componentes?equipo_id=${idEquipo}`;
     } else {
-        window.location.href = '/componentes';
+        window.location.href = `${base}/componentes`;
     }
 }

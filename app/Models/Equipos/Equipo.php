@@ -8,15 +8,71 @@ class Equipo {
 
     private $db;
 
-    // 💡 TUS IDs DE ESTADOS ACTUALIZADOS SEGÚN TU BASE DE DATOS REAL
-    private $ID_ESTADO_ACTIVO = 6;
-    private $ID_ESTADO_MANTENIMIENTO = 3;
-    private $ID_ESTADO_BAJA = 5;
-    private $ID_ESTADO_DISPONIBLE = 1; 
+    // Fallbacks por compatibilidad; en runtime se resuelve por nombre desde BD.
+    private $DEFAULT_ESTADO_ACTIVO = 6;
+    private $DEFAULT_ESTADO_MANTENIMIENTO = 3;
+    private $DEFAULT_ESTADO_BAJA = 5;
+    private $DEFAULT_ESTADO_DISPONIBLE = 1;
+
+    private $estadoIdCache = [];
 
     public function __construct()
     {
         $this->db = Database::getConnection();
+    }
+
+    public function getEstadoIdByNombre($nombre)
+    {
+        $key = mb_strtolower(trim((string)$nombre), 'UTF-8');
+        if ($key === '') {
+            return null;
+        }
+
+        if (array_key_exists($key, $this->estadoIdCache)) {
+            return $this->estadoIdCache[$key];
+        }
+
+        $stmt = $this->db->prepare("SELECT id FROM estados_equipo WHERE LOWER(nombre) = LOWER(?) LIMIT 1");
+        $stmt->execute([$nombre]);
+        $id = $stmt->fetchColumn();
+
+        $this->estadoIdCache[$key] = $id !== false ? (int)$id : null;
+        return $this->estadoIdCache[$key];
+    }
+
+    private function getEstadoIdFallback($nombre, $fallback)
+    {
+        $resolved = $this->getEstadoIdByNombre($nombre);
+        return $resolved !== null ? $resolved : (int)$fallback;
+    }
+
+    private function normalizarEstadoId($estadoId, $defaultNombre = 'Disponible')
+    {
+        $id = filter_var($estadoId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id !== false) {
+            $stmt = $this->db->prepare("SELECT 1 FROM estados_equipo WHERE id = ? LIMIT 1");
+            $stmt->execute([(int)$id]);
+            if ($stmt->fetchColumn()) {
+                return (int)$id;
+            }
+        }
+
+        switch (mb_strtolower((string)$defaultNombre, 'UTF-8')) {
+            case 'mantenimiento':
+                $fallback = $this->DEFAULT_ESTADO_MANTENIMIENTO;
+                break;
+            case 'activo':
+                $fallback = $this->DEFAULT_ESTADO_ACTIVO;
+                break;
+            case 'baja':
+                $fallback = $this->DEFAULT_ESTADO_BAJA;
+                break;
+            default:
+                $fallback = $this->DEFAULT_ESTADO_DISPONIBLE;
+                break;
+        }
+
+        return $this->getEstadoIdFallback($defaultNombre, $fallback);
     }
 
     /**
@@ -39,7 +95,8 @@ class Equipo {
             ORDER BY e.id DESC
         ");
 
-        $stmt->execute([$this->ID_ESTADO_BAJA]);
+        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
+        $stmt->execute([$idEstadoBaja]);
         return $stmt->fetchAll();
     }
 
@@ -61,7 +118,8 @@ class Equipo {
             ORDER BY e.fecha_baja DESC, e.id DESC
         ");
 
-        $stmt->execute([$this->ID_ESTADO_BAJA]);
+        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
+        $stmt->execute([$idEstadoBaja]);
         return $stmt->fetchAll();
     }
 
@@ -83,8 +141,9 @@ class Equipo {
             ORDER BY e.id DESC
         ";
 
+        $idEstadoDisponible = $this->getEstadoIdFallback('Disponible', $this->DEFAULT_ESTADO_DISPONIBLE);
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$this->ID_ESTADO_DISPONIBLE]);
+        $stmt->execute([$idEstadoDisponible]);
 
         return $stmt->fetchAll();
     }
@@ -112,6 +171,8 @@ class Equipo {
      */
     public function create($data)
     {
+        $estadoId = $this->normalizarEstadoId($data['estado_id'] ?? null, 'Disponible');
+
         $sql = "
             INSERT INTO equipos
             (
@@ -129,7 +190,7 @@ class Equipo {
             $data['serie'], 
             $data['descripcion'], 
             $data['precio'],    
-            $data['estado_id'], 
+            $estadoId, 
             $data['sede_id'],   
             $data['fecha_baja'], 
             $data['motivo_baja']
@@ -139,7 +200,8 @@ class Equipo {
             $idNuevoEquipo = $this->db->lastInsertId();
 
             // ⚠️ AUTOMATIZACIÓN: Si ingresa directo a mantenimiento, genera su orden técnica
-            if ((int)$data['estado_id'] === $this->ID_ESTADO_MANTENIMIENTO) {
+            $idEstadoMantenimiento = $this->getEstadoIdFallback('Mantenimiento', $this->DEFAULT_ESTADO_MANTENIMIENTO);
+            if ($estadoId === $idEstadoMantenimiento) {
                 $this->crearOrdenMantenimientoAutomatica($idNuevoEquipo, $data['descripcion']);
             }
         }
@@ -154,6 +216,8 @@ class Equipo {
     public function update($id, $data)
     {
         $equipoAntes = $this->find($id);
+        $estadoActual = isset($equipoAntes['estado_id']) ? (int)$equipoAntes['estado_id'] : null;
+        $estadoId = $this->normalizarEstadoId($data['estado_id'] ?? $estadoActual, 'Disponible');
 
         $sql = "
             UPDATE equipos
@@ -172,7 +236,7 @@ class Equipo {
             $data['serie'], 
             $data['descripcion'], 
             $data['precio'],    
-            $data['estado_id'], 
+            $estadoId, 
             $data['sede_id'],   
             $data['fecha_baja'], 
             $data['motivo_baja'], 
@@ -181,7 +245,8 @@ class Equipo {
 
         if ($result && $equipoAntes) {
             // ⚠️ AUTOMATIZACIÓN: Si cambia a mantenimiento ahora y antes no lo estaba
-            if ((int)$data['estado_id'] === $this->ID_ESTADO_MANTENIMIENTO && (int)$equipoAntes['estado_id'] !== $this->ID_ESTADO_MANTENIMIENTO) {
+            $idEstadoMantenimiento = $this->getEstadoIdFallback('Mantenimiento', $this->DEFAULT_ESTADO_MANTENIMIENTO);
+            if ($estadoId === $idEstadoMantenimiento && (int)($equipoAntes['estado_id'] ?? 0) !== $idEstadoMantenimiento) {
                 $this->crearOrdenMantenimientoAutomatica($id, $data['descripcion']);
             }
         }
@@ -274,7 +339,8 @@ class Equipo {
             WHERE e.estado_id <> ? AND (ee.nombre IS NULL OR ee.nombre <> 'Eliminado')
         ");
 
-        $stmt->execute([$this->ID_ESTADO_BAJA]);
+        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
+        $stmt->execute([$idEstadoBaja]);
         $result = $stmt->fetch();
         return $result['total'];
     }

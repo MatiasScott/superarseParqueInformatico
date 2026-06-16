@@ -25,6 +25,6 @@ class AuditoriaController {
         include __DIR__ . '/../../Views/auditoria/index.php'; 
         $content = ob_get_clean();
 
-        include __DIR__ . '/../../Views/layouts/main.php';
+        include __DIR__ . '/../../Views/Layouts/main.php';
     }
 }

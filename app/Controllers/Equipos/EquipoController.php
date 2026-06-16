@@ -22,7 +22,7 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/index.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     // FORM CREAR
@@ -38,16 +38,19 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/crear.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     // GUARDAR NUEVO EQUIPO
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $model = new Equipo();
+            $idEstadoDisponible = $model->getEstadoIdByNombre('Disponible') ?? 1;
+            $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
 
-            // 🔥 CORREGIDO: Por defecto ahora es 1 (ID correspondiente a tu estado DISPONIBLE real)
-            $estado_id = $_POST['estado_id'] ?? 1; 
+            // Si no llega estado_id o llega inválido, el modelo lo normaliza.
+            $estado_id = $_POST['estado_id'] ?? $idEstadoDisponible;
             $fecha_baja = null;
             $motivo_baja = null;
 
@@ -58,8 +61,6 @@ class EquipoController {
             $precio = isset($_POST['precio']) ? floatval(str_replace(',', '', $_POST['precio'])) : 0.00;
 
             // REVISAR SI ES BAJA
-            // 🔥 CORREGIDO: ID de Baja cambiado a 5 según tu base de datos actual
-            $idEstadoBaja = 5; 
             if ((int)$estado_id === $idEstadoBaja) {
                 $fecha_baja = date('Y-m-d');
                 $motivo_baja = trim($_POST['descripcion']) ?: 'Retirado por el administrador';
@@ -80,7 +81,6 @@ class EquipoController {
             ];
 
             try {
-                $model = new Equipo();
                 $model->create($data);
 
                 // Éxito: Redirecciona normalmente con un aviso opcional
@@ -112,9 +112,10 @@ class EquipoController {
 
         $model = new Equipo();
         $equipo = $model->find($id);
+        $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
 
-        // 🛡️ SI EL EQUIPO YA ES BAJA (ID 5), NO PERMITIR ENTRAR AL FORMULARIO
-        if ($equipo && (int)$equipo['estado_id'] === 5) {
+        // 🛡️ SI EL EQUIPO YA ES BAJA, NO PERMITIR ENTRAR AL FORMULARIO
+        if ($equipo && (int)$equipo['estado_id'] === (int)$idEstadoBaja) {
             header("Location: /equipos?error=equipo_de_baja");
             exit();
         }
@@ -126,7 +127,7 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/editar.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     // ACTUALIZAR (Con bloqueo de seguridad)
@@ -146,7 +147,8 @@ class EquipoController {
             // 🛡️ VERIFICAR EN LA BD QUE NO SE ESTÉ INTENTANDO ALTERAR UN EQUIPO YA DADO DE BAJA
             $model = new Equipo();
             $equipoActual = $model->find($id);
-            if ($equipoActual && (int)$equipoActual['estado_id'] === 5) {
+            $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
+            if ($equipoActual && (int)$equipoActual['estado_id'] === (int)$idEstadoBaja) {
                 header("Location: /equipos?error=modificacion_denegada");
                 exit();
             }
@@ -154,7 +156,6 @@ class EquipoController {
             $fecha_baja = null;
             $motivo_baja = null;
 
-            $idEstadoBaja = 5; 
             if ((int)$estado_id === $idEstadoBaja) {
                 $fecha_baja = date('Y-m-d');
                 $motivo_baja = trim($_POST['descripcion']) ?: 'Retirado por el administrador';

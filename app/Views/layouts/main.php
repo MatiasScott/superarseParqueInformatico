@@ -40,6 +40,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        window.APP_BASE_PATH = <?= json_encode(defined('BASE_PATH') ? BASE_PATH : '') ?>;
+    </script>
     <link rel="stylesheet" href="/css/style.css">
 
     

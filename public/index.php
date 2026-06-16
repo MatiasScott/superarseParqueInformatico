@@ -74,15 +74,99 @@ if (!empty($_SESSION['user_id'])) {
 // ===============================
 // BASE PATH
 // ===============================
-// Asegúrate de que este nombre coincida exactamente con tu carpeta en htdocs
-$base_path = '/superarseParqueInformatico/public';
+// Se calcula automáticamente según dónde esté montado index.php
+// Ejemplos:
+// - /superarseParqueInformatico/public/index.php => /superarseParqueInformatico/public
+// - /index.php (producción con DocumentRoot en public) => ''
+$script_name = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$base_path = rtrim(str_replace('/index.php', '', $script_name), '/');
+
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', $base_path);
+}
+
+if (!function_exists('app_url')) {
+    function app_url(string $path = ''): string
+    {
+        $normalized = '/' . ltrim($path, '/');
+        if ($normalized === '/') {
+            return BASE_PATH !== '' ? BASE_PATH . '/' : '/';
+        }
+
+        return (BASE_PATH !== '' ? BASE_PATH : '') . $normalized;
+    }
+}
+
+// Normaliza cualquier Location: /ruta para que respete BASE_PATH.
+if (function_exists('header_register_callback')) {
+    header_register_callback(function () use ($base_path): void {
+        if ($base_path === '') {
+            return;
+        }
+
+        foreach (headers_list() as $header) {
+            if (stripos($header, 'Location: ') !== 0) {
+                continue;
+            }
+
+            $location = trim(substr($header, 10));
+            if ($location === '') {
+                return;
+            }
+
+            // Solo reescribe rutas absolutas internas tipo /ruta (no //host ni http/https).
+            if ($location[0] !== '/' || (isset($location[1]) && $location[1] === '/')) {
+                return;
+            }
+
+            if ($location === $base_path || strpos($location, $base_path . '/') === 0) {
+                return;
+            }
+
+            header_remove('Location');
+            header('Location: ' . $base_path . $location, true, http_response_code());
+            return;
+        }
+    });
+}
+
+// Reescribe href/src/action con /... hacia BASE_PATH/... para no tocar todas las vistas.
+if (!function_exists('rewrite_app_urls')) {
+    function rewrite_app_urls(string $buffer): string
+    {
+        if (BASE_PATH === '') {
+            return $buffer;
+        }
+
+        return preg_replace_callback(
+            '/(\s(?:href|src|action)=["\'])\/(?!\/)([^"\']*)(["\'])/i',
+            function (array $match): string {
+                $path = '/' . ltrim($match[2], '/');
+
+                if ($path === BASE_PATH || strpos($path, BASE_PATH . '/') === 0) {
+                    return $match[0];
+                }
+
+                return $match[1] . BASE_PATH . $path . $match[3];
+            },
+            $buffer
+        ) ?? $buffer;
+    }
+}
+
+ob_start('rewrite_app_urls');
 
 
 // ===============================
 // URL ACTUAL
 // ===============================
-$request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$route = str_replace($base_path, '', $request_uri);
+$request_uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+
+if ($base_path !== '' && strpos($request_uri, $base_path) === 0) {
+    $route = substr($request_uri, strlen($base_path));
+} else {
+    $route = $request_uri;
+}
 
 
 // ===============================

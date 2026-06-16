@@ -7,9 +7,9 @@ class UsuarioController {
 
     public function crear() {
         ob_start();
-        require_once __DIR__ . '/../Views/usuarios/crear.php';
+        require_once __DIR__ . '/../../Views/usuarios/crear.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function guardar() {
@@ -73,7 +73,7 @@ class UsuarioController {
         ob_start();
         require_once __DIR__ . '/../../Views/usuarios/cambiar_contrasena.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function guardarCambiarContrasena() {

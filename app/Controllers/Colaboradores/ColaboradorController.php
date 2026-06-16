@@ -22,7 +22,7 @@ class ColaboradorController {
         // 💡 CLAVE: Avisamos al layout que pinte de azul el menú de colaboradores
         $activePage = 'colaboradores'; 
         
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
     
     public function guardar() {
@@ -67,7 +67,7 @@ class ColaboradorController {
         // 💡 CLAVE: Incluso al editar, el menú lateral debe mantenerse azul en colaboradores
         $activePage = 'colaboradores';
 
-        require_once __DIR__ . '/../../Views/layouts/main.php';
+        require_once __DIR__ . '/../../Views/Layouts/main.php';
     }
 
     public function actualizar() {
