@@ -1,3 +1,5 @@
+<?php $sedesDisponible = isset($sedesDisponible) && is_array($sedesDisponible) ? $sedesDisponible : []; ?>
+
 <div class="p-6 max-w-7xl mx-auto space-y-6">
     
     <div class="border-b border-slate-200 pb-4">
@@ -7,10 +9,10 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Activos Totales</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Equipos Disponibles</span>
             <div class="mt-2">
                 <h3 class="text-2xl font-black text-slate-800"><?= number_format($resumenEquipos['total_equipos'] ?? 0) ?></h3>
-                <p class="text-xs text-slate-500 mt-1">Unidades registradas</p>
+                <p class="text-xs text-slate-500 mt-1">Unidades en inventario de bodega</p>
             </div>
         </div>
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">

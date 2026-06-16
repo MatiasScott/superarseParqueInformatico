@@ -18,7 +18,7 @@ class EstadisticaModel {
      */
     public function getEstadisticasEquipos(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
-            $whereClauses = [];
+            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
             $params = [];
 
             if (!empty($tipoEquipo)) {
@@ -43,6 +43,7 @@ class EstadisticaModel {
                         IFNULL(MIN(e.precio), 0) as precio_minimo,
                         IFNULL(MAX(e.precio), 0) as precio_maximo
                     FROM equipos e
+                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql";
 
             $stmt = $this->db->prepare($sql);
@@ -58,7 +59,7 @@ class EstadisticaModel {
      */
     public function getListadoEquiposReporte(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
-            $whereClauses = [];
+            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
             $params = [];
 
             if (!empty($tipoEquipo)) { $whereClauses[] = "e.tipo = :tipo"; $params[':tipo'] = $tipoEquipo; }
@@ -98,11 +99,36 @@ class EstadisticaModel {
     /**
      * 📊 INVERSIÓN TOTAL AGRUPADA POR TIPO DE HARDWARE
      */
-    public function getInversionPorTipo(): array {
+    public function getInversionPorTipo(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
+            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
+            $params = [];
+
+            if (!empty($tipoEquipo)) {
+                $whereClauses[] = "e.tipo = :tipo";
+                $params[':tipo'] = $tipoEquipo;
+            }
+            if (!empty($sedeId) && $sedeId > 0) {
+                $whereClauses[] = "e.sede_id = :sede_id";
+                $params[':sede_id'] = $sedeId;
+            }
+            if (!empty($modelo)) {
+                $whereClauses[] = "e.modelo LIKE :modelo";
+                $params[':modelo'] = '%' . $modelo . '%';
+            }
+
+            $whereSql = "WHERE " . implode(" AND ", $whereClauses);
+
             $sql = "SELECT e.tipo, COUNT(e.id) as cantidad, IFNULL(SUM(e.precio), 0) as inversion_subtotal 
-                    FROM equipos e GROUP BY e.tipo ORDER BY inversion_subtotal DESC";
-            return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                    FROM equipos e
+                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
+                    $whereSql
+                    GROUP BY e.tipo
+                    ORDER BY inversion_subtotal DESC";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             return [];
         }
@@ -113,11 +139,11 @@ class EstadisticaModel {
      */
     public function getEstadisticasComponentes(?int $sedeId = null): array {
         try {
-            $whereSql = "";
+            $whereSql = "WHERE LOWER(ee.nombre) = 'disponible'";
             $params = [];
 
             if (!empty($sedeId) && $sedeId > 0) {
-                $whereSql = "WHERE e.sede_id = :sede_id";
+                $whereSql .= " AND e.sede_id = :sede_id";
                 $params[':sede_id'] = $sedeId;
             }
 
@@ -128,6 +154,7 @@ class EstadisticaModel {
                         SUM(CASE WHEN ce.estado = 'Bueno' THEN 1 ELSE 0 END) as componentes_buenos
                     FROM componentes_equipo ce
                     INNER JOIN equipos e ON ce.equipo_id = e.id
+                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql";
 
             $stmt = $this->db->prepare($sql);
@@ -143,17 +170,18 @@ class EstadisticaModel {
      */
     public function getCantidadPorComponente(?int $sedeId = null): array {
         try {
-            $whereSql = "";
+            $whereSql = "WHERE LOWER(ee.nombre) = 'disponible'";
             $params = [];
 
             if (!empty($sedeId) && $sedeId > 0) {
-                $whereSql = "WHERE e.sede_id = :sede_id";
+                $whereSql .= " AND e.sede_id = :sede_id";
                 $params[':sede_id'] = $sedeId;
             }
 
             $sql = "SELECT ce.tipo_componente, COUNT(ce.id) as cantidad
                     FROM componentes_equipo ce
                     INNER JOIN equipos e ON ce.equipo_id = e.id
+                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql
                     GROUP BY ce.tipo_componente 
                     ORDER BY cantidad DESC";

@@ -27,7 +27,7 @@ class EstadisticasController {
         // 🖥️ 3. Consultas para la sección de HARDWARE (Usan el $sede_id de su propio formulario)
         $resumenEquipos  = $this->estadisticaModel->getEstadisticasEquipos($tipo, $sede_id, $modelo);
         $listadoEquipos  = $this->estadisticaModel->getListadoEquiposReporte($tipo, $sede_id, $modelo) ?? [];
-        $graficoHardware = $this->estadisticaModel->getInversionPorTipo();
+        $graficoHardware = $this->estadisticaModel->getInversionPorTipo($tipo, $sede_id, $modelo);
 
         // 🛠️ INYECCIÓN DINÁMICA: Adjuntar componentes a cada equipo en la lista de la interfaz web
         foreach ($listadoEquipos as &$equipo) {
