@@ -25,8 +25,8 @@ class AsignacionesController {
         // Cargamos todos los colaboradores (Servirá para el filtro principal y para el modal de creación)
         $colaboradores = (new ColaboradorModel())->getAll(); 
         
-        // Cargamos los equipos completos (en la vista se filtran por estado DISPONIBLE)
-        $equipos = (new Equipo())->getAll(); 
+        // Cargamos solo equipos disponibles sin hardcodear IDs de estado
+        $equipos = (new Equipo())->getDisponibles(); 
 
         // 📱 Cargamos únicamente los terminales/planes celulares que están en estado 'Disponible'
         $celularesDisponibles = $model->getCelularesDisponibles();

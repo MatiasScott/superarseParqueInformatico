@@ -220,43 +220,36 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
             <div>
                 <label class="text-sm font-bold text-slate-700 block mb-2">Seleccione los Equipos a Entregar (Solo Disponibles)</label>
                 <div class="border border-slate-100 rounded-2xl bg-slate-50 p-4 max-h-44 overflow-y-auto space-y-3">
-                    <?php 
-                    $hayDisponibles = false;
-                    foreach($equipos as $e): 
-                        if((int)$e['estado_id'] === 1): 
-                            $hayDisponibles = true;
-                    ?>
-                        <div class="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-2 shadow-sm">
-                            <label class="flex items-start gap-3 cursor-pointer select-none text-sm text-slate-700 font-medium">
-                                <input type="checkbox" name="equipos_seleccionados[]" value="<?= $e['id'] ?>" class="mt-1 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" onchange="toggleDetalleEquipo(this, <?= $e['id'] ?>)">
-                                <div>
-                                    <span class="font-bold text-slate-800">[<?= htmlspecialchars($e['tipo']) ?>]</span> <?= htmlspecialchars($e['nombre']) ?>
-                                    <span class="block text-xs font-mono text-slate-400">S/N: <?= htmlspecialchars($e['serie']) ?> | <?= htmlspecialchars($e['marca'] ?? 'Genérico') ?></span>
-                                </div>
-                            </label>
-                            
-                            <div id="detalles_equipo_<?= $e['id'] ?>" class="hidden pl-6 pt-1 border-t border-dashed border-slate-100 space-y-2">
-                                <div class="flex gap-2">
-                                    <div class="w-1/3">
-                                        <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Entrega</label>
-                                        <select name="estado_entrega_<?= $e['id'] ?>" class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs focus:outline-none">
-                                            <option value="Bueno" selected>Bueno</option>
-                                            <option value="Regular">Regular</option>
-                                            <option value="Malo">Malo</option>
-                                        </select>
+                    <?php if (!empty($equipos)): ?>
+                        <?php foreach($equipos as $e): ?>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200 flex flex-col gap-2 shadow-sm">
+                                <label class="flex items-start gap-3 cursor-pointer select-none text-sm text-slate-700 font-medium">
+                                    <input type="checkbox" name="equipos_seleccionados[]" value="<?= $e['id'] ?>" class="mt-1 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" onchange="toggleDetalleEquipo(this, <?= $e['id'] ?>)">
+                                    <div>
+                                        <span class="font-bold text-slate-800">[<?= htmlspecialchars($e['tipo']) ?>]</span> <?= htmlspecialchars($e['nombre']) ?>
+                                        <span class="block text-xs font-mono text-slate-400">S/N: <?= htmlspecialchars($e['serie']) ?> | <?= htmlspecialchars($e['marca'] ?? 'Genérico') ?></span>
                                     </div>
-                                    <div class="w-2/3">
-                                        <label class="text-[11px] font-bold text-slate-500 uppercase">Observación del Ítem</label>
-                                        <input type="text" name="observacion_<?= $e['id'] ?>" placeholder="Ej: Cargador rayado..." class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs focus:outline-none">
+                                </label>
+                                
+                                <div id="detalles_equipo_<?= $e['id'] ?>" class="hidden pl-6 pt-1 border-t border-dashed border-slate-100 space-y-2">
+                                    <div class="flex gap-2">
+                                        <div class="w-1/3">
+                                            <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Entrega</label>
+                                            <select name="estado_entrega_<?= $e['id'] ?>" class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs focus:outline-none">
+                                                <option value="Bueno" selected>Bueno</option>
+                                                <option value="Regular">Regular</option>
+                                                <option value="Malo">Malo</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-2/3">
+                                            <label class="text-[11px] font-bold text-slate-500 uppercase">Observación del Ítem</label>
+                                            <input type="text" name="observacion_<?= $e['id'] ?>" placeholder="Ej: Cargador rayado..." class="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs focus:outline-none">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php 
-                        endif;
-                    endforeach; 
-                    if(!$hayDisponibles):
-                    ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <p class="text-xs text-slate-400 text-center py-4">No hay equipos en bodega con estado 'DISPONIBLE'.</p>
                     <?php endif; ?>
                 </div>
