@@ -70,7 +70,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                 </div>
                 
                 <?php if (!empty($equipo_seleccionado)): ?>
-                    <a href="/superarseParqueInformatico/public/componentes" class="p-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm" title="Limpiar Filtro">
+                    <a href="/componentes" class="p-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm" title="Limpiar Filtro">
                         <i class="ph ph-x-circle text-xl flex"></i>
                     </a>
                 <?php endif; ?>
@@ -142,12 +142,12 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                                 <td class="p-4 text-center pr-6">
                                     <div class="flex justify-center gap-2">
                                         <?php if ($canEditComponentes): ?>
-                                        <a href="/superarseParqueInformatico/public/componentes/editar?id=<?= $c['id'] ?>" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Editar Componente">
+                                        <a href="/componentes/editar?id=<?= $c['id'] ?>" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Editar Componente">
                                             <i class="ph ph-pencil-line text-lg"></i>
                                         </a>
                                         <?php endif; ?>
                                         <?php if ($canDeleteComponentes): ?>
-                                        <a href="/superarseParqueInformatico/public/componentes/eliminar?id=<?= $c['id'] ?>" onclick="return confirm('¿Estás seguro de que deseas eliminar este componente por completo?')" class="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Eliminar Componente">
+                                        <a href="/componentes/eliminar?id=<?= $c['id'] ?>" onclick="return confirm('¿Estás seguro de que deseas eliminar este componente por completo?')" class="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Eliminar Componente">
                                             <i class="ph ph-trash text-lg"></i>
                                         </a>
                                         <?php endif; ?>
@@ -184,7 +184,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
             </button>
         </div>
 
-        <form action="/superarseParqueInformatico/public/componentes/guardar" method="POST" class="flex-1 flex flex-col overflow-hidden">
+        <form action="/componentes/guardar" method="POST" class="flex-1 flex flex-col overflow-hidden">
             
             <div id="contenedor-componentes" class="space-y-4 overflow-y-auto pr-2 pb-4 flex-1">
                 
@@ -262,4 +262,4 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
 <script>
     const listaEquiposGlobal = <?= json_encode($equipos); ?>;
 </script>
-<script src="/superarseParqueInformatico/public/js/componentes.js"></script>
+<script src="/js/componentes.js"></script>

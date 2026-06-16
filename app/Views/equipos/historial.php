@@ -14,7 +14,7 @@ $historial = $historial ?? [];
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="/superarseParqueInformatico/public/equipos"
+            <a href="/equipos"
                class="bg-white border border-slate-200 text-slate-700 px-5 py-3 rounded-2xl font-bold shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2">
                 <i class="ph ph-arrow-left text-xl"></i>
                 Volver a Inventario

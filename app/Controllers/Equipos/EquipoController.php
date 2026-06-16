@@ -84,13 +84,13 @@ class EquipoController {
                 $model->create($data);
 
                 // Éxito: Redirecciona normalmente con un aviso opcional
-                header("Location: /superarseParqueInformatico/public/equipos?msg=guardado");
+                header("Location: /equipos?msg=guardado");
                 exit();
 
             } catch (\PDOException $e) {
                 // 🔍 CONTROL DE ERRORES: Capturar si la serie ya existe (Error 1062 / Código 23000)
                 if ($e->getCode() == 23000 && strpos($e->getMessage(), '1062') !== false) {
-                    header("Location: /superarseParqueInformatico/public/equipos?error=duplicado&serie=" . urlencode($data['serie']));
+                    header("Location: /equipos?error=duplicado&serie=" . urlencode($data['serie']));
                     exit();
                 } else {
                     // Si es otro tipo de error de base de datos, lanzarlo
@@ -106,7 +106,7 @@ class EquipoController {
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
-            header("Location: /superarseParqueInformatico/public/equipos");
+            header("Location: /equipos");
             exit();
         }
 
@@ -115,7 +115,7 @@ class EquipoController {
 
         // 🛡️ SI EL EQUIPO YA ES BAJA (ID 5), NO PERMITIR ENTRAR AL FORMULARIO
         if ($equipo && (int)$equipo['estado_id'] === 5) {
-            header("Location: /superarseParqueInformatico/public/equipos?error=equipo_de_baja");
+            header("Location: /equipos?error=equipo_de_baja");
             exit();
         }
 
@@ -147,7 +147,7 @@ class EquipoController {
             $model = new Equipo();
             $equipoActual = $model->find($id);
             if ($equipoActual && (int)$equipoActual['estado_id'] === 5) {
-                header("Location: /superarseParqueInformatico/public/equipos?error=modificacion_denegada");
+                header("Location: /equipos?error=modificacion_denegada");
                 exit();
             }
 
@@ -176,12 +176,12 @@ class EquipoController {
 
             try {
                 $model->update($id, $data);
-                header("Location: /superarseParqueInformatico/public/equipos?msg=actualizado");
+                header("Location: /equipos?msg=actualizado");
                 exit();
 
             } catch (\PDOException $e) {
                 if ($e->getCode() == 23000 && strpos($e->getMessage(), '1062') !== false) {
-                    header("Location: /superarseParqueInformatico/public/equipos?error=duplicado&serie=" . urlencode($data['serie']));
+                    header("Location: /equipos?error=duplicado&serie=" . urlencode($data['serie']));
                     exit();
                 } else {
                     throw $e;
@@ -201,7 +201,7 @@ class EquipoController {
             $model->delete($id);
         }
 
-        header("Location: /superarseParqueInformatico/public/equipos?msg=eliminado");
+        header("Location: /equipos?msg=eliminado");
         exit();
     }
 }

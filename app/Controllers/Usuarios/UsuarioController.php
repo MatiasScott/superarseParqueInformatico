@@ -25,7 +25,7 @@ class UsuarioController {
             
             if ($userModel->create($data)) {
                 // REDIRECCIÓN CORREGIDA PARA XAMPP
-                header("Location: /superarseParqueInformatico/public/usuarios?success=1");
+                header("Location: /usuarios?success=1");
                 exit();
             } else {
                 echo "Error al guardar el usuario.";
@@ -52,14 +52,14 @@ class UsuarioController {
                     isset($user['primer_inicio']) && $user['primer_inicio'] == 1;
 
                 if ($_SESSION['force_password_change']) {
-                    header("Location: /superarseParqueInformatico/public/cambiar-contrasena");
+                    header("Location: /cambiar-contrasena");
                     exit();
                 }
 
-                header("Location: /superarseParqueInformatico/public/dashboard");
+                header("Location: /dashboard");
                 exit();
             } else {
-                header("Location: /superarseParqueInformatico/public/login?error=1");
+                header("Location: /login?error=1");
                 exit();
             }
         }
@@ -78,7 +78,7 @@ class UsuarioController {
 
     public function guardarCambiarContrasena() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /superarseParqueInformatico/public/cambiar-contrasena");
+            header("Location: /cambiar-contrasena");
             exit();
         }
 
@@ -88,24 +88,24 @@ class UsuarioController {
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
         if (trim($nuevoPassword) === '' || $nuevoPassword !== $confirmPassword) {
-            header("Location: /superarseParqueInformatico/public/cambiar-contrasena?error=1");
+            header("Location: /cambiar-contrasena?error=1");
             exit();
         }
 
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
-            header("Location: /superarseParqueInformatico/public/login");
+            header("Location: /login");
             exit();
         }
 
         $userModel = new \App\Models\Usuarios\Usuario();
         if ($userModel->changePassword($userId, $nuevoPassword)) {
             $_SESSION['force_password_change'] = false;
-            header("Location: /superarseParqueInformatico/public/dashboard?password_changed=1");
+            header("Location: /dashboard?password_changed=1");
             exit();
         }
 
-        header("Location: /superarseParqueInformatico/public/cambiar-contrasena?error=1");
+        header("Location: /cambiar-contrasena?error=1");
         exit();
     }
 }

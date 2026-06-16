@@ -15,7 +15,7 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
 
 <div class="col-span-3">
     <div class="mb-6">
-        <a href="/superarseParqueInformatico/public/asignaciones" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors text-sm font-bold mb-2">
+        <a href="/asignaciones" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors text-sm font-bold mb-2">
             <i class="ph ph-arrow-left text-lg"></i> Regresar al listado
         </a>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -30,7 +30,7 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
             </div>
             
             <div>
-                <a href="/superarseParqueInformatico/public/asignaciones/imprimirActa?id=<?= $acta['id'] ?>" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 text-sm">
+                <a href="/asignaciones/imprimirActa?id=<?= $acta['id'] ?>" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 text-sm">
                     <i class="ph ph-printer text-xl"></i> Imprimir Formato Oficial
                 </a>
             </div>
@@ -341,11 +341,11 @@ function openDevolucionModal(detalleId, equipoNombre, tipo) {
     
     const formulario = document.getElementById('formDevolucionDinamico');
     if (tipo === 'celular') {
-        formulario.action = "/superarseParqueInformatico/public/asignaciones/devolverCelular";
+        formulario.action = "/asignaciones/devolverCelular";
     } else if (tipo === 'componente') {
-        formulario.action = "/superarseParqueInformatico/public/asignaciones/devolverComponente";
+        formulario.action = "/asignaciones/devolverComponente";
     } else {
-        formulario.action = "/superarseParqueInformatico/public/asignaciones/devolverEquipo";
+        formulario.action = "/asignaciones/devolverEquipo";
     }
     
     document.getElementById('modalDevolver').classList.remove('hidden');

@@ -104,7 +104,7 @@ $canDeleteUsuarios = sessionHasPermission('usuarios', 'eliminar');
 
                                 <?php if ($canDeleteUsuarios): ?>
                                 <template x-if="u.id != 3">
-                                    <a :href="'/superarseParqueInformatico/public/usuarios/eliminar?id=' + u.id"
+                                    <a :href="'/usuarios/eliminar?id=' + u.id"
                                        onclick="return confirm('¿Está seguro de revocar permanentemente los accesos a este usuario del sistema?')"
                                        class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Eliminar">
                                         <i class="ph ph-trash text-lg"></i>
@@ -145,7 +145,7 @@ $canDeleteUsuarios = sessionHasPermission('usuarios', 'eliminar');
                 </button>
             </div>
 
-            <form action="/superarseParqueInformatico/public/usuarios/guardar" method="POST" class="space-y-4">
+            <form action="/usuarios/guardar" method="POST" class="space-y-4">
                 <input type="hidden" name="id" x-model="formData.id">
 
                 <div>

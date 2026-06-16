@@ -23,10 +23,10 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
         <p class="text-xs text-slate-500">Accesos ágiles para la gestión del parque</p>
     </div>
     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-        <a href="/superarseParqueInformatico/public/equipos?action=nuevo" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-sm shadow-blue-500/10">
+        <a href="/equipos?action=nuevo" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-sm shadow-blue-500/10">
             <i class="ph ph-plus-circle text-base"></i> Nuevo Equipo
         </a>
-        <a href="/superarseParqueInformatico/public/asignaciones?action=nueva" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-sm">
+        <a href="/asignaciones?action=nueva" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-sm">
             <i class="ph ph-hand-pointing text-base"></i> Nueva Asignación
         </a>
     </div>
@@ -204,7 +204,7 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
         </div>
 
         <div class="mt-4 pt-4 border-t border-slate-100">
-            <a href="/superarseParqueInformatico/public/componentes" class="flex items-center justify-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition">
+            <a href="/componentes" class="flex items-center justify-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition">
                 Ir a Almacén de Componentes <i class="ph ph-arrow-right"></i>
             </a>
         </div>
@@ -220,7 +220,7 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
                 <h4 class="text-base font-bold text-slate-800">Entregas de Hardware Recientes</h4>
                 <p class="text-xs text-slate-400">Trazabilidad en tiempo real sobre uso de terminales</p>
             </div>
-            <a href="/superarseParqueInformatico/public/asignaciones" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Ver todas</a>
+            <a href="/asignaciones" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Ver todas</a>
         </div>
 
         <div class="overflow-x-auto">
@@ -269,7 +269,7 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
                 <h4 class="text-base font-bold text-slate-800">Órdenes Técnicas de Soporte</h4>
                 <p class="text-xs text-slate-400">Intervenciones activas y correctivas en ejecución</p>
             </div>
-            <a href="/superarseParqueInformatico/public/mantenimientos" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Ver bitácora</a>
+            <a href="/mantenimientos" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">Ver bitácora</a>
         </div>
 
         <div class="overflow-x-auto">

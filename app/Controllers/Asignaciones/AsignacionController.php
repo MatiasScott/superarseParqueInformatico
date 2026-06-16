@@ -20,7 +20,7 @@ class AsignacionController {
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         if ($id <= 0) {
-            header('Location: /superarseParqueInformatico/public/asignaciones?msg=error');
+            header('Location: /asignaciones?msg=error');
             exit;
         }
 

@@ -130,7 +130,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
 
                                     <?php if ($canDeleteTelefonia): ?>
                                     <a 
-                                        href="/superarseParqueInformatico/public/planes-celulares/eliminar?id=<?= $item['id'] ?>" 
+                                        href="/planes-celulares/eliminar?id=<?= $item['id'] ?>" 
                                         onclick="return confirm('¿Está seguro de que desea eliminar este equipo? Se borrarán de forma permanente sus historiales y órdenes de mantenimiento vinculadas.')" 
                                         class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" 
                                         title="Eliminar">
@@ -158,7 +158,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                 </h4>
                 <button type="button" @click="openCrear = false" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-xl"></i></button>
             </div>
-            <form action="/superarseParqueInformatico/public/planes-celulares/guardar" method="POST" class="p-6 space-y-4">
+            <form action="/planes-celulares/guardar" method="POST" class="p-6 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Número de Celular</label>
@@ -257,7 +257,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                 </h4>
                 <button type="button" @click="openEditar = false" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-xl"></i></button>
             </div>
-            <form action="/superarseParqueInformatico/public/planes-celulares/actualizar" method="POST" class="p-6 space-y-4">
+            <form action="/planes-celulares/actualizar" method="POST" class="p-6 space-y-4">
                 <input type="hidden" name="id" x-model="editItem.id">
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -392,4 +392,4 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
 
 </div>
 
-<script src="/superarseParqueInformatico/public/js/planes.js"></script>
+<script src="/js/planes.js"></script>

@@ -94,8 +94,8 @@ function eliminarFilaComponente(idFila) {
 function filtrarPorEquipo() {
     const idEquipo = document.getElementById('filtro-equipo').value;
     if (idEquipo) {
-        window.location.href = `/superarseParqueInformatico/public/componentes?equipo_id=${idEquipo}`;
+        window.location.href = `/componentes?equipo_id=${idEquipo}`;
     } else {
-        window.location.href = '/superarseParqueInformatico/public/componentes';
+        window.location.href = '/componentes';
     }
 }

@@ -41,7 +41,7 @@ class MantenimientoController {
             $result = (new MantenimientoModel())->create($data);
             
             $msg = $result ? 'guardado' : 'error';
-            header("Location: /superarseParqueInformatico/public/mantenimientos?msg=" . $msg);
+            header("Location: /mantenimientos?msg=" . $msg);
             exit();
         }
     }
@@ -49,7 +49,7 @@ class MantenimientoController {
     public function editar() {
         $id = $_GET['id'] ?? null;
         if (!$id) { 
-            header("Location: /superarseParqueInformatico/public/mantenimientos"); 
+            header("Location: /mantenimientos"); 
             exit(); 
         }
 
@@ -113,7 +113,7 @@ class MantenimientoController {
             }
 
             $msg = $result ? 'actualizado' : 'error';
-            header("Location: /superarseParqueInformatico/public/mantenimientos?msg=" . $msg);
+            header("Location: /mantenimientos?msg=" . $msg);
             exit();
         }
     }
@@ -127,7 +127,7 @@ class MantenimientoController {
         }
         
         $msg = $result ? 'eliminado' : 'error';
-        header("Location: /superarseParqueInformatico/public/mantenimientos?msg=" . $msg);
+        header("Location: /mantenimientos?msg=" . $msg);
         exit();
     }
 }

@@ -77,7 +77,7 @@ class AsignacionesController {
 
             // 3. Validación de consistencia: El acta no puede generarse vacía
             if (empty($equiposDetalle) && empty($celularesDetalle)) {
-                header("Location: /superarseParqueInformatico/public/asignaciones?msg=sin_activos");
+                header("Location: /asignaciones?msg=sin_activos");
                 exit();
             }
 
@@ -101,7 +101,7 @@ class AsignacionesController {
             $result = $model->create($data);
             
             $msg = $result ? 'guardado' : 'error';
-            header("Location: /superarseParqueInformatico/public/asignaciones?msg=" . $msg);
+            header("Location: /asignaciones?msg=" . $msg);
             exit();
         }
     }
@@ -112,7 +112,7 @@ class AsignacionesController {
     public function ver() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header("Location: /superarseParqueInformatico/public/asignaciones");
+            header("Location: /asignaciones");
             exit();
         }
 
@@ -122,7 +122,7 @@ class AsignacionesController {
         $acta = $model->find($id); 
 
         if (!$acta) {
-            header("Location: /superarseParqueInformatico/public/asignaciones?msg=no_encontrado");
+            header("Location: /asignaciones?msg=no_encontrado");
             exit();
         }
 
@@ -149,7 +149,7 @@ class AsignacionesController {
             $result = $model->updateItemDevolucion($detalle_id, $observacion_devolucion);
 
             $msg = $result ? 'devuelto' : 'error';
-            header("Location: /superarseParqueInformatico/public/asignaciones/ver?id=" . $acta_id . "&msg=" . $msg);
+            header("Location: /asignaciones/ver?id=" . $acta_id . "&msg=" . $msg);
             exit();
         }
     }
@@ -167,7 +167,7 @@ class AsignacionesController {
         }
         
         $msg = $result ? 'eliminado' : 'error';
-        header("Location: /superarseParqueInformatico/public/asignaciones?msg=" . $msg);
+        header("Location: /asignaciones?msg=" . $msg);
         exit();
     }
 }

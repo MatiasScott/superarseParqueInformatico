@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </form>
-            <a href="/superarseParqueInformatico/public/estadisticas/imprimir?reporte=hardware&tipo=<?= urlencode($_GET['tipo']??'') ?>&sede_id=<?= urlencode($_GET['sede_id']??'') ?>&modelo=<?= urlencode($_GET['modelo']??'') ?>" 
+            <a href="/estadisticas/imprimir?reporte=hardware&tipo=<?= urlencode($_GET['tipo']??'') ?>&sede_id=<?= urlencode($_GET['sede_id']??'') ?>&modelo=<?= urlencode($_GET['modelo']??'') ?>" 
                target="_blank" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-2 self-start md:self-end whitespace-nowrap">
                 🖨️ PDF Hardware
             </a>
@@ -198,7 +198,7 @@
                     </div>
                 </div>
             </form>
-            <a href="/superarseParqueInformatico/public/estadisticas/imprimir?reporte=celulares&operador=<?= urlencode($_GET['operador']??'') ?>&sede_id_cel=<?= urlencode($_GET['sede_id_cel']??'') ?>" 
+            <a href="/estadisticas/imprimir?reporte=celulares&operador=<?= urlencode($_GET['operador']??'') ?>&sede_id_cel=<?= urlencode($_GET['sede_id_cel']??'') ?>" 
                target="_blank" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-2 self-start md:self-end whitespace-nowrap">
                 🖨️ Imprimir Líneas
             </a>
@@ -343,4 +343,4 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/superarseParqueInformatico/public/js/estadistica.js"></script>
+<script src="/js/estadistica.js"></script>

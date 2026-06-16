@@ -8,7 +8,7 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opc
 
     <div class="mb-8">
         <a
-            href="/superarseParqueInformatico/public/equipos"
+            href="/equipos"
             class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition mb-4">
             <i class="ph ph-arrow-left"></i>
             Volver al Inventario
@@ -25,7 +25,7 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opc
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
 
         <form
-            action="/superarseParqueInformatico/public/equipos/actualizar"
+            action="/equipos/actualizar"
             method="POST"
             class="space-y-6">
 
@@ -190,7 +190,7 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opc
 
             <div class="flex gap-3 pt-4">
                 <a
-                    href="/superarseParqueInformatico/public/equipos"
+                    href="/equipos"
                     class="flex-1 py-3 bg-slate-100 text-slate-600 text-center font-bold rounded-xl hover:bg-slate-200 transition">
                     Cancelar
                 </a>

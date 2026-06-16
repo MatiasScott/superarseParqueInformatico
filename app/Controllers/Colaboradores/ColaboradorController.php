@@ -39,7 +39,7 @@ class ColaboradorController {
 
             $result = (new ColaboradorModel())->create($data);
             $msg = $result ? 'guardado' : 'error';
-            header("Location: /superarseParqueInformatico/public/colaboradores?msg=" . $msg);
+            header("Location: /colaboradores?msg=" . $msg);
             exit();
         }
     }
@@ -47,7 +47,7 @@ class ColaboradorController {
     public function editar() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header("Location: /superarseParqueInformatico/public/colaboradores");
+            header("Location: /colaboradores");
             exit();
         }
 
@@ -75,7 +75,7 @@ class ColaboradorController {
             $id = $_POST['id'] ?? null;
             
             if (!$id) {
-                header("Location: /superarseParqueInformatico/public/colaboradores?msg=error");
+                header("Location: /colaboradores?msg=error");
                 exit();
             }
 
@@ -104,7 +104,7 @@ class ColaboradorController {
             $result = $model->update($id, $data);
             
             $msg = $result ? 'actualizado' : 'error';
-            header("Location: /superarseParqueInformatico/public/colaboradores?msg=" . $msg);
+            header("Location: /colaboradores?msg=" . $msg);
             exit();
         }
     }
@@ -120,7 +120,7 @@ class ColaboradorController {
 
         // Si retorna false, es por la restricción de llave foránea en la base de datos
         $msg = $result ? 'eliminado' : 'error_fk';
-        header("Location: /superarseParqueInformatico/public/colaboradores?msg=" . $msg);
+        header("Location: /colaboradores?msg=" . $msg);
         exit();
     }
 }

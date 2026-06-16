@@ -19,7 +19,7 @@
                 </div>
             <?php endif; ?>
 
-            <form action="/superarseParqueInformatico/public/cambiar-contrasena/guardar" method="POST" class="space-y-6">
+            <form action="/cambiar-contrasena/guardar" method="POST" class="space-y-6">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Nueva contraseña</label>
                     <input type="password" name="new_password" required minlength="8"

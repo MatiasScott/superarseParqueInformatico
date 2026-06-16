@@ -146,7 +146,7 @@ $permissionSchema = [
         </div>
     </div>
 
-    <form x-ref="permisosForm" action="/superarseParqueInformatico/public/usuarios/permisos/guardar" method="POST" class="space-y-6" @submit.prevent="submitForm">
+    <form x-ref="permisosForm" action="/usuarios/permisos/guardar" method="POST" class="space-y-6" @submit.prevent="submitForm">
         <input type="hidden" name="user_id" :value="selectedUserId">
 
         <template x-for="section in sections" :key="section.key">

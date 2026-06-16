@@ -62,7 +62,7 @@ class UsuariosController {
                 }
             }
 
-            header('Location: /superarseParqueInformatico/public/usuarios');
+            header('Location: /usuarios');
             exit;
         }
     }
@@ -75,14 +75,14 @@ class UsuariosController {
         if ($id) {
             $this->model->delete((int)$id);
         }
-        header('Location: /superarseParqueInformatico/public/usuarios');
+        header('Location: /usuarios');
         exit;
     }
 
     public function permisos() {
         if (session_status() === PHP_SESSION_NONE) session_start();
         if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-            header('Location: /superarseParqueInformatico/public/dashboard');
+            header('Location: /dashboard');
             exit();
         }
 
@@ -97,13 +97,13 @@ class UsuariosController {
 
     public function guardarPermisos() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /superarseParqueInformatico/public/usuarios/permisos');
+            header('Location: /usuarios/permisos');
             exit();
         }
 
         if (session_status() === PHP_SESSION_NONE) session_start();
         if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-            header('Location: /superarseParqueInformatico/public/dashboard');
+            header('Location: /dashboard');
             exit();
         }
 
@@ -118,7 +118,7 @@ class UsuariosController {
             }
         }
 
-        header('Location: /superarseParqueInformatico/public/usuarios/permisos?success=1');
+        header('Location: /usuarios/permisos?success=1');
         exit();
     }
 }

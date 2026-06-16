@@ -4,7 +4,7 @@ $mantenimiento = $mantenimiento ?? [];
 ?>
 <div class="max-w-4xl mx-auto py-8 px-4">
     
-    <a href="/superarseParqueInformatico/public/mantenimientos" class="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors mb-6 font-bold text-sm group">
+    <a href="/mantenimientos" class="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors mb-6 font-bold text-sm group">
         <i class="ph ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
         Volver al taller
     </a>
@@ -16,7 +16,7 @@ $mantenimiento = $mantenimiento ?? [];
             <p class="text-slate-500 text-sm mt-0.5">Modificando orden de taller #<?= htmlspecialchars($mantenimiento['id']) ?></p>
         </div>
 
-        <form action="/superarseParqueInformatico/public/mantenimientos/actualizar" method="POST" class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form action="/mantenimientos/actualizar" method="POST" class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <input type="hidden" name="id" value="<?= htmlspecialchars($mantenimiento['id']) ?>">
 
@@ -90,7 +90,7 @@ $mantenimiento = $mantenimiento ?? [];
             </div>
 
             <div class="md:col-span-2 flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
-                <a href="/superarseParqueInformatico/public/mantenimientos" 
+                <a href="/mantenimientos" 
                    class="flex-1 py-3.5 text-center bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all text-sm">
                     Cancelar
                 </a>

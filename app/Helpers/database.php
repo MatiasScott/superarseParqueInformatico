@@ -10,7 +10,7 @@ class Database {
                 $host = "localhost";
                 $db   = "superar1_parque_informatico";
                 $user = "root";
-                $pass = "Patoboris123";
+                $pass = "Superarse.2025";
                 $charset = 'utf8mb4';
 
                 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

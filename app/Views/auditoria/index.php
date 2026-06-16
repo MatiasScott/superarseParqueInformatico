@@ -166,4 +166,4 @@ $metricas = $metricas ?? ['total_eventos' => 0, 'total_inserts' => 0, 'total_upd
     window.DATA_AUDITORIA_LOGS = <?= json_encode($logs ?? []) ?>;
 </script>
 
-<script src="/superarseParqueInformatico/public/js/auditoria.js"></script>
+<script src="/js/auditoria.js"></script>

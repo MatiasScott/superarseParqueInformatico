@@ -130,13 +130,13 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                             <td class="p-5 text-center">
                                 <div class="flex justify-center gap-1.5">
                                     <?php if ($canEditColaborador): ?>
-                                    <a href="/superarseParqueInformatico/public/colaboradores/editar?id=<?= $c['id'] ?>" 
+                                    <a href="/colaboradores/editar?id=<?= $c['id'] ?>" 
                                        class="p-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                         <i class="ph ph-note-pencil text-lg"></i>
                                     </a>
                                     <?php endif; ?>
                                     <?php if ($canDeleteColaborador): ?>
-                                    <a href="/superarseParqueInformatico/public/colaboradores/eliminar?id=<?= $c['id'] ?>" 
+                                    <a href="/colaboradores/eliminar?id=<?= $c['id'] ?>" 
                                        onclick="return confirm('¿Está seguro de eliminar este colaborador? Solo procederá si no tiene actas de asignación vinculadas.')" 
                                        class="p-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
                                         <i class="ph ph-trash-simple text-lg"></i>
@@ -168,7 +168,7 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
             <button onclick="document.getElementById('modalColaborador').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl"><i class="ph ph-x"></i></button>
         </div>
         
-        <form action="/superarseParqueInformatico/public/colaboradores/guardar" method="POST" class="p-6 space-y-4">
+        <form action="/colaboradores/guardar" method="POST" class="p-6 space-y-4">
             <div>
                 <label class="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-1">Apellidos y Nombres *</label>
                 <input type="text" name="nombres" required placeholder="Ej: Mendoza Páez Juan Carlos" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-blue-500 focus:bg-white focus:outline-none transition-all shadow-sm">

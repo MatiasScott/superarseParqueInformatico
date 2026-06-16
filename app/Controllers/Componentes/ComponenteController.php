@@ -56,7 +56,7 @@ class ComponenteController {
                 }
             }
 
-            header("Location: /superarseParqueInformatico/public/componentes?msg=guardado");
+            header("Location: /componentes?msg=guardado");
             exit();
         }
     }
@@ -68,7 +68,7 @@ class ComponenteController {
             $id = $_POST['id'];
 
             if (empty($_POST['equipo_id'])) {
-                header("Location: /superarseParqueInformatico/public/componentes?msg=error");
+                header("Location: /componentes?msg=error");
                 exit();
             }
 
@@ -82,7 +82,7 @@ class ComponenteController {
 
             (new ComponenteModel())->update($id, $data);
 
-            header("Location: /superarseParqueInformatico/public/componentes?msg=actualizado");
+            header("Location: /componentes?msg=actualizado");
             exit();
         }
     }
@@ -100,7 +100,7 @@ class ComponenteController {
     // FORM EDITAR
     public function editar() {
         $id = $_GET['id'] ?? null;
-        if (!$id) { header("Location: /superarseParqueInformatico/public/componentes"); exit(); }
+        if (!$id) { header("Location: /componentes"); exit(); }
 
         $componente = (new ComponenteModel())->find($id);
         $equipos = (new Equipo())->getAll();
@@ -121,7 +121,7 @@ class ComponenteController {
             (new ComponenteModel())->delete($id); 
         }
         
-        header("Location: /superarseParqueInformatico/public/componentes?msg=eliminado");
+        header("Location: /componentes?msg=eliminado");
         exit();
     }
 }

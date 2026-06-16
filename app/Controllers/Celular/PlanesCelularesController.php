@@ -46,7 +46,7 @@ class PlanesCelularesController {
             } catch (Exception $e) {
                 $_SESSION['flash_error'] = "Error al guardar el registro: " . $e->getMessage();
             }
-            header('Location: /superarseParqueInformatico/public/planes-celulares');
+            header('Location: /planes-celulares');
             exit;
         }
     }
@@ -60,7 +60,7 @@ class PlanesCelularesController {
 
         if ($id <= 0) {
             $_SESSION['flash_error'] = "ID de dispositivo no válido.";
-            header('Location: /superarseParqueInformatico/public/planes-celulares');
+            header('Location: /planes-celulares');
             exit;
         }
 
@@ -71,7 +71,7 @@ class PlanesCelularesController {
             $_SESSION['flash_error'] = "No se puede remover: El plan tiene histórico asignado en actas.";
         }
         
-        header('Location: /superarseParqueInformatico/public/planes-celulares');
+        header('Location: /planes-celulares');
         exit;
     }
 
@@ -100,7 +100,7 @@ class PlanesCelularesController {
 
             if ($id <= 0) {
                 $_SESSION['flash_error'] = "ID de dispositivo no válido para actualizar.";
-                header('Location: /superarseParqueInformatico/public/planes-celulares');
+                header('Location: /planes-celulares');
                 exit;
             }
 
@@ -111,7 +111,7 @@ class PlanesCelularesController {
                 $_SESSION['flash_error'] = "Error al actualizar el registro: " . $e->getMessage();
             }
             
-            header('Location: /superarseParqueInformatico/public/planes-celulares');
+            header('Location: /planes-celulares');
             exit;
         }
     }

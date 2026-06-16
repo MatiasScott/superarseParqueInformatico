@@ -58,7 +58,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
             </div>
         </div>
 
-        <form method="GET" action="/superarseParqueInformatico/public/asignaciones" id="formFiltroColaborador" class="w-full sm:w-80">
+        <form method="GET" action="/asignaciones" id="formFiltroColaborador" class="w-full sm:w-80">
             <div class="relative">
                 <select 
                     name="colaborador_id" 
@@ -167,12 +167,12 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-1.5">
                                     <?php if ($canViewAsignaciones): ?>
-                                    <a href="/superarseParqueInformatico/public/asignaciones/ver?id=<?= $a['id'] ?>" title="Ver equipos asignados y devoluciones" class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                    <a href="/asignaciones/ver?id=<?= $a['id'] ?>" title="Ver equipos asignados y devoluciones" class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                         <i class="ph ph-eye text-lg"></i>
                                     </a>
                                     <?php endif; ?>
                                     <?php if ($canDeleteAsignaciones): ?>
-                                    <a href="/superarseParqueInformatico/public/asignaciones/eliminar?id=<?= $a['id'] ?>" onclick="return confirm('¿Está seguro de eliminar esta acta? Todos los equipos y celulares vinculados volverán automáticamente a estar DISPONIBLES.')" title="Anular Acta" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                                    <a href="/asignaciones/eliminar?id=<?= $a['id'] ?>" onclick="return confirm('¿Está seguro de eliminar esta acta? Todos los equipos y celulares vinculados volverán automáticamente a estar DISPONIBLES.')" title="Anular Acta" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
                                         <i class="ph ph-trash text-lg"></i>
                                     </a>
                                     <?php endif; ?>
@@ -201,7 +201,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
             </button>
         </div>
         
-        <form action="/superarseParqueInformatico/public/asignaciones/guardar" method="POST" class="space-y-4">
+        <form action="/asignaciones/guardar" method="POST" class="space-y-4">
             <div>
                 <label class="text-sm font-bold text-slate-700">Colaborador / Custodio Responsable</label>
                 <select name="colaborador_id" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 text-sm">

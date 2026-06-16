@@ -35,7 +35,7 @@ class DocumentoController {
             
             // 1. Validar si el archivo existe en el envío y no presenta anomalías
             if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] !== UPLOAD_ERR_OK) {
-                header("Location: /superarseParqueInformatico/public/documentos?msg=error_archivo");
+                header("Location: /documentos?msg=error_archivo");
                 exit();
             }
 
@@ -48,7 +48,7 @@ class DocumentoController {
             $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
             if (!in_array($fileExt, $allowedExtensions)) {
-                header("Location: /superarseParqueInformatico/public/documentos?msg=extension_no_valida");
+                header("Location: /documentos?msg=extension_no_valida");
                 exit();
             }
 
@@ -86,7 +86,7 @@ class DocumentoController {
                 $msg = 'error_subida';
             }
 
-            header("Location: /superarseParqueInformatico/public/documentos?msg=" . $msg);
+            header("Location: /documentos?msg=" . $msg);
             exit();
         }
     }
@@ -98,7 +98,7 @@ class DocumentoController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'] ?? null;
             if (!$id) {
-                header("Location: /superarseParqueInformatico/public/documentos");
+                header("Location: /documentos");
                 exit();
             }
 
@@ -110,7 +110,7 @@ class DocumentoController {
 
             $result = $model->update($id, $data);
             $msg = $result ? 'actualizado' : 'error';
-            header("Location: /superarseParqueInformatico/public/documentos?msg=" . $msg);
+            header("Location: /documentos?msg=" . $msg);
             exit();
         }
     }
@@ -121,7 +121,7 @@ class DocumentoController {
     public function eliminar() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header("Location: /superarseParqueInformatico/public/documentos");
+            header("Location: /documentos");
             exit();
         }
 
@@ -141,7 +141,7 @@ class DocumentoController {
             $msg = 'no_encontrado';
         }
 
-        header("Location: /superarseParqueInformatico/public/documentos?msg=" . $msg);
+        header("Location: /documentos?msg=" . $msg);
         exit();
     }
 }

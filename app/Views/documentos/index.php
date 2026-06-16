@@ -87,7 +87,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-1.5">
-                                    <a href="/superarseParqueInformatico/public/<?= htmlspecialchars($doc['ruta_almacenamiento']) ?>" target="_blank" title="Ver / Descargar Expediente PDF" class="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all">
+                                    <a href="/<?= htmlspecialchars($doc['ruta_almacenamiento']) ?>" target="_blank" title="Ver / Descargar Expediente PDF" class="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all">
                                         <i class="ph ph-download-simple text-lg"></i>
                                     </a>
                                     <?php if ($canEditDocumentos): ?>
@@ -96,7 +96,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
                                     </button>
                                     <?php endif; ?>
                                     <?php if ($canDeleteDocumentos): ?>
-                                    <a href="/superarseParqueInformatico/public/documentos/eliminar?id=<?= $doc['id'] ?>" onclick="return confirm('¿Está seguro de remover permanentemente este registro lógico y borrar su archivo PDF del servidor?')" title="Eliminar Adjunto" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all">
+                                    <a href="/documentos/eliminar?id=<?= $doc['id'] ?>" onclick="return confirm('¿Está seguro de remover permanentemente este registro lógico y borrar su archivo PDF del servidor?')" title="Eliminar Adjunto" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all">
                                         <i class="ph ph-trash text-lg"></i>
                                     </a>
                                     <?php endif; ?>
@@ -123,7 +123,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
             <button onclick="closeUploadModal()" class="text-slate-400 hover:text-red-500 text-2xl"><i class="ph ph-x"></i></button>
         </div>
         
-        <form action="/superarseParqueInformatico/public/documentos/guardar" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="/documentos/guardar" method="POST" enctype="multipart/form-data" class="space-y-4">
             <div>
                 <label class="text-sm font-bold text-slate-700">Título del Archivo</label>
                 <input type="text" name="titulo" required placeholder="Ej: Acta Digitalizada - Bodega Central" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500">
@@ -170,7 +170,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
             <button onclick="closeEditModal()" class="text-slate-400 text-xl hover:text-red-500"><i class="ph ph-x"></i></button>
         </div>
         
-        <form action="/superarseParqueInformatico/public/documentos/actualizar" method="POST" class="space-y-4">
+        <form action="/documentos/actualizar" method="POST" class="space-y-4">
             <input type="hidden" name="id" id="edit_doc_id">
             <div>
                 <label class="text-sm font-bold text-slate-700">Título descriptivo</label>

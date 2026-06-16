@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso | InfoPark</title>
-    <link rel="icon" type="image/png" href="/superarseParqueInformatico/public/assets/img/infopark02.png" />
+    <link rel="icon" type="image/png" href="/assets/img/infopark02.png" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="/superarseParqueInformatico/public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     
    
     
@@ -54,7 +54,7 @@
                 <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 to-orange-500"></div>
                 
                 <div class="inline-flex items-center justify-center w-48 h-14 overflow-hidden bg-transparent mb-2">
-                    <img src="/superarseParqueInformatico/public/assets/img/infopark01.png" 
+                    <img src="/assets/img/infopark01.png" 
                          alt="Vista del Programa InfoPark" 
                          class="w-full h-full object-contain">
                 </div>

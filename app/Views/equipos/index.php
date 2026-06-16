@@ -165,7 +165,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
                                     <div class="flex justify-center gap-2">
                                         <?php if ($canEditEquipos): ?>
                                         <a
-                                            href="/superarseParqueInformatico/public/equipos/editar?id=<?= $e['id'] ?>"
+                                            href="/equipos/editar?id=<?= $e['id'] ?>"
                                             class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                                             title="Editar / Cambiar Estado u Ubicación">
                                             <i class="ph ph-pencil-line text-lg"></i>
@@ -174,7 +174,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
 
                                         <?php if ($canDeleteEquipos): ?>
                                         <a
-                                            href="/superarseParqueInformatico/public/equipos/eliminar?id=<?= $e['id'] ?>"
+                                            href="/equipos/eliminar?id=<?= $e['id'] ?>"
                                             onclick="return confirm('¿Está seguro de que desea eliminar este equipo? Se borrarán de forma permanente sus historiales y órdenes de mantenimiento vinculadas.')"
                                             class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
                                             title="Eliminar">
@@ -230,7 +230,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
         </div>
 
         <form
-            action="/superarseParqueInformatico/public/equipos/guardar"
+            action="/equipos/guardar"
             method="POST"
             class="space-y-5">
             
@@ -367,4 +367,4 @@ function closeModal() {
 }
 </script>
 
-<script src="/superarseParqueInformatico/public/js/equipos.js"></script>
+<script src="/js/equipos.js"></script>

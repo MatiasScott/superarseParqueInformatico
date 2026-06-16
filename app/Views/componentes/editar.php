@@ -1,7 +1,7 @@
 <?php
 // Validación de seguridad para asegurar que los datos del componente existan
 if (!isset($componente)) {
-    header("Location: /superarseParqueInformatico/public/componentes");
+    header("Location: /componentes");
     exit();
 }
 $equipos = $equipos ?? [];
@@ -36,7 +36,7 @@ $equipos = $equipos ?? [];
         </div>
 
         <div class="p-8">
-            <form action="/superarseParqueInformatico/public/componentes/actualizar" method="POST" class="space-y-6">
+            <form action="/componentes/actualizar" method="POST" class="space-y-6">
 
                 <input type="hidden" name="id" value="<?= $componente['id'] ?>">
 
@@ -115,7 +115,7 @@ $equipos = $equipos ?? [];
 
                 <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
                     <a
-                        href="/superarseParqueInformatico/public/componentes"
+                        href="/componentes"
                         class="flex-1 py-4 text-center bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all"
                     >
                         Cancelar

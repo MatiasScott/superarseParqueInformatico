@@ -180,7 +180,7 @@ $finalizados = count(array_filter($mantenimientos, fn($m) => strtolower($m['esta
                                 <?php if ($canEditMantenimiento || $canDeleteMantenimiento): ?>
                                     <div class="flex justify-center gap-1.5">
                                         <?php if ($canEditMantenimiento): ?>
-                                            <a href="/superarseParqueInformatico/public/mantenimientos/editar?id=<?= $m['id'] ?>" 
+                                            <a href="/mantenimientos/editar?id=<?= $m['id'] ?>" 
                                                title="Gestionar Diagnóstico Clínico"
                                                class="p-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm flex items-center justify-center group">
                                                 <i class="ph ph-note-pencil text-lg transition-transform group-hover:scale-110"></i>
@@ -188,7 +188,7 @@ $finalizados = count(array_filter($mantenimientos, fn($m) => strtolower($m['esta
                                         <?php endif; ?>
 
                                         <?php if ($canDeleteMantenimiento): ?>
-                                            <a href="/superarseParqueInformatico/public/mantenimientos/eliminar?id=<?= $m['id'] ?>" 
+                                            <a href="/mantenimientos/eliminar?id=<?= $m['id'] ?>" 
                                                onclick="return confirm('¿Está completamente seguro de eliminar esta orden del taller? El historial del equipo se verá afectado.')" 
                                                class="p-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all shadow-sm flex items-center justify-center group">
                                                 <i class="ph ph-trash-simple text-lg transition-transform group-hover:scale-110"></i>

@@ -1,6 +1,6 @@
 <?php
 if (!isset($colaborador)) {
-    header("Location: /superarseParqueInformatico/public/colaboradores");
+    header("Location: /colaboradores");
     exit();
 }
 
@@ -18,7 +18,7 @@ $areasDisponibles = [
 ?>
 <div class="col-span-3 max-w-3xl mx-auto w-full py-4">
     <div class="mb-6">
-        <a href="/superarseParqueInformatico/public/colaboradores" class="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold text-sm group">
+        <a href="/colaboradores" class="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold text-sm group">
             <i class="ph ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
             Volver a la lista
         </a>
@@ -61,7 +61,7 @@ $areasDisponibles = [
         </div>
 
         <div class="p-8">
-            <form action="/superarseParqueInformatico/public/colaboradores/actualizar" method="POST" class="space-y-6">
+            <form action="/colaboradores/actualizar" method="POST" class="space-y-6">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($colaborador['id']) ?>">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -187,7 +187,7 @@ $areasDisponibles = [
 
                 <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
                     <a
-                        href="/superarseParqueInformatico/public/colaboradores"
+                        href="/colaboradores"
                         class="flex-1 py-3.5 text-center bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all text-sm"
                     >
                         Cancelar

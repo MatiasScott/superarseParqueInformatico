@@ -35,12 +35,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($currentTitle) ?> | InfoPark</title>
-    <link rel="icon" type="image/png" href="/superarseParqueInformatico/public/assets/img/infopark02.png"/>
+    <link rel="icon" type="image/png" href="/assets/img/infopark02.png"/>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="/superarseParqueInformatico/public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 
     
 </head>
@@ -62,7 +62,7 @@
             <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 to-orange-500"></div>
             <div class="flex items-center gap-3">
                 <div class="inline-flex items-center justify-center w-40 h-12 overflow-hidden bg-transparent">
-                    <img src="/superarseParqueInformatico/public/assets/img/infopark01.png" 
+                    <img src="/assets/img/infopark01.png" 
                          alt="Vista del Programa InfoPark" 
                          class="w-full h-full object-contain">
                 </div>
@@ -77,7 +77,7 @@
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Monitoreo</p>
                 <div class="space-y-1">
-                    <a href="/superarseParqueInformatico/public/dashboard"
+                    <a href="/dashboard"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-chart-pie-slice text-lg <?= ($activePage == 'dashboard') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
@@ -89,19 +89,19 @@
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Activos e Inventario</p>
                 <div class="space-y-1">
-                    <a href="/superarseParqueInformatico/public/equipos"
+                    <a href="/equipos"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'equipos') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-desktop text-lg <?= ($activePage == 'equipos') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Equipos de Cómputo</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/componentes"
+                    <a href="/componentes"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'componentes') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-hard-drives text-lg <?= ($activePage == 'componentes') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Componentes de Equipo</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/planes-celulares"
+                    <a href="/planes-celulares"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'planes-celulares') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-device-mobile text-lg <?= ($activePage == 'planes-celulares') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
@@ -113,25 +113,25 @@
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Operaciones</p>
                 <div class="space-y-1">
-                    <a href="/superarseParqueInformatico/public/colaboradores"
+                    <a href="/colaboradores"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'colaboradores') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-users-three text-lg <?= ($activePage == 'colaboradores') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Colaboradores</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/asignaciones"
+                    <a href="/asignaciones"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'asignaciones') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-textbox text-lg <?= ($activePage == 'asignaciones') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Actas de Asignación</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/mantenimientos"
+                    <a href="/mantenimientos"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'mantenimientos') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-wrench text-lg <?= ($activePage == 'mantenimientos') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Órdenes de Soporte</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/documentos"
+                    <a href="/documentos"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'documentos') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-file-pdf text-lg <?= ($activePage == 'documentos') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
@@ -143,25 +143,25 @@
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Módulo de Reportes</p>
                 <div class="space-y-1">
-                    <a href="/superarseParqueInformatico/public/inventario"
+                    <a href="/inventario"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'inventario') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-file-xls text-lg <?= ($activePage == 'inventario') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Inventario General</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/equipos-asignados"
+                    <a href="/equipos-asignados"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'equipos-asignados') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-monitor-arrow-up text-lg <?= ($activePage == 'equipos-asignados') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Equipos Asignados</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/equipos-baja"
+                    <a href="/equipos-baja"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'equipos-baja') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-trash text-lg <?= ($activePage == 'equipos-baja') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Bajas Tecnológicas</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/estadisticas"
+                    <a href="/estadisticas"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'estadisticas') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-chart-bar text-lg <?= ($activePage == 'estadisticas') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
@@ -174,19 +174,19 @@
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-3">Security y Logs</p>
                 <div class="space-y-1">
-                    <a href="/superarseParqueInformatico/public/usuarios"
+                    <a href="/usuarios"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'usuarios') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-user-gear text-lg <?= ($activePage == 'usuarios') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Gestión de Usuarios</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/usuarios/permisos"
+                    <a href="/usuarios/permisos"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'usuarios_permisos') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-shield-check text-lg <?= ($activePage == 'usuarios_permisos') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
                         <span>Permisos de Acceso</span>
                     </a>
-                    <a href="/superarseParqueInformatico/public/auditoria"
+                    <a href="/auditoria"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group
                        <?= ($activePage == 'auditoria') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/20 font-bold' : 'text-slate-600 hover:bg-sky-500/10 hover:text-sky-700' ?>">
                         <i class="ph ph-shield-check text-lg <?= ($activePage == 'auditoria') ? 'text-white' : 'text-slate-500 group-hover:text-sky-600' ?>"></i>
@@ -208,7 +208,7 @@
                         <p class="text-blue-600 text-[9px] uppercase tracking-[0.15em] font-black mt-0.5"><?= htmlspecialchars(ucfirst($_SESSION['rol'] ?? 'admin')) ?></p>
                     </div>
                 </div>
-                <a href="/superarseParqueInformatico/public/logout"
+                <a href="/logout"
                    class="mt-3 flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 border border-rose-100/50 shadow-sm">
                     <i class="ph ph-sign-out"></i>
                     Cerrar Sesión Interna
