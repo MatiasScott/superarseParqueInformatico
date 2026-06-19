@@ -320,13 +320,21 @@ class AsignacionesModel {
             $actaAntes = $this->find($id);
             if (!$actaAntes) return false;
 
+            $stmtEstadoDisponible = $this->db->prepare("SELECT id FROM estados_equipo WHERE LOWER(nombre) = 'disponible' LIMIT 1");
+            $stmtEstadoDisponible->execute();
+            $idEstadoDisponible = $stmtEstadoDisponible->fetchColumn();
+
+            if ($idEstadoDisponible === false) {
+                return false;
+            }
+
             $this->db->beginTransaction();
 
             if (!empty($actaAntes['equipos'])) {
-                $sqlLiberarEq = "UPDATE equipos SET estado_id = 1 WHERE id = ?";
+                $sqlLiberarEq = "UPDATE equipos SET estado_id = ? WHERE id = ?";
                 $stmtLE = $this->db->prepare($sqlLiberarEq);
                 foreach ($actaAntes['equipos'] as $eq) {
-                    $stmtLE->execute([$eq['equipo_id']]);
+                    $stmtLE->execute([(int)$idEstadoDisponible, $eq['equipo_id']]);
                 }
             }
 

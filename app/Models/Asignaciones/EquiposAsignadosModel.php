@@ -35,12 +35,13 @@ class EquiposAsignadosModel {
                         aad.estado_entrega_equipo,
                         aad.observacion_item
                     FROM equipos e
+                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     INNER JOIN actas_asignacion_detalle aad ON e.id = aad.equipo_id 
                         AND aad.estado_item = 'En Uso'
                     INNER JOIN actas_asignacion aa ON aad.acta_id = aa.id 
                         AND aa.estado_acta = 'Vigente'
                     INNER JOIN colaboradores c ON aa.colaborador_id = c.id
-                    WHERE e.estado_id = 2
+                    WHERE LOWER(ee.nombre) = 'asignado'
 
                     UNION ALL
 
@@ -88,9 +89,10 @@ class EquiposAsignadosModel {
                                 SUM(CASE WHEN e.tipo = 'Laptop' THEN 1 ELSE 0 END) as total_laptops,
                                 SUM(CASE WHEN e.tipo = 'Desktop' THEN 1 ELSE 0 END) as total_desktops
                            FROM equipos e
+                          INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                            INNER JOIN actas_asignacion_detalle aad ON e.id = aad.equipo_id AND aad.estado_item = 'En Uso'
                            INNER JOIN actas_asignacion aa ON aad.acta_id = aa.id AND aa.estado_acta = 'Vigente'
-                           WHERE e.estado_id = 2";
+                          WHERE LOWER(ee.nombre) = 'asignado'";
             
             $resEquipos = $this->db->query($sqlEquipos)->fetch(PDO::FETCH_ASSOC) ?: ['total_equipos' => 0, 'total_laptops' => 0, 'total_desktops' => 0];
 

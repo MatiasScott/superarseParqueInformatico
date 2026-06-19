@@ -47,12 +47,7 @@ class InventarioModel {
                         p.celular_modelo AS modelo,
                         p.numero_celular AS serie,
                         p.estado_plan AS estado_nombre,
-                        CASE 
-                            WHEN p.estado_plan = 'Disponible' THEN 1
-                            WHEN p.estado_plan = 'Asignado' THEN 2
-                            WHEN p.estado_plan = 'Mantenimiento' THEN 3
-                            ELSE 4
-                        END AS estado_id,
+                        NULL AS estado_id,
                         c.nombres AS colaborador_asignado,
                         c.area AS colaborador_area,
                         0 as total_componentes
@@ -84,19 +79,19 @@ class InventarioModel {
                         (SELECT COUNT(*) FROM equipos) + (SELECT COUNT(*) FROM planes_celulares) as total_equipos,
                         
                         -- Sumatoria de Disponibles
-                        (SELECT COUNT(*) FROM equipos WHERE estado_id = 1) + 
+                        (SELECT COUNT(*) FROM equipos e INNER JOIN estados_equipo ee ON e.estado_id = ee.id WHERE LOWER(ee.nombre) = 'disponible') + 
                         (SELECT COUNT(*) FROM planes_celulares WHERE estado_plan = 'Disponible') as disponibles,
                         
                         -- Sumatoria de Asignados
-                        (SELECT COUNT(*) FROM equipos WHERE estado_id = 2) + 
+                        (SELECT COUNT(*) FROM equipos e INNER JOIN estados_equipo ee ON e.estado_id = ee.id WHERE LOWER(ee.nombre) = 'asignado') + 
                         (SELECT COUNT(*) FROM planes_celulares WHERE estado_plan = 'Asignado') as asignados,
                         
                         -- Sumatoria en Mantenimiento
-                        (SELECT COUNT(*) FROM equipos WHERE estado_id = 3) + 
+                        (SELECT COUNT(*) FROM equipos e INNER JOIN estados_equipo ee ON e.estado_id = ee.id WHERE LOWER(ee.nombre) = 'mantenimiento') + 
                         (SELECT COUNT(*) FROM planes_celulares WHERE estado_plan = 'Mantenimiento') as mantenimiento,
                         
                         -- Sumatoria de Bajas/Daños/Robos
-                        (SELECT COUNT(*) FROM equipos WHERE estado_id IN (4,5,6)) + 
+                        (SELECT COUNT(*) FROM equipos e INNER JOIN estados_equipo ee ON e.estado_id = ee.id WHERE LOWER(ee.nombre) IN ('baja','robado/perdido','eliminado')) + 
                         (SELECT COUNT(*) FROM planes_celulares WHERE estado_plan IN ('Baja','Robado/Perdido')) as bajas_danos";
             
             $result = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);

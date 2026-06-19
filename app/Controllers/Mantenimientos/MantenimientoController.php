@@ -104,10 +104,19 @@ class MantenimientoController {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($row && $row['tiene_acta'] > 0) {
-                    // 🌟 Corrección: Si tiene un acta activa, forzamos a que vuelva a quedar como ASIGNADO (estado_id = 2)
-                    $sqlUpdate = "UPDATE equipos SET estado_id = 2 WHERE id = :equipo_id";
-                    $stmtUpdate = $db->prepare($sqlUpdate);
-                    $stmtUpdate->execute([':equipo_id' => $equipo_id]);
+                    // Si tiene acta activa, vuelve a quedar como Asignado resolviendo el estado por nombre.
+                    $stmtEstadoAsignado = $db->prepare("SELECT id FROM estados_equipo WHERE LOWER(nombre) = 'asignado' LIMIT 1");
+                    $stmtEstadoAsignado->execute();
+                    $idEstadoAsignado = $stmtEstadoAsignado->fetchColumn();
+
+                    if ($idEstadoAsignado !== false) {
+                        $sqlUpdate = "UPDATE equipos SET estado_id = :estado_id WHERE id = :equipo_id";
+                        $stmtUpdate = $db->prepare($sqlUpdate);
+                        $stmtUpdate->execute([
+                            ':estado_id' => (int)$idEstadoAsignado,
+                            ':equipo_id' => $equipo_id
+                        ]);
+                    }
                 }
                 // Si no tiene acta, el trigger de la base de datos ya lo dejó en estado 1 (Disponible), lo cual es correcto.
             }

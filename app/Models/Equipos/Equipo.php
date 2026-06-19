@@ -9,12 +9,6 @@ class Equipo {
 
     private $db;
 
-    // Fallbacks por compatibilidad; en runtime se resuelve por nombre desde BD.
-    private $DEFAULT_ESTADO_ACTIVO = 6;
-    private $DEFAULT_ESTADO_MANTENIMIENTO = 3;
-    private $DEFAULT_ESTADO_BAJA = 5;
-    private $DEFAULT_ESTADO_DISPONIBLE = 1;
-
     private $estadoIdCache = [];
 
     public function __construct()
@@ -41,10 +35,18 @@ class Equipo {
         return $this->estadoIdCache[$key];
     }
 
-    private function getEstadoIdFallback($nombre, $fallback)
+    public function getEstadoNombreById($id): ?string
     {
-        $resolved = $this->getEstadoIdByNombre($nombre);
-        return $resolved !== null ? $resolved : (int)$fallback;
+        $idValidado = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($idValidado === false) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare("SELECT nombre FROM estados_equipo WHERE id = ? LIMIT 1");
+        $stmt->execute([(int)$idValidado]);
+        $nombre = $stmt->fetchColumn();
+
+        return $nombre !== false ? (string)$nombre : null;
     }
 
     private function normalizarEstadoId($estadoId, $defaultNombre = 'Disponible')
@@ -58,22 +60,7 @@ class Equipo {
             }
         }
 
-        switch (mb_strtolower((string)$defaultNombre, 'UTF-8')) {
-            case 'mantenimiento':
-                $fallback = $this->DEFAULT_ESTADO_MANTENIMIENTO;
-                break;
-            case 'activo':
-                $fallback = $this->DEFAULT_ESTADO_ACTIVO;
-                break;
-            case 'baja':
-                $fallback = $this->DEFAULT_ESTADO_BAJA;
-                break;
-            default:
-                $fallback = $this->DEFAULT_ESTADO_DISPONIBLE;
-                break;
-        }
-
-        return $this->getEstadoIdFallback($defaultNombre, $fallback);
+        return $this->getEstadoIdByNombre($defaultNombre);
     }
 
     /**
@@ -91,13 +78,12 @@ class Equipo {
             FROM equipos e
             LEFT JOIN estados_equipo ee ON e.estado_id = ee.id
             LEFT JOIN sedes s ON e.sede_id = s.id
-            WHERE e.estado_id <> ? 
-              AND (ee.nombre IS NULL OR ee.nombre <> 'Eliminado')
+            WHERE (ee.nombre IS NULL OR LOWER(ee.nombre) <> 'baja')
+              AND (ee.nombre IS NULL OR LOWER(ee.nombre) <> 'eliminado')
             ORDER BY e.id DESC
         ");
 
-        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
-        $stmt->execute([$idEstadoBaja]);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -115,12 +101,11 @@ class Equipo {
             FROM equipos e
             LEFT JOIN estados_equipo ee ON e.estado_id = ee.id
             LEFT JOIN sedes s ON e.sede_id = s.id
-            WHERE e.estado_id = ?
+            WHERE LOWER(ee.nombre) = 'baja'
             ORDER BY e.fecha_baja DESC, e.id DESC
         ");
 
-        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
-        $stmt->execute([$idEstadoBaja]);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -132,19 +117,18 @@ class Equipo {
         $sql = "
             SELECT e.*, s.nombre AS sede_nombre 
             FROM equipos e
+            INNER JOIN estados_equipo ee ON e.estado_id = ee.id
             LEFT JOIN sedes s ON e.sede_id = s.id
             LEFT JOIN actas_asignacion_detalle aad 
                 ON e.id = aad.equipo_id AND aad.fecha_devolucion_equipo IS NULL
             LEFT JOIN actas_asignacion aa 
                 ON aad.acta_id = aa.id AND aa.estado_acta = 'Vigente'
-            WHERE e.estado_id = ? 
+            WHERE LOWER(ee.nombre) = 'disponible'
               AND aa.id IS NULL
             ORDER BY e.id DESC
         ";
-
-        $idEstadoDisponible = $this->getEstadoIdFallback('Disponible', $this->DEFAULT_ESTADO_DISPONIBLE);
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$idEstadoDisponible]);
+        $stmt->execute();
 
         return $stmt->fetchAll();
     }
@@ -173,6 +157,9 @@ class Equipo {
     public function create($data)
     {
         $estadoId = $this->normalizarEstadoId($data['estado_id'] ?? null, 'Disponible');
+        if ($estadoId === null) {
+            return false;
+        }
 
         $sql = "
             INSERT INTO equipos
@@ -201,8 +188,8 @@ class Equipo {
             $idNuevoEquipo = $this->db->lastInsertId();
 
             // ⚠️ AUTOMATIZACIÓN: Si ingresa directo a mantenimiento, genera su orden técnica
-            $idEstadoMantenimiento = $this->getEstadoIdFallback('Mantenimiento', $this->DEFAULT_ESTADO_MANTENIMIENTO);
-            if ($estadoId === $idEstadoMantenimiento) {
+            $nombreEstado = mb_strtolower((string)($this->getEstadoNombreById($estadoId) ?? ''), 'UTF-8');
+            if ($nombreEstado === 'mantenimiento') {
                 $this->crearOrdenMantenimientoAutomatica($idNuevoEquipo, $data['descripcion']);
             }
 
@@ -221,6 +208,9 @@ class Equipo {
         $equipoAntes = $this->find($id);
         $estadoActual = isset($equipoAntes['estado_id']) ? (int)$equipoAntes['estado_id'] : null;
         $estadoId = $this->normalizarEstadoId($data['estado_id'] ?? $estadoActual, 'Disponible');
+        if ($estadoId === null) {
+            return false;
+        }
 
         $sql = "
             UPDATE equipos
@@ -248,8 +238,9 @@ class Equipo {
 
         if ($result && $equipoAntes) {
             // ⚠️ AUTOMATIZACIÓN: Si cambia a mantenimiento ahora y antes no lo estaba
-            $idEstadoMantenimiento = $this->getEstadoIdFallback('Mantenimiento', $this->DEFAULT_ESTADO_MANTENIMIENTO);
-            if ($estadoId === $idEstadoMantenimiento && (int)($equipoAntes['estado_id'] ?? 0) !== $idEstadoMantenimiento) {
+            $nombreEstadoNuevo = mb_strtolower((string)($this->getEstadoNombreById($estadoId) ?? ''), 'UTF-8');
+            $nombreEstadoAnterior = mb_strtolower((string)($this->getEstadoNombreById($equipoAntes['estado_id'] ?? null) ?? ''), 'UTF-8');
+            if ($nombreEstadoNuevo === 'mantenimiento' && $nombreEstadoAnterior !== 'mantenimiento') {
                 $this->crearOrdenMantenimientoAutomatica($id, $data['descripcion']);
             }
 
@@ -341,11 +332,11 @@ class Equipo {
             SELECT COUNT(*) as total
             FROM equipos e
             LEFT JOIN estados_equipo ee ON e.estado_id = ee.id
-            WHERE e.estado_id <> ? AND (ee.nombre IS NULL OR ee.nombre <> 'Eliminado')
+            WHERE (ee.nombre IS NULL OR LOWER(ee.nombre) <> 'baja')
+              AND (ee.nombre IS NULL OR LOWER(ee.nombre) <> 'eliminado')
         ");
 
-        $idEstadoBaja = $this->getEstadoIdFallback('Baja', $this->DEFAULT_ESTADO_BAJA);
-        $stmt->execute([$idEstadoBaja]);
+        $stmt->execute();
         $result = $stmt->fetch();
         return $result['total'];
     }

@@ -46,8 +46,7 @@ class EquipoController {
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $model = new Equipo();
-            $idEstadoDisponible = $model->getEstadoIdByNombre('Disponible') ?? 1;
-            $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
+            $idEstadoDisponible = $model->getEstadoIdByNombre('Disponible');
 
             // Si no llega estado_id o llega inválido, el modelo lo normaliza.
             $estado_id = $_POST['estado_id'] ?? $idEstadoDisponible;
@@ -61,7 +60,8 @@ class EquipoController {
             $precio = isset($_POST['precio']) ? floatval(str_replace(',', '', $_POST['precio'])) : 0.00;
 
             // REVISAR SI ES BAJA
-            if ((int)$estado_id === $idEstadoBaja) {
+            $nombreEstadoSeleccionado = mb_strtolower((string)($model->getEstadoNombreById($estado_id) ?? ''), 'UTF-8');
+            if ($nombreEstadoSeleccionado === 'baja') {
                 $fecha_baja = date('Y-m-d');
                 $motivo_baja = trim($_POST['descripcion']) ?: 'Retirado por el administrador';
             }
@@ -112,10 +112,10 @@ class EquipoController {
 
         $model = new Equipo();
         $equipo = $model->find($id);
-        $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
+        $nombreEstadoEquipo = mb_strtolower((string)($model->getEstadoNombreById($equipo['estado_id'] ?? null) ?? ''), 'UTF-8');
 
         // 🛡️ SI EL EQUIPO YA ES BAJA, NO PERMITIR ENTRAR AL FORMULARIO
-        if ($equipo && (int)$equipo['estado_id'] === (int)$idEstadoBaja) {
+        if ($equipo && $nombreEstadoEquipo === 'baja') {
             header("Location: /equipos?error=equipo_de_baja");
             exit();
         }
@@ -147,8 +147,8 @@ class EquipoController {
             // 🛡️ VERIFICAR EN LA BD QUE NO SE ESTÉ INTENTANDO ALTERAR UN EQUIPO YA DADO DE BAJA
             $model = new Equipo();
             $equipoActual = $model->find($id);
-            $idEstadoBaja = $model->getEstadoIdByNombre('Baja') ?? 5;
-            if ($equipoActual && (int)$equipoActual['estado_id'] === (int)$idEstadoBaja) {
+            $nombreEstadoActual = mb_strtolower((string)($model->getEstadoNombreById($equipoActual['estado_id'] ?? null) ?? ''), 'UTF-8');
+            if ($equipoActual && $nombreEstadoActual === 'baja') {
                 header("Location: /equipos?error=modificacion_denegada");
                 exit();
             }
@@ -156,7 +156,8 @@ class EquipoController {
             $fecha_baja = null;
             $motivo_baja = null;
 
-            if ((int)$estado_id === $idEstadoBaja) {
+            $nombreEstadoSeleccionado = mb_strtolower((string)($model->getEstadoNombreById($estado_id) ?? ''), 'UTF-8');
+            if ($nombreEstadoSeleccionado === 'baja') {
                 $fecha_baja = date('Y-m-d');
                 $motivo_baja = trim($_POST['descripcion']) ?: 'Retirado por el administrador';
             }

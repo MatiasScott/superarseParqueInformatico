@@ -133,12 +133,12 @@ $metricas = $metricas ?? ['total_equipos' => 0, 'disponibles' => 0, 'asignados' 
                         
                         <td class="py-4 px-6 text-center">
                             <span :class="{
-                                'bg-emerald-100 text-emerald-700 border-emerald-200': equipo.estado_id == 1,
-                                'bg-indigo-100 text-indigo-700 border-indigo-200': equipo.estado_id == 2,
-                                'bg-amber-100 text-amber-700 border-amber-200': equipo.estado_id == 3,
-                                'bg-red-100 text-red-700 border-red-200': equipo.estado_id == 4,
-                                'bg-slate-200 text-slate-700 border-slate-300': equipo.estado_id == 5,
-                                'bg-rose-100 text-rose-700 border-rose-200': equipo.estado_id == 6
+                                'bg-emerald-100 text-emerald-700 border-emerald-200': ['disponible'].includes((equipo.estado_nombre || '').toLowerCase().trim()),
+                                'bg-indigo-100 text-indigo-700 border-indigo-200': ['asignado', 'activo', 'en uso'].includes((equipo.estado_nombre || '').toLowerCase().trim()),
+                                'bg-amber-100 text-amber-700 border-amber-200': ['mantenimiento', 'en mantenimiento'].includes((equipo.estado_nombre || '').toLowerCase().trim()),
+                                'bg-red-100 text-red-700 border-red-200': ['baja'].includes((equipo.estado_nombre || '').toLowerCase().trim()),
+                                'bg-slate-200 text-slate-700 border-slate-300': ['eliminado'].includes((equipo.estado_nombre || '').toLowerCase().trim()),
+                                'bg-rose-100 text-rose-700 border-rose-200': ['robado/perdido', 'robado', 'perdido'].includes((equipo.estado_nombre || '').toLowerCase().trim())
                             }" class="px-2.5 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full border" x-text="equipo.estado_nombre">
                             </span>
                         </td>
