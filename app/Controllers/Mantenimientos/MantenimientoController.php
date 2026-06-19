@@ -97,7 +97,7 @@ class MantenimientoController {
                              INNER JOIN actas_asignacion aa ON aad.acta_id = aa.id
                              WHERE aad.equipo_id = :equipo_id 
                                AND aad.estado_item = 'En Uso' 
-                               AND aad.estado_acta = 'Vigente'";
+                                                             AND aa.estado_acta = 'Vigente'";
                 
                 $stmt = $db->prepare($sqlCheck);
                 $stmt->execute([':equipo_id' => $equipo_id]);

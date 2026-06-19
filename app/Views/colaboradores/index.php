@@ -23,13 +23,13 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
             </h2>
             <p class="text-slate-500 text-sm mt-1">Gestión de personal custodio de los recursos tecnológicos de la empresa.</p>
         </div>
-        
+
         <?php if ($canCreateColaborador): ?>
-        <button onclick="document.getElementById('modalColaborador').classList.remove('hidden')" 
+            <button onclick="document.getElementById('modalColaborador').classList.remove('hidden')"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-blue-500/10 flex items-center gap-2 transition-all hover:-translate-y-0.5">
-            <i class="ph ph-user-plus text-lg"></i>
-            Nuevo Colaborador
-        </button>
+                <i class="ph ph-user-plus text-lg"></i>
+                Nuevo Colaborador
+            </button>
         <?php endif; ?>
     </div>
 
@@ -62,8 +62,8 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
     <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
         <div class="relative w-full sm:w-96">
             <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-lg"></i>
-            <input type="text" id="buscadorColaborador" placeholder="Buscar por nombre, cargo, área o sede..." 
-                   class="w-full bg-slate-50 pl-11 pr-4 py-3 rounded-2xl text-sm border border-slate-100 focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-inner">
+            <input type="text" id="buscadorColaborador" placeholder="Buscar por nombre, cargo, área o sede..."
+                class="w-full bg-slate-50 pl-11 pr-4 py-3 rounded-2xl text-sm border border-slate-100 focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-inner">
         </div>
     </div>
 
@@ -83,68 +83,68 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <?php if (!empty($colaboradores)): ?>
-                        <?php foreach($colaboradores as $c): ?>
-                        <tr class="fila-colaborador hover:bg-slate-50/80 transition-all text-sm">
-                            <td class="p-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 bg-gradient-to-tr from-slate-100 to-slate-200 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xs uppercase tracking-tighter shadow-inner">
-                                        <?= substr($c['nombres'], 0, 2) ?>
+                        <?php foreach ($colaboradores as $c): ?>
+                            <tr class="fila-colaborador hover:bg-slate-50/80 transition-all text-sm">
+                                <td class="p-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 bg-gradient-to-tr from-slate-100 to-slate-200 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xs uppercase tracking-tighter shadow-inner">
+                                            <?= substr($c['nombres'], 0, 2) ?>
+                                        </div>
+                                        <span class="font-bold text-slate-800 block target-buscar"><?= htmlspecialchars($c['nombres']) ?></span>
                                     </div>
-                                    <span class="font-bold text-slate-800 block target-buscar"><?= htmlspecialchars($c['nombres']) ?></span>
-                                </div>
-                            </td>
-                            
-                            <td class="p-5">
-                                <span class="font-semibold text-slate-700 block target-buscar"><?= htmlspecialchars($c['cargo'] ?? 'No asignado') ?></span>
-                                <span class="text-xs text-slate-400 target-buscar"><?= htmlspecialchars($c['area'] ?? 'Sin Área') ?></span>
-                            </td>
+                                </td>
 
-                            <td class="p-5 font-medium text-slate-700">
-                                <span class="inline-flex items-center gap-1.5 bg-blue-50/60 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-xl text-xs font-bold target-buscar">
-                                    <i class="ph ph-buildings text-sm"></i>
-                                    <?= htmlspecialchars($c['sede_nombre'] ?? 'Sede Central') ?>
-                                </span>
-                            </td>
-                            
-                            <td class="p-5 font-medium text-slate-600">
-                                <?= htmlspecialchars($c['correo'] ?? '---') ?>
-                            </td>
+                                <td class="p-5">
+                                    <span class="font-semibold text-slate-700 block target-buscar"><?= htmlspecialchars($c['cargo'] ?? 'No asignado') ?></span>
+                                    <span class="text-xs text-slate-400 target-buscar"><?= htmlspecialchars($c['area'] ?? 'Sin Área') ?></span>
+                                </td>
 
-                            <td class="p-5 text-slate-500">
-                                <i class="ph ph-calendar text-slate-400 mr-1 inline"></i>
-                                <?= $c['fecha_ingreso'] ? date('d/m/Y', strtotime($c['fecha_ingreso'])) : 'No registrada' ?>
-                            </td>
-
-                            <td class="p-5">
-                                <?php if ((int)$c['estado'] === 1): ?>
-                                    <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-xl text-xs font-bold uppercase">
-                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Activo
+                                <td class="p-5 font-medium text-slate-700">
+                                    <span class="inline-flex items-center gap-1.5 bg-blue-50/60 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-xl text-xs font-bold target-buscar">
+                                        <i class="ph ph-buildings text-sm"></i>
+                                        <?= htmlspecialchars($c['sede_nombre'] ?? 'Sede Central') ?>
                                     </span>
-                                <?php else: ?>
-                                    <span class="inline-flex items-center gap-1.5 bg-slate-50 text-slate-500 border border-slate-200/60 px-2.5 py-1 rounded-xl text-xs font-bold uppercase">
-                                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Inactivo
-                                    </span>
-                                <?php endif; ?>
-                            </td>
+                                </td>
 
-                            <td class="p-5 text-center">
-                                <div class="flex justify-center gap-1.5">
-                                    <?php if ($canEditColaborador): ?>
-                                    <a href="/colaboradores/editar?id=<?= $c['id'] ?>" 
-                                       class="p-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                                        <i class="ph ph-note-pencil text-lg"></i>
-                                    </a>
+                                <td class="p-5 font-medium text-slate-600">
+                                    <?= htmlspecialchars($c['correo'] ?? '---') ?>
+                                </td>
+
+                                <td class="p-5 text-slate-500">
+                                    <i class="ph ph-calendar text-slate-400 mr-1 inline"></i>
+                                    <?= $c['fecha_ingreso'] ? date('d/m/Y', strtotime($c['fecha_ingreso'])) : 'No registrada' ?>
+                                </td>
+
+                                <td class="p-5">
+                                    <?php if ((int)$c['estado'] === 1): ?>
+                                        <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-xl text-xs font-bold uppercase">
+                                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Activo
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center gap-1.5 bg-slate-50 text-slate-500 border border-slate-200/60 px-2.5 py-1 rounded-xl text-xs font-bold uppercase">
+                                            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Inactivo
+                                        </span>
                                     <?php endif; ?>
-                                    <?php if ($canDeleteColaborador): ?>
-                                    <a href="/colaboradores/eliminar?id=<?= $c['id'] ?>" 
-                                       onclick="return confirm('¿Está seguro de eliminar este colaborador? Solo procederá si no tiene actas de asignación vinculadas.')" 
-                                       class="p-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
-                                        <i class="ph ph-trash-simple text-lg"></i>
-                                    </a>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+
+                                <td class="p-5 text-center">
+                                    <div class="flex justify-center gap-1.5">
+                                        <?php if ($canEditColaborador): ?>
+                                            <a href="/colaboradores/editar?id=<?= $c['id'] ?>"
+                                                class="p-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                                <i class="ph ph-note-pencil text-lg"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($canDeleteColaborador): ?>
+                                            <a href="/colaboradores/eliminar?id=<?= $c['id'] ?>"
+                                                onclick="return confirm('¿Está seguro de eliminar este colaborador? Solo procederá si no tiene actas de asignación vinculadas.')"
+                                                class="p-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm">
+                                                <i class="ph ph-trash-simple text-lg"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
@@ -167,7 +167,7 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
             <h3 class="text-lg font-black text-slate-800 tracking-tight">Registrar Nuevo Colaborador</h3>
             <button onclick="document.getElementById('modalColaborador').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl"><i class="ph ph-x"></i></button>
         </div>
-        
+
         <form action="/colaboradores/guardar" method="POST" class="p-6 space-y-4">
             <div>
                 <label class="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-1">Apellidos y Nombres *</label>
@@ -178,9 +178,9 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                 <div>
                     <label class="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-1">Área Corporativa *</label>
                     <div class="relative">
-                        <select 
-                            name="area" 
-                            required 
+                        <select
+                            name="area"
+                            required
                             class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 text-sm font-medium transition cursor-pointer shadow-sm">
                             <option value="" disabled selected>Seleccione Área</option>
                             <option value="Recepción">Recepción</option>
@@ -189,6 +189,10 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                             <option value="Academica">Académico</option>
                             <option value="Finanzas">Finanzas</option>
                             <option value="Secretaria">Secretaría</option>
+                            <option value="Talento Humano">Talento Humano</option>
+                            <option value="Veterinaria">Veterinaria</option>
+                            <option value="Promotores">Promotores</option>
+                            <option value="Nexo">Nexo</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400">
                             <i class="ph ph-caret-down text-base"></i>
@@ -204,12 +208,12 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
             <div>
                 <label class="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-1">Sede / Sucursal de Trabajo *</label>
                 <div class="relative">
-                    <select 
-                        name="sede_id" 
-                        required 
+                    <select
+                        name="sede_id"
+                        required
                         class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 text-sm font-medium transition cursor-pointer shadow-sm">
                         <option value="" disabled selected>Seleccione Ubicación Física</option>
-                        <?php foreach($sedes as $sede): ?>
+                        <?php foreach ($sedes as $sede): ?>
                             <option value="<?= $sede['id'] ?>"><?= htmlspecialchars($sede['nombre']) ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -240,20 +244,20 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const buscador = document.getElementById("buscadorColaborador");
-    const filas = document.querySelectorAll(".fila-colaborador");
+    document.addEventListener("DOMContentLoaded", () => {
+        const buscador = document.getElementById("buscadorColaborador");
+        const filas = document.querySelectorAll(".fila-colaborador");
 
-    if (buscador) {
-        buscador.addEventListener("input", (e) => {
-            const termino = e.target.value.toLowerCase().trim();
-            filas.forEach(fila => {
-                const targets = fila.querySelectorAll(".target-buscar");
-                const textos = Array.from(targets).map(el => el.textContent.toLowerCase());
-                // Al agregar la clase target-buscar en la sede, el buscador también filtrará por sedes de forma reactiva
-                fila.style.display = textos.some(t => t.includes(termino)) ? "" : "none";
+        if (buscador) {
+            buscador.addEventListener("input", (e) => {
+                const termino = e.target.value.toLowerCase().trim();
+                filas.forEach(fila => {
+                    const targets = fila.querySelectorAll(".target-buscar");
+                    const textos = Array.from(targets).map(el => el.textContent.toLowerCase());
+                    // Al agregar la clase target-buscar en la sede, el buscador también filtrará por sedes de forma reactiva
+                    fila.style.display = textos.some(t => t.includes(termino)) ? "" : "none";
+                });
             });
-        });
-    }
-});
+        }
+    });
 </script>
