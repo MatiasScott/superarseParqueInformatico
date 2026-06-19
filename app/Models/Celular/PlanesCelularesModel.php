@@ -3,6 +3,7 @@
 namespace App\Models\Celular;
 
 use App\Helpers\Database;
+use App\Models\Auditoria\AuditoriaModel;
 use PDO;
 use PDOException;
 use Exception;
@@ -79,8 +80,8 @@ class PlanesCelularesModel {
                     )";
             
             $stmt = $this->db->prepare($sql);
-            
-            return $stmt->execute([
+
+            $result = $stmt->execute([
                 ':numero_celular'         => $data['numero_celular'],
                 ':operador'               => $data['operador'],
                 ':nombre_plan'            => $data['nombre_plan'],
@@ -98,6 +99,13 @@ class PlanesCelularesModel {
                 ':estado_plan'            => !empty($data['estado_plan']) ? $data['estado_plan'] : 'Disponible',
                 ':observacion'            => !empty($data['observacion']) ? $data['observacion'] : null
             ]);
+
+            if ($result) {
+                $idNuevo = (int)$this->db->lastInsertId();
+                AuditoriaModel::registrar('INSERT', 'planes_celulares', $idNuevo, null, $this->getById($idNuevo) ?: $data);
+            }
+
+            return $result;
         } catch (PDOException $e) {
             error_log("Error en PlanesCelularesModel::create -> " . $e->getMessage());
             throw new Exception("Error al insertar el dispositivo en la base: " . $e->getMessage());
@@ -109,6 +117,8 @@ class PlanesCelularesModel {
      */
     public function update($id, $data) {
         try {
+            $antes = $this->getById((int)$id);
+
             $sql = "UPDATE planes_celulares SET 
                         numero_celular         = :numero_celular, 
                         operador               = :operador, 
@@ -129,8 +139,8 @@ class PlanesCelularesModel {
                     WHERE id = :id";
             
             $stmt = $this->db->prepare($sql);
-            
-            return $stmt->execute([
+
+                    $result = $stmt->execute([
                 ':id'                     => (int)$id,
                 ':numero_celular'         => $data['numero_celular'],
                 ':operador'               => $data['operador'],
@@ -149,6 +159,12 @@ class PlanesCelularesModel {
                 ':estado_plan'            => !empty($data['estado_plan']) ? $data['estado_plan'] : 'Disponible',
                 ':observacion'            => !empty($data['observacion']) ? $data['observacion'] : null
             ]);
+
+            if ($result && $antes) {
+                AuditoriaModel::registrar('UPDATE', 'planes_celulares', (int)$id, $antes, $this->getById((int)$id) ?: $data);
+            }
+
+            return $result;
         } catch (PDOException $e) {
             error_log("Error en PlanesCelularesModel::update -> " . $e->getMessage());
             throw new Exception("Error al actualizar el registro en la base de datos: " . $e->getMessage());
@@ -160,9 +176,17 @@ class PlanesCelularesModel {
      */
     public function delete($id) {
         try {
+            $antes = $this->getById((int)$id);
+
             $sql = "DELETE FROM planes_celulares WHERE id = :id";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute([':id' => $id]);
+            $result = $stmt->execute([':id' => $id]);
+
+            if ($result && $antes) {
+                AuditoriaModel::registrar('DELETE', 'planes_celulares', (int)$id, $antes, null);
+            }
+
+            return $result;
         } catch (PDOException $e) {
             error_log("Error en PlanesCelularesModel::delete -> " . $e->getMessage());
             throw new Exception("El activo celular está vinculado a un historial.");

@@ -3,6 +3,7 @@
 namespace App\Models\Colaboradores; // 📁 Ajustado a tu estructura física actual
 
 use App\Helpers\Database;
+use App\Models\Auditoria\AuditoriaModel;
 use PDO;
 use Exception;
 
@@ -71,7 +72,14 @@ class UsuariosModel {
 
             $sql = "INSERT INTO usuarios ({$columns}) VALUES ({$placeholders})";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($params);
+            $result = $stmt->execute($params);
+
+            if ($result) {
+                $nuevoId = (int)$this->db->lastInsertId();
+                AuditoriaModel::registrar('INSERT', 'usuarios', $nuevoId, null, $this->find($nuevoId) ?: $data);
+            }
+
+            return $result;
         } catch (Exception $e) {
             return false;
         }
@@ -123,9 +131,16 @@ class UsuariosModel {
                 return false;
             }
 
+            $antes = $this->find($id);
             $json = json_encode($permisos);
             $stmt = $this->db->prepare("UPDATE usuarios SET permisos = ?, updated_at = CURRENT_TIMESTAMP() WHERE id = ?");
-            return $stmt->execute([$json, $id]);
+            $result = $stmt->execute([$json, $id]);
+
+            if ($result && $antes) {
+                AuditoriaModel::registrar('UPDATE', 'usuarios', $id, $antes, $this->find($id) ?: ['permisos' => $permisos]);
+            }
+
+            return $result;
         } catch (Exception $e) {
             return false;
         }
@@ -163,6 +178,7 @@ class UsuariosModel {
      */
     public function update(int $id, array $data): bool {
         try {
+            $antes = $this->find($id);
             $estado = isset($data['estado']) ? (int)$data['estado'] : 1;
             $rol = $data['rol'] ?? 'usuario';
             $primerInicio = isset($data['primer_inicio']) ? (int)$data['primer_inicio'] : 0;
@@ -196,7 +212,13 @@ class UsuariosModel {
                 $params[] = $id;
 
                 $stmt = $this->db->prepare($sql);
-                return $stmt->execute($params);
+                $result = $stmt->execute($params);
+
+                if ($result && $antes) {
+                    AuditoriaModel::registrar('UPDATE', 'usuarios', $id, $antes, $this->find($id) ?: $data);
+                }
+
+                return $result;
             } else {
                 // Si la clave se dejó en blanco, se preserva la actual intacta
                 $sql = "UPDATE usuarios 
@@ -220,7 +242,13 @@ class UsuariosModel {
                 $params[] = $id;
 
                 $stmt = $this->db->prepare($sql);
-                return $stmt->execute($params);
+                $result = $stmt->execute($params);
+
+                if ($result && $antes) {
+                    AuditoriaModel::registrar('UPDATE', 'usuarios', $id, $antes, $this->find($id) ?: $data);
+                }
+
+                return $result;
             }
         } catch (Exception $e) {
             return false;
@@ -232,8 +260,15 @@ class UsuariosModel {
      */
     public function delete(int $id): bool {
         try {
+            $antes = $this->find($id);
             $stmt = $this->db->prepare("DELETE FROM usuarios WHERE id = ?");
-            return $stmt->execute([$id]);
+            $result = $stmt->execute([$id]);
+
+            if ($result && $antes) {
+                AuditoriaModel::registrar('DELETE', 'usuarios', $id, $antes, null);
+            }
+
+            return $result;
         } catch (Exception $e) {
             return false;
         }

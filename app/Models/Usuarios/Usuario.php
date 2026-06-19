@@ -4,6 +4,7 @@ namespace App\Models\Usuarios;
 
 // 2. Importar la clase Database desde su namespace
 use App\Helpers\database;
+use App\Models\Auditoria\AuditoriaModel;
 
 class Usuario {
     private $db;
@@ -36,7 +37,17 @@ class Usuario {
         }
 
         $stmt = $this->db->prepare("INSERT INTO usuarios ({$columns}) VALUES ({$values})");
-        return $stmt->execute($params);
+        $result = $stmt->execute($params);
+
+        if ($result) {
+            $idNuevo = (int)$this->db->lastInsertId();
+            $stmtFind = $this->db->prepare("SELECT id, nombre, email, rol, estado, primer_inicio FROM usuarios WHERE id = ?");
+            $stmtFind->execute([$idNuevo]);
+            $nuevo = $stmtFind->fetch() ?: $data;
+            AuditoriaModel::registrar('INSERT', 'usuarios', $idNuevo, null, $nuevo);
+        }
+
+        return $result;
     }
 
     private function hasPrimerInicioColumn(): bool
@@ -51,6 +62,10 @@ class Usuario {
     }
 
     public function changePassword(int $id, string $newPassword): bool {
+        $stmtAntes = $this->db->prepare("SELECT id, nombre, email, rol, estado, primer_inicio FROM usuarios WHERE id = ?");
+        $stmtAntes->execute([$id]);
+        $antes = $stmtAntes->fetch() ?: null;
+
         $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
         $sql = "UPDATE usuarios SET password_hash = ?";
 
@@ -60,6 +75,15 @@ class Usuario {
 
         $sql .= " WHERE id = ?";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$passwordHash, $id]);
+        $result = $stmt->execute([$passwordHash, $id]);
+
+        if ($result && $antes) {
+            $stmtDespues = $this->db->prepare("SELECT id, nombre, email, rol, estado, primer_inicio FROM usuarios WHERE id = ?");
+            $stmtDespues->execute([$id]);
+            $despues = $stmtDespues->fetch() ?: ['password_hash' => '[actualizado]'];
+            AuditoriaModel::registrar('UPDATE', 'usuarios', $id, $antes, $despues);
+        }
+
+        return $result;
     }
 }
