@@ -1,0 +1,23 @@
+services:
+  superar1_parque_informatico:
+    build: .
+
+    container_name: superar1_parque_informatico
+
+    restart: unless-stopped
+
+    ports:
+      - "8090:80"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./app/public/uploads:/var/www/html/app/public/uploads
+
+    networks:
+      - moodle_net
+
+networks:
+  moodle_net:
+    external: true

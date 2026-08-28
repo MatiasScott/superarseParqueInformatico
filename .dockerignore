@@ -1,0 +1,8 @@
+.git
+.gitignore
+.env
+manual
+tmp_db_check.php
+tmp_test_insert.php
+Dockerfile
+docker-compose.yml

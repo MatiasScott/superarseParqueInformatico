@@ -22,7 +22,7 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/index.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/Layouts/main.php';
+        require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     // FORM CREAR
@@ -38,7 +38,7 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/crear.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/Layouts/main.php';
+        require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     // GUARDAR NUEVO EQUIPO
@@ -127,7 +127,7 @@ class EquipoController {
         ob_start();
         require_once __DIR__ . '/../../Views/equipos/editar.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../../Views/Layouts/main.php';
+        require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     // ACTUALIZAR (Con bloqueo de seguridad)
