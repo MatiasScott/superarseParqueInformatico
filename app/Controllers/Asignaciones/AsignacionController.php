@@ -13,7 +13,7 @@ class AsignacionController {
     }
 
     /**
-     * Acci贸n encargada de procesar el formato de impresi贸n
+     * Acción encargada de procesar el formato de impresión
      */
     public function imprimirActa() {
         // Captura del ID por GET
@@ -28,14 +28,14 @@ class AsignacionController {
         $acta = $this->asignacionModel->obtenerActaPorId($id);
 
         if (empty($acta)) {
-            echo "El acta de asignaci贸n no existe en la base de datos.";
+            echo "El acta de asignación no existe en la base de datos.";
             exit;
         }
 
         // Incrustar los equipos usando la tabla relacional correcta
         $acta['equipos'] = $this->asignacionModel->obtenerEquiposPorActaId($id);
 
-        // 馃摫 NUEVO: Incrustar los celulares vinculados al acta usando el nuevo m茅todo del modelo
+        // 📱 NUEVO: Incrustar los celulares vinculados al acta usando el nuevo método del modelo
         $acta['celulares'] = $this->asignacionModel->obtenerCelularesPorActaId($id);
 
         // Renderizar la vista pasando la variable $acta

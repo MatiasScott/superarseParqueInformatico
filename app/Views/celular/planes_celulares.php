@@ -4,7 +4,7 @@ $canCreateTelefonia = sessionHasPermission('celular', 'crear');
 $canEditTelefonia = sessionHasPermission('celular', 'editar');
 $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
 ?>
-<div x-data="{ openCrear: false, openEditar: false, selectItem: null, editItem: {} }" class="space-y-6 col-span-3">
+<div x-data="{ openCrear: false, openEditar: false, selectItem: null, editItem: {}, entregaCelular: true, editEntregaCelular: true }" class="space-y-6 col-span-3">
 
     <?php if (isset($_SESSION['flash_success'])): ?>
         <div class="p-4 mb-4 text-sm text-emerald-800 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center gap-2 shadow-sm">
@@ -32,7 +32,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                 <h3 class="text-xl font-black text-slate-800"><?= !empty($items) ? count($items) : 0 ?></h3>
             </div>
             <?php if ($canCreateTelefonia): ?>
-            <button @click="openCrear = true" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md shadow-blue-500/10 transition-all whitespace-nowrap">
+            <button @click="openCrear = true; entregaCelular = true" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md shadow-blue-500/10 transition-all whitespace-nowrap">
                 <i class="ph-bold ph-plus text-sm"></i>
                 Registrar Línea & Celular
             </button>
@@ -60,6 +60,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
             </button>
         </div>
     </div>
+
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs" id="tablaTelefonia">
@@ -91,15 +92,25 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                                 <div class="text-[10px] text-slate-500 italic mt-0.5"><?= htmlspecialchars($item['tipo_sim']) ?></div>
                             </td>
                             <td class="p-4">
-                                <div class="text-slate-900 font-bold uppercase"><?= htmlspecialchars($item['celular_marca'] . ' ' . $item['celular_modelo']) ?></div>
-                                <div class="flex gap-2 text-[10px] text-slate-400 mt-1">
-                                    <span>Capacidad: <b class="text-slate-600"><?= htmlspecialchars($item['celular_almacenamiento']) ?></b></span>
-                                    <span>Color: <b class="text-slate-600"><?= htmlspecialchars($item['celular_color']) ?></b></span>
-                                </div>
+                                <?php if (!empty($item['celular_marca'])): ?>
+                                    <div class="text-slate-900 font-bold uppercase"><?= htmlspecialchars($item['celular_marca'] . ' ' . $item['celular_modelo']) ?></div>
+                                    <div class="flex gap-2 text-[10px] text-slate-400 mt-1">
+                                        <span>Capacidad: <b class="text-slate-600"><?= htmlspecialchars($item['celular_almacenamiento']) ?></b></span>
+                                        <span>Color: <b class="text-slate-600"><?= htmlspecialchars($item['celular_color']) ?></b></span>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="text-slate-400 italic flex items-center gap-1">
+                                        <i class="ph ph-sim-card text-base text-amber-500"></i> Solo Línea (Sin Celular)
+                                    </div>
+                                <?php endif; ?>
                             </td>
                             <td class="p-4 font-mono text-[11px] space-y-0.5 text-slate-600">
-                                <div><span class="text-slate-400 font-sans text-[10px]">IMEI:</span> <?= htmlspecialchars($item['celular_imei_1']) ?></div>
-                                <div><span class="text-slate-400 font-sans text-[10px]">Serie:</span> <?= htmlspecialchars($item['celular_serie']) ?></div>
+                                <?php if (!empty($item['celular_imei_1'])): ?>
+                                    <div><span class="text-slate-400 font-sans text-[10px]">IMEI:</span> <?= htmlspecialchars($item['celular_imei_1']) ?></div>
+                                    <div><span class="text-slate-400 font-sans text-[10px]">Serie:</span> <?= htmlspecialchars($item['celular_serie']) ?></div>
+                                <?php else: ?>
+                                    <span class="text-slate-400 italic">N/A</span>
+                                <?php endif; ?>
                             </td>
                             <td class="p-4 text-center">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide
@@ -121,7 +132,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                                     <?php if ($canEditTelefonia): ?>
                                     <button 
                                         type="button"
-                                        @click="editItem = <?= htmlspecialchars(json_encode($item)) ?>; openEditar = true" 
+                                        @click="editItem = <?= htmlspecialchars(json_encode($item)) ?>; editEntregaCelular = !!editItem.celular_marca; openEditar = true" 
                                         class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" 
                                         title="Editar / Cambiar Estado">
                                         <i class="ph ph-pencil-line text-lg"></i>
@@ -159,6 +170,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                 <button type="button" @click="openCrear = false" class="text-slate-400 hover:text-slate-600"><i class="ph ph-x text-xl"></i></button>
             </div>
             <form action="/planes-celulares/guardar" method="POST" class="p-6 space-y-4">
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Número de Celular</label>
@@ -192,54 +204,69 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                     </div>
                 </div>
 
-                <hr class="border-slate-100 my-2">
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center justify-between my-2">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-info text-blue-600 text-base"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">¿Esta línea incluye un equipo Celular físico?</p>
+                            <p class="text-[11px] text-slate-500">Desactívalo si solo vas a registrar el CHIP / Línea móvil.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" x-model="entregaCelular" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Marca / Proveedor</label>
-                        <input type="text" name="celular_marca" required placeholder="Samsung, Apple, Xiaomi" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                <div x-show="entregaCelular" x-transition class="space-y-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Marca / Proveedor</label>
+                            <input type="text" name="celular_marca" :required="entregaCelular" placeholder="Samsung, Apple, Xiaomi" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Modelo de Fábrica</label>
+                            <input type="text" name="celular_modelo" :required="entregaCelular" placeholder="Galaxy A54, iPhone 13" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Modelo de Fábrica</label>
-                        <input type="text" name="celular_modelo" required placeholder="Galaxy A54, iPhone 13" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Principal (SIM 1)</label>
+                            <input type="text" name="celular_imei_1" :required="entregaCelular" maxlength="15" placeholder="15 dígitos numéricos" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Secundario (SIM 2 / eSIM)</label>
+                            <input type="text" name="celular_imei_2" maxlength="15" placeholder="Opcional" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono bg-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nº Serie Hardware</label>
+                            <input type="text" name="celular_serie" placeholder="S/N de fábrica" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Almacenamiento</label>
+                            <select name="celular_almacenamiento" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer bg-white">
+                                <option value="64GB">64GB</option>
+                                <option value="128GB" selected>128GB</option>
+                                <option value="256GB">256GB</option>
+                                <option value="512GB">512GB</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Color Estético</label>
+                            <input type="text" name="celular_color" :required="entregaCelular" placeholder="Negro, Azul, Plata" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Salud Batería</label>
+                            <input type="text" name="bateria_salud" value="100%" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none text-center bg-white">
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Principal (SIM 1)</label>
-                        <input type="text" name="celular_imei_1" required maxlength="15" placeholder="15 dígitos numéricos" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Secundario (SIM 2 / eSIM)</label>
-                        <input type="text" name="celular_imei_2" maxlength="15" placeholder="Opcional" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nº Serie Hardware</label>
-                        <input type="text" name="celular_serie" placeholder="S/N de fábrica" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Almacenamiento</label>
-                        <select name="celular_almacenamiento" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
-                            <option value="64GB">64GB</option>
-                            <option value="128GB" selected>128GB</option>
-                            <option value="256GB">256GB</option>
-                            <option value="512GB">512GB</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Color Estético</label>
-                        <input type="text" name="celular_color" required placeholder="Negro, Azul, Plata" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Salud Batería</label>
-                        <input type="text" name="bateria_salud" value="100%" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none text-center">
-                    </div>
-                </div>
+
                 <div>
                     <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Observaciones / Estado Inicial de Entrega</label>
-                    <textarea name="observacion" rows="2" placeholder="Ej: Se ingresa con mica protectora de vidrio instalada y estuche transparente." class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none"></textarea>
+                    <textarea name="observacion" rows="2" placeholder="Ej: Se ingresa con mica protectora de vidrio instalada o Solo se entrega tarjeta SIM física." class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none"></textarea>
                 </div>
                 <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
                     <button type="button" @click="openCrear = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 font-bold rounded-xl text-xs transition-colors">Cancelar</button>
@@ -293,59 +320,76 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                     </div>
                 </div>
 
-                <hr class="border-slate-100 my-2">
+                <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex items-center justify-between my-2">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-info text-amber-600 text-base"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">¿Esta línea cuenta con equipo celular físico?</p>
+                            <p class="text-[11px] text-slate-500">Si se desmarca, se limpiarán los identificadores IMEI.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" x-model="editEntregaCelular" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Marca / Proveedor</label>
-                        <input type="text" name="celular_marca" required x-model="editItem.celular_marca" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                <div x-show="editEntregaCelular" x-transition class="space-y-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Marca / Proveedor</label>
+                            <input type="text" name="celular_marca" :required="editEntregaCelular" x-model="editItem.celular_marca" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Modelo de Fábrica</label>
+                            <input type="text" name="celular_modelo" :required="editEntregaCelular" x-model="editItem.celular_modelo" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Modelo de Fábrica</label>
-                        <input type="text" name="celular_modelo" required x-model="editItem.celular_modelo" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Principal (SIM 1)</label>
+                            <input type="text" name="celular_imei_1" :required="editEntregaCelular" maxlength="15" x-model="editItem.celular_imei_1" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Secundario (SIM 2 / eSIM)</label>
+                            <input type="text" name="celular_imei_2" maxlength="15" x-model="editItem.celular_imei_2" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono bg-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nº Serie Hardware</label>
+                            <input type="text" name="celular_serie" x-model="editItem.celular_serie" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Almacenamiento</label>
+                            <select name="celular_almacenamiento" x-model="editItem.celular_almacenamiento" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer bg-white">
+                                <option value="64GB">64GB</option>
+                                <option value="128GB">128GB</option>
+                                <option value="256GB">256GB</option>
+                                <option value="512GB">512GB</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Color Estético</label>
+                            <input type="text" name="celular_color" :required="editEntregaCelular" x-model="editItem.celular_color" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Salud Batería</label>
+                            <input type="text" name="bateria_salud" x-model="editItem.bateria_salud" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none text-center bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Estado</label>
+                            <select name="estado_plan" x-model="editItem.estado_plan" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-bold cursor-pointer bg-white">
+                                <option value="Disponible">Disponible</option>
+                                <option value="Asignado">Asignado</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Baja">Baja</option>
+                                <option value="Robado/Perdido">Robado/Perdido</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Principal (SIM 1)</label>
-                        <input type="text" name="celular_imei_1" required maxlength="15" x-model="editItem.celular_imei_1" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">IMEI Secundario (SIM 2 / eSIM)</label>
-                        <input type="text" name="celular_imei_2" maxlength="15" x-model="editItem.celular_imei_2" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-mono">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nº Serie Hardware</label>
-                        <input type="text" name="celular_serie" x-model="editItem.celular_serie" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Almacenamiento</label>
-                        <select name="celular_almacenamiento" x-model="editItem.celular_almacenamiento" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
-                            <option value="64GB">64GB</option>
-                            <option value="128GB">128GB</option>
-                            <option value="256GB">256GB</option>
-                            <option value="512GB">512GB</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Color Estético</label>
-                        <input type="text" name="celular_color" required x-model="editItem.celular_color" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Salud Batería</label>
-                        <input type="text" name="bateria_salud" x-model="editItem.bateria_salud" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none text-center">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Estado</label>
-                        <select name="estado_plan" x-model="editItem.estado_plan" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none font-bold cursor-pointer">
-                            <option value="Disponible">Disponible</option>
-                            <option value="Asignado">Asignado</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
-                        </select>
-                    </div>
-                </div>
+
                 <div>
                     <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Observaciones / Historial de Cambios</label>
                     <textarea name="observacion" rows="2" x-model="editItem.observacion" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none"></textarea>
@@ -366,22 +410,32 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
             </div>
             
             <div class="p-6 space-y-3 text-slate-700" x-show="selectItem">
-                <div class="flex justify-between border-b pb-1.5 border-slate-100">
-                    <span class="text-slate-400 font-bold">IMEI 1 (Principal):</span>
-                    <span class="font-mono font-bold text-slate-900" x-text="selectItem ? selectItem.celular_imei_1 : ''"></span>
-                </div>
-                <div class="flex justify-between border-b pb-1.5 border-slate-100">
-                    <span class="text-slate-400 font-bold">IMEI 2 (Dual SIM):</span>
-                    <span class="font-mono text-slate-900" x-text="selectItem ? selectItem.celular_imei_2 : ''"></span>
-                </div>
-                <div class="flex justify-between border-b pb-1.5 border-slate-100">
-                    <span class="text-slate-400 font-bold">Color Estético:</span>
-                    <span class="font-bold text-slate-900 uppercase" x-text="selectItem ? selectItem.celular_color : ''"></span>
-                </div>
-                <div class="flex justify-between border-b pb-1.5 border-slate-100">
-                    <span class="text-slate-400 font-bold">Salud de la Celda (Batería):</span>
-                    <span class="font-bold text-emerald-600" x-text="selectItem ? selectItem.bateria_salud : ''"></span>
-                </div>
+                <template x-if="selectItem && selectItem.celular_imei_1">
+                    <div>
+                        <div class="flex justify-between border-b pb-1.5 border-slate-100">
+                            <span class="text-slate-400 font-bold">IMEI 1 (Principal):</span>
+                            <span class="font-mono font-bold text-slate-900" x-text="selectItem.celular_imei_1"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1.5 border-slate-100 mt-3">
+                            <span class="text-slate-400 font-bold">IMEI 2 (Dual SIM):</span>
+                            <span class="font-mono text-slate-900" x-text="selectItem.celular_imei_2 || 'N/A'"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1.5 border-slate-100 mt-3">
+                            <span class="text-slate-400 font-bold">Color Estético:</span>
+                            <span class="font-bold text-slate-900 uppercase" x-text="selectItem.celular_color"></span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1.5 border-slate-100 mt-3">
+                            <span class="text-slate-400 font-bold">Salud de la Celda (Batería):</span>
+                            <span class="font-bold text-emerald-600" x-text="selectItem.bateria_salud"></span>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="selectItem && !selectItem.celular_imei_1">
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 font-medium text-center">
+                        <i class="ph ph-sim-card text-2xl block mb-1 text-amber-500"></i>
+                        Esta línea no tiene un aparato celular asociado en inventario.
+                    </div>
+                </template>
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
                     <span class="block font-bold text-[10px] text-slate-400 uppercase mb-1">Notas técnicas de ingreso:</span>
                     <p class="text-slate-600 italic leading-relaxed" x-text="selectItem && selectItem.observacion ? selectItem.observacion : 'Sin observaciones detalladas.'"></p>

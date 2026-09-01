@@ -83,21 +83,20 @@ class AsignacionModel {
         }
     }
 
-    /**
-     * 🔌 COMPONENTES INTERNOS: Limpio de la columna física 'serie'
+ /**
+     * 🔌 COMPONENTES INTERNOS: Excluye los componentes marcados como 'Eliminado'
      */
     public function obtenerComponentesPorEquipoId(int $equipo_id): array {
         try {
-            // 🌟 QUITADA LA COLUMNA 'serie' DE ESTE SELECT PARA EVITAR EL ERROR INTERNO
             $sql = "SELECT id, tipo_componente, marca_modelo, capacidad_detalle, estado 
                     FROM componentes_equipo 
-                    WHERE equipo_id = :equipo_id";
+                    WHERE equipo_id = :equipo_id 
+                      AND estado != 'Eliminado'";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([':equipo_id' => $equipo_id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
-            // Muestra en los logs de Apache/XAMPP si algo más falla temporalmente
             error_log("Error en obtenerComponentesPorEquipoId: " . $e->getMessage());
             return [];
         }

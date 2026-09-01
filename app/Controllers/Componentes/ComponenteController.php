@@ -7,7 +7,9 @@ use App\Models\Equipos\Equipo;
 
 class ComponenteController {
 
-   // LISTAR
+    /**
+     * 📋 LISTAR COMPONENTES
+     */
     public function index() {
         $model = new ComponenteModel();
         $equipoModel = new Equipo(); 
@@ -29,7 +31,9 @@ class ComponenteController {
         require_once ROOT . 'Views/layouts/main.php';
     }
 
-    // GUARDAR EN LOTE
+    /**
+     * 📥 GUARDAR EN LOTE
+     */
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -39,17 +43,17 @@ class ComponenteController {
                 $model = new ComponenteModel();
 
                 foreach ($componentesEnviados as $item) {
-                    // Validar campo requerido de tipo de componente enum
+                    // Validar campos requeridos para evitar excepciones de FK en la BD
                     if (empty($item['tipo']) || empty($item['equipo_id'])) {
-                        continue; // No se puede guardar sin tipo o sin equipo asociado por restricciones FK
+                        continue; 
                     }
 
                     $data = [
-                        'equipo_id'   => $item['equipo_id'],
-                        'tipo'        => $item['tipo'], // RAM, Disco Duro, etc.
-                        'marca_modelo'=> trim($item['marca_modelo'] ?? 'Genérico'),
-                        'descripcion' => trim($item['descripcion']), // Capacidad/Detalle
-                        'estado'      => $item['estado'] ?? 'Bueno'
+                        'equipo_id'    => intval($item['equipo_id']),
+                        'tipo'         => trim($item['tipo']), 
+                        'marca_modelo' => !empty($item['marca_modelo']) ? trim($item['marca_modelo']) : 'Genérico',
+                        'descripcion'  => isset($item['descripcion']) ? trim($item['descripcion']) : '', 
+                        'estado'       => $item['estado'] ?? 'Bueno'
                     ];
 
                     $model->create($data);
@@ -61,33 +65,51 @@ class ComponenteController {
         }
     }
 
-    // ACTUALIZAR
+    /**
+     * 📝 ACTUALIZAR COMPONENTE
+     */
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'];
+            $id = !empty($_POST['id']) ? intval($_POST['id']) : null;
 
-            if (empty($_POST['equipo_id'])) {
-                header("Location: /componentes?msg=error");
+            if (!$id) {
+                header("Location: /componentes");
                 exit();
             }
 
+            // Nota de Producción: Si tu base de datos requiere obligatoriamente una FK,
+            // asegúrate de que tu vista no envíe un '0' o vacío si el INNER JOIN oculta los NULL.
+            $equipo_id = !empty($_POST['equipo_id']) ? intval($_POST['equipo_id']) : null;
+            
+            $tipo         = !empty($_POST['tipo']) ? trim($_POST['tipo']) : 'Otro';
+            $marca_modelo = !empty($_POST['marca_modelo']) ? trim($_POST['marca_modelo']) : 'Genérico';
+            $descripcion  = !empty($_POST['descripcion']) ? trim($_POST['descripcion']) : 'Sin especificaciones';
+            $estado       = !empty($_POST['estado']) ? trim($_POST['estado']) : 'Bueno';
+
+            // Estructura idéntica compatible con tu ComponenteModel de producción
             $data = [
-                'equipo_id'   => $_POST['equipo_id'],
-                'tipo'        => $_POST['tipo'],
-                'marca_modelo'=> trim($_POST['marca_modelo'] ?? 'Genérico'),
-                'descripcion' => trim($_POST['descripcion']),
-                'estado'      => $_POST['estado']
+                'equipo_id'    => $equipo_id,
+                'tipo'         => $tipo,         
+                'marca_modelo' => $marca_modelo,
+                'descripcion'  => $descripcion,   
+                'estado'       => $estado
             ];
 
-            (new ComponenteModel())->update($id, $data);
-
-            header("Location: /componentes?msg=actualizado");
-            exit();
+            try {
+                (new ComponenteModel())->update($id, $data);
+                header("Location: /componentes?msg=actualizado");
+                exit();
+            } catch (\Exception $e) {
+                header("Location: /componentes?msg=error&debug=" . urlencode($e->getMessage()));
+                exit();
+            }
         }
     }
-
-    // FORM CREAR
+    
+    /**
+     * ➕ FORMULARIO CREAR
+     */
     public function crear() {
         $equipos = (new Equipo())->getAll();
         $activePage = 'componentes';
@@ -97,12 +119,24 @@ class ComponenteController {
         require_once ROOT . 'Views/layouts/main.php';
     }
 
-    // FORM EDITAR
+    /**
+     * 🔍 FORMULARIO EDITAR
+     */
     public function editar() {
-        $id = $_GET['id'] ?? null;
-        if (!$id) { header("Location: /componentes"); exit(); }
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!$id) { 
+            header("Location: /componentes"); 
+            exit(); 
+        }
 
         $componente = (new ComponenteModel())->find($id);
+        
+        // Evitamos que intente renderizar la vista si el componente no existe o está eliminado
+        if (!$componente) {
+            header("Location: /componentes?msg=no_encontrado");
+            exit();
+        }
+
         $equipos = (new Equipo())->getAll();
         $activePage = 'componentes';
 
@@ -112,16 +146,18 @@ class ComponenteController {
         require_once ROOT . 'Views/layouts/main.php';
     }
 
-    // ELIMINAR (BORRADO LÓGICO PASIVO)
+    /**
+     * 🗑️ ELIMINAR (BORRADO LÓGICO PASIVO)
+     */
     public function eliminar() {
-        $id = $_GET['id'] ?? null;
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         
         if ($id) { 
-            // 🛡️ El modelo cambiará dinámicamente el estado a 'Eliminado' sin romper registros históricos
             (new ComponenteModel())->delete($id); 
+            header("Location: /componentes?msg=eliminado");
+        } else {
+            header("Location: /componentes?msg=error_eliminar");
         }
-        
-        header("Location: /componentes?msg=eliminado");
         exit();
     }
 }

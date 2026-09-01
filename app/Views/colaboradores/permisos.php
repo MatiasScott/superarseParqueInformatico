@@ -47,6 +47,21 @@ $permissionSchema = [
             ['key' => 'recibir', 'label' => 'Recibir'],
         ]
     ],
+    // --- REPORTES NUEVOS ---
+    [
+        'key' => 'equipos-asignados',
+        'label' => 'Equipos Asignados (Reporte)',
+        'actions' => [
+            ['key' => 'ver', 'label' => 'Ver Acceso'],
+        ]
+    ],
+    [
+        'key' => 'equipos-baja',
+        'label' => 'Bajas Tecnológicas (Reporte)',
+        'actions' => [
+            ['key' => 'ver', 'label' => 'Ver Acceso'],
+        ]
+    ],
     [
         'key' => 'documentos',
         'label' => 'Documentos',
@@ -146,8 +161,12 @@ $permissionSchema = [
         </div>
     </div>
 
+    <!-- Modificamos el envío para generar de forma segura los inputs nativos que PHP lee de forma clásica -->
     <form x-ref="permisosForm" action="/usuarios/permisos/guardar" method="POST" class="space-y-6" @submit.prevent="submitForm">
         <input type="hidden" name="user_id" :value="selectedUserId">
+        
+        <!-- Este contenedor dinámico recibirá los inputs ocultos temporales con el formato de array que tu controlador espera -->
+        <div x-ref="hiddenInputsContainer"></div>
 
         <template x-for="section in sections" :key="section.key">
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
@@ -157,15 +176,15 @@ $permissionSchema = [
                         <p class="text-sm text-slate-500 mt-1">Permisos disponibles para esta sección.</p>
                     </div>
                     <div class="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
-                        Sesión: <span x-text="section.key.replace('_', ' ')" class="capitalize"></span>
+                        Sección: <span x-text="section.key.replace('_', ' ').replace('-', ' ')" class="capitalize"></span>
                     </div>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-4">
                     <template x-for="action in section.actions" :key="action.key">
                         <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 cursor-pointer transition hover:border-blue-300">
+                            <!-- Quitamos el atributo :name de aquí para que no interfiera. Alpine lo procesa directamente -->
                             <input type="checkbox"
-                                   :name="`permisos[${section.key}][${action.key}]`"
                                    x-model="permisos[section.key][action.key]"
                                    class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
                             <span class="font-semibold text-slate-700" x-text="action.label"></span>
@@ -215,15 +234,40 @@ function permisosComponent() {
             this.sections.forEach(section => {
                 this.permisos[section.key] = {};
                 section.actions.forEach(action => {
-                    this.permisos[section.key][action.key] = raw[section.key] && raw[section.key][action.key] ? 1 : 0;
+                    const val = raw[section.key] && raw[section.key][action.key];
+                    // Normalización estricta a Booleano para Alpine
+                    this.permisos[section.key][action.key] = (val === true || val == 1 || val === "1");
                 });
             });
         },
 
         submitForm() {
             const form = this.$refs.permisosForm;
+            const container = this.$refs.hiddenInputsContainer;
             const user = this.users.find(u => u.id == this.selectedUserId);
+            
             if (!user) return;
+
+            // Limpiamos los inputs temporales anteriores si los hubiera
+            container.innerHTML = '';
+
+            // Recorremos el objeto reactivo de Alpine y generamos inputs reales en el DOM justo antes del envío
+            Object.keys(this.permisos).forEach(sectionKey => {
+                Object.keys(this.permisos[sectionKey]).forEach(actionKey => {
+                    const isChecked = this.permisos[sectionKey][actionKey];
+                    
+                    if (isChecked) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        // El nombre exacto que PHP procesará como array de forma nativa
+                        input.name = `permisos[${sectionKey}][${actionKey}]`;
+                        input.value = '1';
+                        container.appendChild(input);
+                    }
+                });
+            });
+
+            // Una vez inyectados los inputs nativos con sus valores reales, procedemos al submit
             form.submit();
         }
     }

@@ -59,6 +59,9 @@ class EquipoController {
             // 📊 PROCESAMIENTO DE PRECIO (Limpia comas y asegura formato numérico con fallback a 0.00)
             $precio = isset($_POST['precio']) ? floatval(str_replace(',', '', $_POST['precio'])) : 0.00;
 
+            // 📍 PROCESAMIENTO DE SECCIÓN (Si viene vacío o no se envía, se almacena como null)
+            $seccion = !empty($_POST['seccion']) ? trim((string)$_POST['seccion']) : null;
+
             // REVISAR SI ES BAJA
             $nombreEstadoSeleccionado = mb_strtolower((string)($model->getEstadoNombreById($estado_id) ?? ''), 'UTF-8');
             if ($nombreEstadoSeleccionado === 'baja') {
@@ -76,6 +79,7 @@ class EquipoController {
                 'precio'      => $precio,    // 💰 Añadido al flujo de persistencia
                 'estado_id'   => $estado_id,
                 'sede_id'     => $sede_id,  // 🏢 Añadido al flujo de persistencia
+                'seccion'     => $seccion,  // 📍 Añadido de forma opcional
                 'fecha_baja'  => $fecha_baja,  
                 'motivo_baja' => $motivo_baja  
             ];
@@ -144,6 +148,9 @@ class EquipoController {
             // 📊 PROCESAMIENTO DE PRECIO
             $precio = isset($_POST['precio']) ? floatval(str_replace(',', '', $_POST['precio'])) : 0.00;
 
+            // 📍 PROCESAMIENTO DE SECCIÓN (Si viene vacío o no se envía, se almacena como null)
+            $seccion = !empty($_POST['seccion']) ? trim((string)$_POST['seccion']) : null;
+
             // 🛡️ VERIFICAR EN LA BD QUE NO SE ESTÉ INTENTANDO ALTERAR UN EQUIPO YA DADO DE BAJA
             $model = new Equipo();
             $equipoActual = $model->find($id);
@@ -172,6 +179,7 @@ class EquipoController {
                 'precio'      => $precio,    // 💰 Añadido a los datos de actualización
                 'estado_id'   => $estado_id,
                 'sede_id'     => $sede_id,  // 🏢 Añadido a los datos de actualización
+                'seccion'     => $seccion,  // 📍 Añadido de forma opcional
                 'fecha_baja'  => $fecha_baja,  
                 'motivo_baja' => $motivo_baja  
             ];

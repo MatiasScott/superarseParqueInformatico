@@ -2,7 +2,7 @@
 $equipos = $equipos ?? [];
 $totalEquipos = $totalEquipos ?? 0;
 $estados = $estados ?? [];
-$sedes = $sedes ?? []; // 🏢 Recibido desde el controlador
+$sedes = $sedes ?? []; //  Recibido desde el controlador
 
 $idEstadoDisponible = 1;
 foreach ($estados as $estadoTmp) {
@@ -40,7 +40,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
         <div class="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-700 px-5 py-4 rounded-2xl shadow-sm">
             <i class="ph ph-info text-2xl text-blue-500"></i>
             <div>
-                <span class="font-bold">¡Actualización Exitosa!</span> Los datos técnicos, sede y valor del equipo se modificaron correctamente.
+                <span class="font-bold">¡Actualización Exitosa!</span> Los datos técnicos, sede, sección y valor del equipo se modificaron correctamente.
             </div>
         </div>
     <?php endif; ?>
@@ -91,7 +91,7 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
             <input
                 type="text"
                 id="searchInput"
-                placeholder="Buscar equipo por nombre, marca, modelo, serie, tipo o sede..."
+                placeholder="Buscar equipo por nombre, marca, modelo, serie, tipo, sede o sección..."
                 class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
         </div>
     </div>
@@ -141,9 +141,16 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
                                     <?= htmlspecialchars($e['serie']) ?>
                                 </td>
                                 <td class="p-4">
-                                    <div class="flex items-center gap-1.5 text-slate-700">
-                                        <i class="ph ph-map-pin text-slate-400 text-base"></i>
-                                        <span class="font-medium"><?= htmlspecialchars($e['sede_nombre'] ?? 'Sin asignar') ?></span>
+                                    <div class="flex flex-col text-slate-700">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="ph ph-map-pin text-slate-400 text-base"></i>
+                                            <span class="font-medium"><?= htmlspecialchars($e['sede_nombre'] ?? 'Sin asignar') ?></span>
+                                        </div>
+                                        <?php if (!empty($e['seccion'])): ?>
+                                            <span class="text-xs text-slate-400 ml-5 font-medium bg-slate-100 px-2 py-0.5 rounded w-max mt-0.5">
+                                                <?= htmlspecialchars($e['seccion']) ?>
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="p-4 text-right font-mono font-bold text-slate-800">
@@ -216,49 +223,60 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
     </div>
 </div>
 
+<!-- MODAL REPARADO Y RESPONSIVO -->
 <div
     id="modalEquipo"
-    class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full p-8">
-        <div class="flex justify-between items-center mb-6">
+    class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-5 sm:p-8 my-auto max-h-[90vh] flex flex-col">
+        
+        <!-- Cabecera del Modal -->
+        <div class="flex justify-between items-start gap-3 mb-4 sm:mb-6">
             <div>
-                <h3 class="text-2xl font-bold text-slate-800">
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-800">
                     Registrar Equipo
                 </h3>
-                <p class="text-slate-500 text-sm mt-1">
+                <p class="text-slate-500 text-xs sm:text-sm mt-1">
                     Complete la información inicial técnica del equipo. Todo equipo nuevo ingresa como <b>Disponible</b> en bodega.
                 </p>
             </div>
 
             <button
                 onclick="closeModal()"
-                class="text-slate-400 hover:text-red-500 text-2xl transition">
+                class="text-slate-400 hover:text-red-500 text-2xl transition p-1">
                 <i class="ph ph-x"></i>
             </button>
         </div>
 
+        <!-- Formulario con Scroll Interno si es necesario -->
         <form
             action="/equipos/guardar"
             method="POST"
-            class="space-y-5">
+            class="space-y-4 sm:space-y-5 overflow-y-auto pr-1">
             
             <input type="hidden" name="estado_id" value="<?= $idEstadoDisponible ?>">
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Tipo de Equipo</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Tipo de Equipo</label>
                     <div class="relative">
                         <select 
                             name="tipo" 
                             required 
-                            class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-medium transition cursor-pointer">
+                            class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-medium transition cursor-pointer text-sm">
                             <option value="" disabled selected>Seleccione Tipo</option>
                             <option value="Laptop">Laptop / Portátil</option>
                             <option value="Desktop">Desktop / Escritorio</option>
+                            <option value="Monitor">Monitor</option>
                             <option value="Impresora">Impresora</option>
+                            <option value="Servidor">Servidor</option>
+                            <option value="Proyector">Proyector</option>
+                            <option value="Televisor">Televisor</option>
                             <option value="Scanner">Scanner</option>
-                            <option value="Infocus">Infocus</option>
-                            <option value="Componente">Componente Interno / Otro</option>
+                            <option value="Ventilador">Ventilador</option>
+                            <option value="EcoFlow">EcoFlow</option>
+                            <option value="MP3">MP3</option>
+                            <option value="DVR">DVR</option>
+                            <option value="Otro">Otro</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400">
                             <i class="ph ph-caret-down text-base"></i>
@@ -267,50 +285,50 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
                 </div>
 
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Nombre / Identificador</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Nombre / Identificador</label>
                     <input
                         type="text"
                         name="nombre"
                         placeholder="Ej. Laptop HP Oficinas 01"
                         required
-                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition">
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition text-sm">
                 </div>
 
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Marca</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Marca</label>
                     <input
                         type="text"
                         name="marca"
                         placeholder="Ej. HP, Dell, Lenovo"
-                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition">
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition text-sm">
                 </div>
 
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Modelo</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Modelo</label>
                     <input
                         type="text"
                         name="modelo"
                         placeholder="Ej. ProBook 450 G8"
-                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition">
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition text-sm">
                 </div>
 
-                <div class="col-span-2">
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Número de Serie</label>
+                <div class="col-span-1 sm:col-span-2">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Número de Serie</label>
                     <input
                         type="text"
                         name="serie"
                         required
                         placeholder="Código de serie único del fabricante"
-                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-mono transition">
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-mono transition text-sm">
                 </div>
 
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Sede de Ingreso</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Sede de Ingreso</label>
                     <div class="relative">
                         <select 
                             name="sede_id" 
                             required 
-                            class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-medium transition cursor-pointer">
+                            class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-medium transition cursor-pointer text-sm">
                             <?php foreach ($sedes as $s): ?>
                                 <option value="<?= $s['id'] ?>" <?= (int)$s['id'] === 1 ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($s['nombre']) ?>
@@ -324,9 +342,18 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
                 </div>
 
                 <div>
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Precio de Compra ($)</label>
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Sección / Área / Aula</label>
+                    <input
+                        type="text"
+                        name="seccion"
+                        placeholder="Ej. Aula 5, TI, Contabilidad"
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition text-sm">
+                </div>
+
+                <div class="col-span-1 sm:col-span-2">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Precio de Compra ($)</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-3 text-slate-400 font-medium">$</span>
+                        <span class="absolute left-3 top-2.5 sm:top-3 text-slate-400 font-medium text-sm">$</span>
                         <input
                             type="number"
                             name="precio"
@@ -334,32 +361,33 @@ $canDeleteEquipos = sessionHasPermission('equipos', 'eliminar');
                             min="0"
                             placeholder="0.00"
                             required
-                            class="w-full pl-7 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-mono transition">
+                            class="w-full pl-7 pr-3 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-mono transition text-sm">
                     </div>
                 </div>
 
-                <div class="col-span-2">
-                    <label class="text-sm font-bold text-slate-700 block mb-1">Descripción / Especificaciones Técnicas</label>
+                <div class="col-span-1 sm:col-span-2">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 block mb-1">Descripción / Especificaciones Técnicas</label>
                     <textarea
                         name="descripcion"
-                        rows="3"
-                        placeholder="Detalle de componentes (Procesador, RAM, Almacenamiento, etc.) o estado inicial de entrega..."
-                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition"></textarea>
+                        rows="2"
+                        placeholder="Detalle de componentes (Procesador, RAM, Almacenamiento, etc.)..."
+                        class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition text-sm"></textarea>
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4">
+            <!-- Botones de Acción -->
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2 sm:pt-4">
                 <button
                     type="button"
                     onclick="closeModal()"
-                    class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition">
+                    class="w-full sm:flex-1 py-2.5 sm:py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition text-sm order-2 sm:order-1">
                     Cancelar
                 </button>
 
                 <button
                     type="submit"
-                    class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                    Guardar e Ingresar a Almacén
+                    class="w-full sm:flex-1 py-2.5 sm:py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-200 text-sm order-1 sm:order-2">
+                    Guardar e Ingresar
                 </button>
             </div>
         </form>

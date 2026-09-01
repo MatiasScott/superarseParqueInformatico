@@ -18,8 +18,11 @@ class EstadisticaModel {
      */
     public function getEstadisticasEquipos(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
-            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
+            $whereClauses = [];
             $params = [];
+
+            // ⚠️ SIEMPRE excluir equipos eliminados
+            $whereClauses[] = "ee.nombre <> 'Eliminado'";
 
             if (!empty($tipoEquipo)) {
                 $whereClauses[] = "e.tipo = :tipo";
@@ -34,7 +37,7 @@ class EstadisticaModel {
                 $params[':modelo'] = '%' . $modelo . '%';
             }
 
-            $whereSql = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+            $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
             $sql = "SELECT 
                         COUNT(e.id) as total_equipos,
@@ -59,14 +62,17 @@ class EstadisticaModel {
      */
     public function getListadoEquiposReporte(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
-            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
+            $whereClauses = [];
             $params = [];
+
+            // ⚠️ SIEMPRE excluir equipos eliminados
+            $whereClauses[] = "ee.nombre <> 'Eliminado'";
 
             if (!empty($tipoEquipo)) { $whereClauses[] = "e.tipo = :tipo"; $params[':tipo'] = $tipoEquipo; }
             if (!empty($sedeId)) { $whereClauses[] = "e.sede_id = :sede_id"; $params[':sede_id'] = $sedeId; }
             if (!empty($modelo)) { $whereClauses[] = "e.modelo LIKE :modelo"; $params[':modelo'] = '%' . $modelo . '%'; }
 
-            $whereSql = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
+            $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
             $sql = "SELECT e.id, e.tipo, e.nombre, e.marca, e.modelo, e.serie, e.precio, 
                            ee.nombre as estado_nombre, s.nombre as sede_nombre
@@ -97,18 +103,21 @@ class EstadisticaModel {
     }
 
     /**
-     * 📊 INVERSIÓN TOTAL AGRUPADA POR TIPO DE HARDWARE
+     * 📊 INVERSIÓN TOTAL Y CANTIDADES AGRUPADAS POR TIPO DE HARDWARE (Soporta Filtros)
      */
     public function getInversionPorTipo(?string $tipoEquipo = null, ?int $sedeId = null, ?string $modelo = null): array {
         try {
-            $whereClauses = ["LOWER(ee.nombre) = 'disponible'"];
+            $whereClauses = [];
             $params = [];
+
+            // ⚠️ SIEMPRE excluir equipos eliminados
+            $whereClauses[] = "ee.nombre <> 'Eliminado'";
 
             if (!empty($tipoEquipo)) {
                 $whereClauses[] = "e.tipo = :tipo";
                 $params[':tipo'] = $tipoEquipo;
             }
-            if (!empty($sedeId) && $sedeId > 0) {
+            if (!empty($sedeId)) {
                 $whereClauses[] = "e.sede_id = :sede_id";
                 $params[':sede_id'] = $sedeId;
             }
@@ -119,15 +128,18 @@ class EstadisticaModel {
 
             $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
+            // Seleccionamos tanto el conteo (cantidad) como la suma (inversion_subtotal)
             $sql = "SELECT e.tipo, COUNT(e.id) as cantidad, IFNULL(SUM(e.precio), 0) as inversion_subtotal 
                     FROM equipos e
                     INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql
-                    GROUP BY e.tipo
+                    GROUP BY e.tipo 
                     ORDER BY inversion_subtotal DESC";
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
+            
+            // Devolvemos el fetchAll directo para mantener la estructura original que tu JS lee por defecto
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             return [];
@@ -139,13 +151,18 @@ class EstadisticaModel {
      */
     public function getEstadisticasComponentes(?int $sedeId = null): array {
         try {
-            $whereSql = "WHERE LOWER(ee.nombre) = 'disponible'";
+            $whereClauses = [];
             $params = [];
 
+            // ⚠️ SIEMPRE excluir componentes eliminados
+            $whereClauses[] = "ce.estado <> 'Eliminado'";
+
             if (!empty($sedeId) && $sedeId > 0) {
-                $whereSql .= " AND e.sede_id = :sede_id";
+                $whereClauses[] = "e.sede_id = :sede_id";
                 $params[':sede_id'] = $sedeId;
             }
+
+            $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
             $sql = "SELECT 
                         COUNT(ce.id) as total_componentes,
@@ -154,7 +171,6 @@ class EstadisticaModel {
                         SUM(CASE WHEN ce.estado = 'Bueno' THEN 1 ELSE 0 END) as componentes_buenos
                     FROM componentes_equipo ce
                     INNER JOIN equipos e ON ce.equipo_id = e.id
-                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql";
 
             $stmt = $this->db->prepare($sql);
@@ -170,18 +186,22 @@ class EstadisticaModel {
      */
     public function getCantidadPorComponente(?int $sedeId = null): array {
         try {
-            $whereSql = "WHERE LOWER(ee.nombre) = 'disponible'";
+            $whereClauses = [];
             $params = [];
 
+            // ⚠️ SIEMPRE excluir componentes eliminados
+            $whereClauses[] = "ce.estado <> 'Eliminado'";
+
             if (!empty($sedeId) && $sedeId > 0) {
-                $whereSql .= " AND e.sede_id = :sede_id";
+                $whereClauses[] = "e.sede_id = :sede_id";
                 $params[':sede_id'] = $sedeId;
             }
+
+            $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
             $sql = "SELECT ce.tipo_componente, COUNT(ce.id) as cantidad
                     FROM componentes_equipo ce
                     INNER JOIN equipos e ON ce.equipo_id = e.id
-                    INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     $whereSql
                     GROUP BY ce.tipo_componente 
                     ORDER BY cantidad DESC";
@@ -201,7 +221,7 @@ class EstadisticaModel {
         try {
             $sql = "SELECT tipo_componente, marca_modelo, capacidad_detalle, serie, estado 
                     FROM componentes_equipo 
-                    WHERE equipo_id = :equipo_id 
+                    WHERE equipo_id = :equipo_id AND estado <> 'Eliminado'
                     ORDER BY tipo_componente ASC";
             
             $stmt = $this->db->prepare($sql);
@@ -250,40 +270,43 @@ class EstadisticaModel {
     }
 
     /**
-     * 📊 DISTRIBUCIÓN DE GASTO POR OPERADOR 
+     * 📊 GASTO RECURRENTE AGRUPADO POR PLAN TELEFÓNICO
      */
-    public function getGastoPorOperador(?int $sedeId = null): array {
+    public function getGastoPorPlan(?int $sedeIdCel = null): array {
         try {
             $whereClauses = [];
             $params = [];
 
-            if (!empty($sedeId) && $sedeId > 0) {
-                $whereClauses[] = "c.sede_id = :sede_id";
-                $params[':sede_id'] = $sedeId;
+            // Si los planes tienen sede_id directo en 'planes_celulares':
+            if (!empty($sedeIdCel)) {
+                $whereClauses[] = "p.sede_id = :sede_id"; 
+                $params[':sede_id'] = $sedeIdCel;
             }
+
+            /* 💡 NOTA: Si 'planes_celulares' NO tiene sede_id, sino que debes unirla con otra tabla (ej: 'celulares'), el FROM sería así:
+            FROM planes_celulares p 
+            INNER JOIN celulares c ON c.plan_id = p.id
+            Y el WHERE usaría: $whereClauses[] = "c.sede_id = :sede_id";
+            */
 
             $whereSql = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
 
-            $sql = "SELECT 
-                        p.operador, 
-                        COUNT(p.id) as cantidad_lineas, 
-                        IFNULL(SUM(p.costo_mensual), 0) as gasto_subtotal 
+            // Consultamos directo a la tabla planes_celulares
+            $sql = "SELECT p.nombre_plan AS plan, IFNULL(SUM(p.costo_mensual), 0) AS gasto_subtotal 
                     FROM planes_celulares p
-                    LEFT JOIN actas_planes_detalle apd ON p.id = apd.plan_celular_id AND apd.estado_item = 'En Uso'
-                    LEFT JOIN actas_asignacion aa ON apd.acta_id = aa.id
-                    LEFT JOIN colaboradores c ON aa.colaborador_id = c.id
                     $whereSql
-                    GROUP BY p.operador
+                    GROUP BY p.nombre_plan 
                     ORDER BY gasto_subtotal DESC";
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
+            
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
+            // Retorno seguro en caso de error para que Chart.js no se rompa en la vista
             return [];
         }
     }
-
     /**
      * 📋 LISTADO DE PLANES Y LÍNEAS PARA LA NUEVA TABLA (MAPEADO EXACTO)
      */

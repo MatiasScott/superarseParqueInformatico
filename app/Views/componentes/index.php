@@ -212,7 +212,12 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                             <option value="Cargador">Cargador</option>
                             <option value="Mouse">Mouse</option>
                             <option value="Teclado">Teclado</option>
+                            <option value="Mouse Pad">Mouse Pad</option>
+                            <option value="Ventilador">Ventilador</option>
+                            <option value="Cortina de proyección">Cortina de proyección</option>
+                            <option value="Adaptadores de red">Adaptadores de red</option>
                             <option value="Otro">Otro</option>
+                             
                         </select>
                     </div>
 

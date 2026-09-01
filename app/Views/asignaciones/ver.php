@@ -23,14 +23,14 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                 <div class="flex items-center gap-3">
                     <h2 class="text-3xl font-bold text-slate-800">Control de Acta</h2>
                     <span class="font-mono bg-emerald-50 text-emerald-700 px-3 py-1 text-sm font-bold border border-emerald-200 rounded-xl">
-                        <?= htmlspecialchars($acta['codigo_acta']) ?>
+                        <?= htmlspecialchars($acta['codigo_acta'] ?? '') ?>
                     </span>
                 </div>
                 <p class="text-slate-500 mt-1">Monitoreo de ítems entregados y registro de devoluciones parciales o totales</p>
             </div>
             
             <div>
-                <a href="/asignaciones/imprimirActa?id=<?= $acta['id'] ?>" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 text-sm">
+                <a href="/asignaciones/imprimirActa?id=<?= $acta['id'] ?? '' ?>" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-amber-200 transition-all flex items-center justify-center gap-2 text-sm">
                     <i class="ph ph-printer text-xl"></i> Imprimir Formato Oficial
                 </a>
             </div>
@@ -56,33 +56,33 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
             <div>
                 <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Custodio / Colaborador</span>
                 <p class="text-slate-800 font-bold flex items-center gap-1 mt-0.5">
-                    <i class="ph ph-user text-slate-400"></i> <?= htmlspecialchars($acta['colaborador_nombre']) ?>
+                    <i class="ph ph-user text-slate-400"></i> <?= htmlspecialchars($acta['colaborador_nombre'] ?? '') ?>
                 </p>
-                <p class="text-xs text-slate-500 pl-5"><?= htmlspecialchars($acta['colaborador_area']) ?> — <?= htmlspecialchars($acta['colaborador_cargo']) ?></p>
+                <p class="text-xs text-slate-500 pl-5"><?= htmlspecialchars($acta['colaborador_area'] ?? '') ?> — <?= htmlspecialchars($acta['colaborador_cargo'] ?? '') ?></p>
             </div>
 
             <div>
                 <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Técnico que Entrega</span>
                 <p class="text-slate-700 font-medium mt-0.5">
-                    <i class="ph ph-user-gear text-slate-400"></i> <?= htmlspecialchars($acta['usuario_technical'] ?? $acta['usuario_tecnico']) ?>
+                    <i class="ph ph-user-gear text-slate-400"></i> <?= htmlspecialchars($acta['usuario_technical'] ?? $acta['usuario_tecnico'] ?? '') ?>
                 </p>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
                 <div>
                     <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Fecha Entrega</span>
-                    <p class="text-slate-700 text-sm font-medium"><?= $acta['fecha_entrega'] ?></p>
+                    <p class="text-slate-700 text-sm font-medium"><?= htmlspecialchars($acta['fecha_entrega'] ?? '') ?></p>
                 </div>
                 <div>
                     <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Fecha Dev. Global</span>
-                    <p class="text-slate-700 text-sm font-medium"><?= $acta['fecha_devolucion_global'] ?? '—' ?></p>
+                    <p class="text-slate-700 text-sm font-medium"><?= htmlspecialchars($acta['fecha_devolucion_global'] ?? '—') ?></p>
                 </div>
             </div>
 
             <div>
                 <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Estado de Cobertura</span>
                 <?php 
-                    $est = $acta['estado_acta'];
+                    $est = $acta['estado_acta'] ?? '';
                     $badge = $est === 'Vigente' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($est === 'Parcial' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-slate-500 border-slate-200');
                 ?>
                 <span class="<?= $badge ?> px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border inline-block mt-1">
@@ -121,8 +121,8 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                             <?php foreach ($detalles as $eq): ?>
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="p-4">
-                                        <div class="font-bold text-slate-800">[<?= htmlspecialchars($eq['tipo']) ?>] <?= htmlspecialchars($eq['nombre']) ?></div>
-                                        <div class="text-xs text-slate-400 font-mono">S/N: <?= htmlspecialchars($eq['serie']) ?> | Marca: <?= htmlspecialchars($eq['marca']) ?></div>
+                                        <div class="font-bold text-slate-800">[<?= htmlspecialchars($eq['tipo'] ?? '') ?>] <?= htmlspecialchars($eq['nombre'] ?? '') ?></div>
+                                        <div class="text-xs text-slate-400 font-mono">S/N: <?= htmlspecialchars($eq['serie'] ?? 'N/A') ?> | Marca: <?= htmlspecialchars($eq['marca'] ?? 'N/A') ?></div>
                                         <?php if(!empty($eq['observacion_item'])): ?>
                                             <div class="text-[11px] text-amber-600 bg-amber-50/50 inline-block px-2 py-0.5 rounded mt-1 max-w-xs truncate" title="<?= htmlspecialchars($eq['observacion_item']) ?>">
                                                 <strong>Historial:</strong> <?= htmlspecialchars($eq['observacion_item']) ?>
@@ -130,24 +130,24 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                                         <?php endif; ?>
                                     </td>
                                     <td class="p-4 text-slate-600 font-medium">
-                                        <?= htmlspecialchars($eq['estado_entrega_equipo']) ?>
+                                        <?= htmlspecialchars($eq['estado_entrega_equipo'] ?? '') ?>
                                     </td>
                                     <td class="p-4">
                                         <?php 
-                                            $enUso = $eq['estado_item'] === 'En Uso';
+                                            $enUso = ($eq['estado_item'] ?? '') === 'En Uso';
                                             $itemBadge = $enUso ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600';
                                         ?>
                                         <span class="<?= $itemBadge ?> px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                                            <?= htmlspecialchars($eq['estado_item']) ?>
+                                            <?= htmlspecialchars($eq['estado_item'] ?? '') ?>
                                         </span>
                                         <?php if(!$enUso && !empty($eq['fecha_devolucion_equipo'])): ?>
-                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= $eq['fecha_devolucion_equipo'] ?></span>
+                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= htmlspecialchars($eq['fecha_devolucion_equipo']) ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="p-4 text-center">
                                         <?php if ($enUso): ?>
                                             <?php if ($permisoRecibir): ?>
-                                                <button type="button" onclick="openDevolucionModal(<?= $eq['id'] ?>, '<?= htmlspecialchars($eq['nombre']) ?> (<?= htmlspecialchars($eq['serie']) ?>)', 'equipo')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
+                                                <button type="button" onclick="openDevolucionModal(<?= $eq['id'] ?>, '<?= htmlspecialchars($eq['nombre'] ?? '', ENT_QUOTES) ?> (<?= htmlspecialchars($eq['serie'] ?? '', ENT_QUOTES) ?>)', 'equipo')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
                                                     <i class="ph ph-arrow-counter-clockwise"></i> Recibir
                                                 </button>
                                             <?php else: ?>
@@ -187,33 +187,35 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                             <?php foreach ($celulares as $cel): ?>
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="p-4">
-                                        <div class="font-bold text-slate-800">📱 <?= htmlspecialchars($cel['numero_celular']) ?></div>
-                                        <div class="text-xs text-slate-400"><?= htmlspecialchars($cel['celular_marca']) ?> <?= htmlspecialchars($cel['celular_modelo']) ?></div>
+                                        <div class="font-bold text-slate-800">📱 <?= htmlspecialchars($cel['numero_celular'] ?? '') ?></div>
+                                        <div class="text-xs text-slate-400">
+                                            <?= htmlspecialchars($cel['celular_marca'] ?? '') ?> <?= htmlspecialchars($cel['celular_modelo'] ?? '') ?>
+                                        </div>
                                         <div class="text-[10px] font-mono text-slate-400">IMEI: <?= htmlspecialchars($cel['imei'] ?? 'N/A') ?></div>
                                     </td>
                                     <td class="p-4 text-xs">
-                                        <span class="font-semibold text-slate-700 block"><?= htmlspecialchars($cel['nombre_plan']) ?></span>
-                                        <span class="text-slate-400 font-mono"><?= htmlspecialchars($cel['operador']) ?></span>
+                                        <span class="font-semibold text-slate-700 block"><?= htmlspecialchars($cel['nombre_plan'] ?? '') ?></span>
+                                        <span class="text-slate-400 font-mono"><?= htmlspecialchars($cel['operador'] ?? '') ?></span>
                                     </td>
                                     <td class="p-4 text-slate-600 font-medium text-xs">
-                                        <?= htmlspecialchars($cel['estado_entrega']) ?>
+                                        <?= htmlspecialchars($cel['estado_entrega'] ?? '') ?>
                                     </td>
                                     <td class="p-4">
                                         <?php 
-                                            $celEnUso = $cel['estado_item'] === 'En Uso';
+                                            $celEnUso = ($cel['estado_item'] ?? '') === 'En Uso';
                                             $celBadge = $celEnUso ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600';
                                         ?>
                                         <span class="<?= $celBadge ?> px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                                            <?= htmlspecialchars($cel['estado_item']) ?>
+                                            <?= htmlspecialchars($cel['estado_item'] ?? '') ?>
                                         </span>
                                         <?php if(!$celEnUso && !empty($cel['fecha_devolucion'])): ?>
-                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= $cel['fecha_devolucion'] ?></span>
+                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= htmlspecialchars($cel['fecha_devolucion']) ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="p-4 text-center">
                                         <?php if ($celEnUso): ?>
                                             <?php if ($permisoRecibir): ?>
-                                                <button type="button" onclick="openDevolucionModal(<?= $cel['id'] ?>, 'Celular: <?= htmlspecialchars($cel['numero_celular']) ?>', 'celular')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
+                                                <button type="button" onclick="openDevolucionModal(<?= $cel['id'] ?>, 'Celular: <?= htmlspecialchars($cel['numero_celular'] ?? '', ENT_QUOTES) ?>', 'celular')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
                                                     <i class="ph ph-arrow-counter-clockwise"></i> Recibir
                                                 </button>
                                             <?php else: ?>
@@ -253,7 +255,7 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                             <?php foreach ($componentes as $comp): ?>
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="p-4">
-                                        <div class="font-bold text-slate-800">🔧 <?= htmlspecialchars($comp['nombre']) ?></div>
+                                        <div class="font-bold text-slate-800">🔧 <?= htmlspecialchars($comp['nombre'] ?? '') ?></div>
                                         <div class="text-xs text-slate-400 font-mono">S/N: <?= htmlspecialchars($comp['serie'] ?? 'N/A') ?> | Marca: <?= htmlspecialchars($comp['marca'] ?? 'N/A') ?></div>
                                     </td>
                                     <td class="p-4 text-xs text-slate-600 font-medium">
@@ -271,13 +273,13 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                                             <?= htmlspecialchars($comp['estado_item'] ?? 'En Uso') ?>
                                         </span>
                                         <?php if(!$compEnUso && !empty($comp['fecha_devolucion'])): ?>
-                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= $comp['fecha_devolucion'] ?></span>
+                                            <span class="block text-[11px] text-slate-400 mt-0.5">Retorno: <?= htmlspecialchars($comp['fecha_devolucion']) ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="p-4 text-center">
                                         <?php if ($compEnUso): ?>
                                             <?php if ($permisoRecibir): ?>
-                                                <button type="button" onclick="openDevolucionModal(<?= $comp['id'] ?>, 'Componente: <?= htmlspecialchars($comp['nombre']) ?>', 'componente')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
+                                                <button type="button" onclick="openDevolucionModal(<?= $comp['id'] ?>, 'Componente: <?= htmlspecialchars($comp['nombre'] ?? '', ENT_QUOTES) ?>', 'componente')" class="px-3 py-1.5 bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 mx-auto">
                                                     <i class="ph ph-arrow-counter-clockwise"></i> Recibir
                                                 </button>
                                             <?php else: ?>
@@ -313,7 +315,7 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
         
         <form id="formDevolucionDinamico" action="" method="POST" class="space-y-4">
             <input type="hidden" name="detalle_id" id="modal_detalle_id">
-            <input type="hidden" name="acta_id" value="<?= $acta['id'] ?>">
+            <input type="hidden" name="acta_id" value="<?= htmlspecialchars($acta['id'] ?? '') ?>">
 
             <div>
                 <label class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Activo Seleccionado</label>
@@ -334,14 +336,14 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
 </div>
 
 <script>
-// Manejo dinámico de rutas en el modal añadiendo el tipo 'componente'
+// Manejo dinámico de rutas en el modal con re-direccionamiento por tipo
 function openDevolucionModal(detalleId, equipoNombre, tipo) {
     document.getElementById('modal_detalle_id').value = detalleId;
     document.getElementById('modal_equipo_nombre').innerText = equipoNombre;
     
     const formulario = document.getElementById('formDevolucionDinamico');
     if (tipo === 'celular') {
-        formulario.action = "/asignaciones/devolverCelular";
+        formulario.action = "/asignaciones/devolverCelular"; // 🔧 CORREGIDO: Apunta al nuevo endpoint del controlador
     } else if (tipo === 'componente') {
         formulario.action = "/asignaciones/devolverComponente";
     } else {

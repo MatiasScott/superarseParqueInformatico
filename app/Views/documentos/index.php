@@ -87,14 +87,22 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-1.5">
-                                    <a href="/<?= htmlspecialchars($doc['ruta_almacenamiento']) ?>" target="_blank" title="Ver / Descargar Expediente PDF" class="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all">
+                                   <!-- 👁️ VISUALIZAR PDF EN PESTAÑA NUEVA USANDO EL CONTROLADOR -->
+                                           <a href="/documentos/ver?id=<?= $doc['id'] ?>" target="_blank" title="Visualizar Documento PDF" class="p-2 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-600 hover:text-white transition-all">
+                                        <i class="ph ph-eye text-lg"></i>
+                                        </a>
+
+                                    <!-- 📥 BOTÓN PARA DESCARGAR -->
+                                    <a href="/<?= htmlspecialchars($doc['ruta_almacenamiento']) ?>" download title="Descargar Expediente PDF" class="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all">
                                         <i class="ph ph-download-simple text-lg"></i>
                                     </a>
+
                                     <?php if ($canEditDocumentos): ?>
                                     <button onclick="openEditModal(<?= $doc['id'] ?>, '<?= htmlspecialchars($doc['nombre_archivo'], ENT_QUOTES) ?>', '<?= htmlspecialchars($doc['tipo_documento'], ENT_QUOTES) ?>')" title="Editar Metadatos" class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                                         <i class="ph ph-pencil-line text-lg"></i>
                                     </button>
                                     <?php endif; ?>
+
                                     <?php if ($canDeleteDocumentos): ?>
                                     <a href="/documentos/eliminar?id=<?= $doc['id'] ?>" onclick="return confirm('¿Está seguro de remover permanentemente este registro lógico y borrar su archivo PDF del servidor?')" title="Eliminar Adjunto" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all">
                                         <i class="ph ph-trash text-lg"></i>
@@ -113,6 +121,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
     </div>
 </div>
 
+<!-- MODAL SUBIR DOCUMENTO -->
 <div id="modalUpload" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8">
         <div class="flex justify-between items-center mb-6">
@@ -163,6 +172,7 @@ $canDeleteDocumentos = sessionHasPermission('documentos', 'eliminar');
     </div>
 </div>
 
+<!-- MODAL EDITAR DOCUMENTO -->
 <div id="modalEditDoc" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">
         <div class="flex justify-between items-center mb-4">

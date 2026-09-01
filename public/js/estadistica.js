@@ -75,21 +75,54 @@ function initGraficoHardware(data) {
         type: 'bar',
         data: {
             labels: data.labels,
-            datasets: [{
-                label: 'Inversión Total ($)',
-                data: data.values,
-                backgroundColor: '#3b82f6',
-                borderRadius: 4
-            }]
+            datasets: [
+                {
+                    label: 'Inversión Total ($)',
+                    data: data.values, // Tus datos originales de dinero
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4,
+                    yAxisID: 'y' // Usa el eje izquierdo normal
+                },
+                {
+                    label: 'Cantidad (Unidades)',
+                    data: data.cantidades, // 🌟 CORREGIDO: cambiado de data.quantities a data.cantidades
+                    backgroundColor: '#10b981', // Un tono esmeralda para contrastar
+                    borderRadius: 4,
+                    yAxisID: 'y1' // Usa el nuevo eje derecho
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
+            plugins: { 
+                legend: { 
+                    display: true, // Ahora activamos la leyenda para distinguir qué es qué
+                    position: 'top',
+                    labels: { boxWidth: 12, font: { size: 11 } }
+                } 
+            },
+            scales: { 
+                y: { 
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    beginAtZero: true,
+                    title: { display: true, text: 'Inversión ($)' }
+                },
+                y1: { 
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    title: { display: true, text: 'Cantidad' },
+                    grid: { drawOnChartArea: false } // Evita que se crucen las líneas de cuadrícula internas
+                }
+            }
         }
     });
 }
+
 
 // 🖥️ 5. CONSTRUCTOR: GRÁFICO MODELOS CLAVE (Barras Horizontales Bi-Métrica)
 function initGraficoModelos(data) {
@@ -143,11 +176,22 @@ function initGraficoComponentes(data) {
             datasets: [{
                 data: data.values,
                 backgroundColor: [
-                    'rgba(59, 130, 246, 0.75)',  // Azul
-                    'rgba(139, 92, 246, 0.75)',  // Violeta
-                    'rgba(16, 185, 129, 0.75)',  // Esmeralda
-                    'rgba(245, 158, 11, 0.75)',  // Ámbar
-                    'rgba(239, 68, 68, 0.75)'    // Rojo
+                    'rgba(59, 130, 246, 0.75)',  // 1. Azul (RAM)
+                    'rgba(139, 92, 246, 0.75)',  // 2. Violeta (Disco Duro)
+                    'rgba(16, 185, 129, 0.75)',  // 3. Esmeralda (SSD)
+                    'rgba(245, 158, 11, 0.75)',  // 4. Ámbar / Oro (Procesador)
+                    'rgba(239, 68, 68, 0.75)',   // 5. Rojo (Tarjeta de Video)
+                    'rgba(236, 72, 153, 0.75)',  // 6. Rosa (Batería)
+                    'rgba(6, 182, 212, 0.75)',   // 7. Cian (Cargador)
+                    'rgba(20, 184, 166, 0.75)',  // 8. Teal / Turquesa (Mouse)
+                    'rgba(249, 115, 22, 0.75)',  // 9. Naranja (Teclado)
+                    'rgba(107, 114, 128, 0.75)', // 10. Gris Slate (Mouse Pad)
+                    'rgba(132, 204, 22, 0.75)',  // 11. Lima (Ventilador)
+                    'rgba(14, 165, 233, 0.75)',  // 12. Sky Blue (Otro)
+                    'rgba(99, 102, 241, 0.75)',  // 13. Índigo
+                    'rgba(217, 70, 239, 0.75)',  // 14. Fucsia
+                    'rgba(234, 179, 8, 0.75)',   // 15. Amarillo
+                    'rgba(161, 98, 7, 0.75)'     // 16. Marrón / Tierra
                 ],
                 borderColor: '#ffffff',
                 borderWidth: 2

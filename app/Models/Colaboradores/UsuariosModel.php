@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Colaboradores; // 馃搧 Ajustado a tu estructura f铆sica actual
+namespace App\Models\Colaboradores; // 📁 Ajustado a tu estructura física actual
 
 use App\Helpers\Database;
 use App\Models\Auditoria\AuditoriaModel;
@@ -15,7 +15,7 @@ class UsuariosModel {
     }
 
     /**
-     * Obtiene todos los usuarios ordenados por el m谩s reciente
+     * Obtiene todos los usuarios ordenados por el más reciente
      */
     public function getAll(): array {
         try {
@@ -40,7 +40,7 @@ class UsuariosModel {
     }
 
     /**
-     * Crea un nuevo usuario en el sistema con encriptaci贸n BCRYPT
+     * Crea un nuevo usuario en el sistema con encriptación BCRYPT
      */
     public function create(array $data): bool {
         try {
@@ -147,7 +147,7 @@ class UsuariosModel {
     }
 
     /**
-     * Busca un usuario espec铆fico por su ID primario
+     * Busca un usuario específico por su ID primario
      */
     public function find(int $id): ?array {
         try {
@@ -164,7 +164,7 @@ class UsuariosModel {
      */
     public function findByEmail(string $email): ?array {
         try {
-            // Extrae el password_hash solo si el usuario est谩 activo (estado = 1)
+            // Extrae el password_hash solo si el usuario está activo (estado = 1)
             $stmt = $this->db->prepare("SELECT id, nombre, email, password_hash, rol, estado, primer_inicio, permisos FROM usuarios WHERE email = ? AND estado = 1");
             $stmt->execute([$email]);
             return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -174,7 +174,7 @@ class UsuariosModel {
     }
 
     /**
-     * Actualiza los datos del usuario manejando de forma segura la contrase帽a y el estado funcional
+     * Actualiza los datos del usuario manejando de forma segura la contraseña y el estado funcional
      */
     public function update(int $id, array $data): bool {
         try {
@@ -189,7 +189,7 @@ class UsuariosModel {
             }
 
             if (!empty($data['password'])) {
-                // Si el operador digit贸 una nueva clave, se re-encripta
+                // Si el operador digitó una nueva clave, se re-encripta
                 $passwordHash = password_hash($data['password'], PASSWORD_BCRYPT);
                 $sql = "UPDATE usuarios 
                         SET nombre = ?, email = ?, password_hash = ?, rol = ?, estado = ?, updated_at = CURRENT_TIMESTAMP()";
@@ -220,7 +220,7 @@ class UsuariosModel {
 
                 return $result;
             } else {
-                // Si la clave se dej贸 en blanco, se preserva la actual intacta
+                // Si la clave se dejó en blanco, se preserva la actual intacta
                 $sql = "UPDATE usuarios 
                         SET nombre = ?, email = ?, rol = ?, estado = ?, updated_at = CURRENT_TIMESTAMP()";
 
@@ -256,7 +256,7 @@ class UsuariosModel {
     }
 
     /**
-     * Elimina un usuario f铆sicamente de la base de datos
+     * Elimina un usuario físicamente de la base de datos
      */
     public function delete(int $id): bool {
         try {

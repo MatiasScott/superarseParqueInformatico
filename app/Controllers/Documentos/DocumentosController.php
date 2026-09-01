@@ -31,6 +31,11 @@ class DocumentoController {
      * 💾 PROCESAR, VALIDAR Y GUARDAR DOCUMENTO ADJUNTO
      */
     public function guardar() {
+        // Asegurar que la sesión esté iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // 1. Validar si el archivo existe en el envío y no presenta anomalías
@@ -52,7 +57,16 @@ class DocumentoController {
                 exit();
             }
 
-            // 3. Estructuración del directorio raíz de carga
+            // 3. Obtener el ID del usuario autenticado dinámicamente
+            $usuarioId = $_SESSION['usuario_id'] ?? $_SESSION['id'] ?? $_SESSION['user_id'] ?? null;
+
+            if (empty($usuarioId)) {
+                // Si la sesión caducó o no inició sesión, redirigimos con un mensaje de error
+                header("Location: /documentos?msg=sesion_expirada");
+                exit();
+            }
+
+            // 4. Estructuración del directorio raíz de carga
             $uploadDir = __DIR__ . '/../../public/uploads/documentos/';
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
@@ -62,12 +76,11 @@ class DocumentoController {
             $newFileName = 'DOC-' . time() . '-' . uniqid() . '.' . $fileExt;
             $destination = $uploadDir . $newFileName;
 
-            // 4. Mover el archivo al almacenamiento físico e insertar el registro en la BD
+            // 5. Mover el archivo al almacenamiento físico e insertar el registro en la BD
             if (move_uploaded_file($fileTmp, $destination)) {
                 $model = new DocumentosModel();
                 $relativePath = 'uploads/documentos/' . $newFileName;
 
-                // Definición estructural de la tabla polimórfica 'documentos_adjuntos'
                 $tipoEntidad = 'Acta'; 
                 $entidadId = $_POST['acta_id'] ?? 0;
 
@@ -77,7 +90,7 @@ class DocumentoController {
                     'tipo_documento'      => $_POST['tipo_documento'], // 'Acta Entrega', 'Informe Técnico', etc.
                     'nombre_archivo'      => trim($_POST['titulo']),
                     'ruta_almacenamiento' => $relativePath,
-                    'usuario_id'          => $_SESSION['usuario_id'] ?? 3
+                    'usuario_id'          => $usuarioId // Totalmente dinámico según el usuario que sube el archivo
                 ];
 
                 $result = $model->create($data);
@@ -143,5 +156,50 @@ class DocumentoController {
 
         header("Location: /documentos?msg=" . $msg);
         exit();
+    }
+    
+    /**
+     * 👁️ VISUALIZAR DOCUMENTO PDF EN NAVEGADOR (CORREGIDO)
+     */
+    public function ver() 
+    {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            header("Location: /documentos?msg=error");
+            exit();
+        }
+
+        // 1. Usar el método correcto del modelo (find)
+        $model = new DocumentosModel();
+        $doc = $model->find($id);
+
+        if (!$doc || empty($doc['ruta_almacenamiento'])) {
+            header("Location: /documentos?msg=no_encontrado");
+            exit();
+        }
+
+        // 2. Ruta física exacta al PDF en public
+        $filePath = __DIR__ . '/../../public/' . ltrim($doc['ruta_almacenamiento'], '/');
+
+        // 3. Comprobar que existe el archivo en el servidor
+        if (file_exists($filePath)) {
+            // Limpiar buffers para evitar que se corrompa la lectura binaria del PDF (Error 500)
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: inline; filename="' . basename($filePath) . '"');
+            header('Content-Length: ' . filesize($filePath));
+            header('Pragma: public');
+            header('Cache-Control: private, max-age=0, must-revalidate');
+
+            readfile($filePath);
+            exit();
+        } else {
+            header("Location: /documentos?msg=archivo_no_existe");
+            exit();
+        }
     }
 }

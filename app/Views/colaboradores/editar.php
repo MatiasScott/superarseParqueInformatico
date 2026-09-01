@@ -8,12 +8,16 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el ColaboradorController->editar()
 
 // Definimos el arreglo de áreas para mapear el select dinámicamente
 $areasDisponibles = [
-    "Recepción"   => "Recepción",
-    "Admisiones"  => "Admisiones",
-    "TICs"        => "TICs",
-    "Academica"   => "Académico",
-    "Finanzas"    => "Finanzas",
-    "Secretaria"  => "Secretaría"
+    "Recepción"      => "Recepción",
+    "Admisiones"     => "Admisiones",
+    "TICs"           => "TICs",
+    "Academica"      => "Académico",
+    "Finanzas"       => "Finanzas",
+    "Secretaria"     => "Secretaría",
+    "Talento Humano" => "Talento Humano",
+    "Veterinaria"    => "Veterinaria",
+    "Promotores"     => "Promotores",
+    "Nexo"           => "Nexo"
 ];
 ?>
 <div class="col-span-3 max-w-3xl mx-auto w-full py-4">

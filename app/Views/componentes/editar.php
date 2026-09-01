@@ -7,7 +7,14 @@ if (!isset($componente)) {
 $equipos = $equipos ?? [];
 ?>
 
-<div class="col-span-3 max-w-3xl mx-auto w-full animate-fade-in">
+<div class="col-span-3 max-w-3xl mx-auto w-full animate-fade-in py-4">
+
+    <div class="mb-6">
+        <a href="/componentes" class="inline-flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold text-sm group">
+            <i class="ph ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
+            Volver a la lista
+        </a>
+    </div>
 
     <div class="flex items-center gap-4 mb-6">
         <div class="w-16 h-16 rounded-2xl shadow-md border-4 border-white bg-blue-600 flex items-center justify-center text-white text-3xl">
@@ -15,7 +22,7 @@ $equipos = $equipos ?? [];
         </div>
         <div>
             <h2 class="text-3xl font-bold text-slate-800">Editar Componente</h2>
-            <p class="text-slate-500 mt-1">Modifica las especificaciones o reasigna esta pieza a otro equipo informático</p>
+            <p class="text-slate-500 mt-1 text-sm">Modifica las especificaciones o reasigna esta pieza a otro equipo informático</p>
         </div>
     </div>
 
@@ -26,7 +33,7 @@ $equipos = $equipos ?? [];
                 <div>
                     <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Pieza / Periférico</p>
                     <h3 class="text-xl font-bold text-slate-800 mt-1">
-                        <?= htmlspecialchars($componente['tipo']) ?>
+                        <?= htmlspecialchars($componente['tipo']) ?> <?= isset($componente['marca_modelo']) ? ' - ' . htmlspecialchars($componente['marca_modelo']) : '' ?>
                     </h3>
                 </div>
                 <div class="bg-blue-50 text-blue-600 border border-blue-100 px-4 py-2 rounded-xl text-sm font-black tracking-wide">
@@ -49,12 +56,12 @@ $equipos = $equipos ?? [];
                         <div class="relative">
                             <select 
                                 name="equipo_id" 
-                                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition appearance-none text-slate-700 font-medium"
+                                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition appearance-none text-slate-700 font-medium cursor-pointer"
                             >
                                 <option value="">-- Dejar Libre / En Bodega (Stock) --</option>
                                 <?php foreach($equipos as $e): ?>
                                     <option value="<?= $e['id'] ?>" <?= ($e['id'] == $componente['equipo_id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($e['nombre']) ?> - <?= htmlspecialchars($e['marca']) ?> (Serie: <?= htmlspecialchars($e['serie']) ?>)
+                                        <?= htmlspecialchars($e['nombre']) ?> (Serie: <?= htmlspecialchars($e['serie'] ?? 'S/N') ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -66,31 +73,20 @@ $equipos = $equipos ?? [];
 
                     <div>
                         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                            Tipo de Componente
-                        </label>
-                        <input
-                            type="text"
-                            name="tipo"
-                            value="<?= htmlspecialchars($componente['tipo']) ?>"
-                            placeholder="Ej: Memoria RAM, Disco SSD"
-                            required
-                            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition text-slate-700 font-medium shadow-sm"
-                        >
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                            Estado Actual
+                            Tipo de Componente *
                         </label>
                         <div class="relative">
                             <select 
-                                name="estado" 
-                                required
-                                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition appearance-none text-slate-700 font-medium"
+                                name="tipo" 
+                                required 
+                                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition appearance-none text-slate-700 font-medium cursor-pointer"
                             >
-                                <option value="Bueno" <?= ($componente['estado'] == 'Bueno') ? 'selected' : '' ?>>Bueno</option>
-                                <option value="Regular" <?= ($componente['estado'] == 'Regular') ? 'selected' : '' ?>>Regular</option>
-                                <option value="Dañado" <?= ($componente['estado'] == 'Dañado') ? 'selected' : '' ?>>Dañado</option>
+                                <?php 
+                                $tipos = ['RAM', 'Disco Duro', 'SSD', 'Procesador', 'Tarjeta de Video', 'Batería', 'Cargador', 'Mouse', 'Teclado', 'Mouse Pad', 'Ventilador', 'Monitor', 'Proyector', 'Cortina de proyección', 'Adaptadores de red', 'TV', 'Otro'];
+                                foreach($tipos as $t): 
+                                ?>
+                                    <option value="<?= $t ?>" <?= ($componente['tipo'] === $t) ? 'selected' : '' ?>><?= $t ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
                                 <i class="ph ph-caret-down text-lg"></i>
@@ -98,17 +94,51 @@ $equipos = $equipos ?? [];
                         </div>
                     </div>
 
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                            Marca / Modelo
+                        </label>
+                        <input
+                            type="text"
+                            name="marca_modelo"
+                            value="<?= htmlspecialchars($componente['marca_modelo'] ?? '') ?>"
+                            placeholder="Ej: Kingston A400"
+                            class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition text-slate-700 font-medium shadow-sm"
+                        >
+                    </div>
+
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                            Descripción / Detalles Técnicos
+                            Capacidad / Detalle Técnico *
                         </label>
-                        <textarea
+                        <input
+                            type="text"
                             name="descripcion"
-                            rows="3"
+                            value="<?= htmlspecialchars($componente['descripcion'] ?? '') ?>"
                             required
+                            placeholder="Ej: 16GB DDR4 / 480GB"
                             class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition text-slate-700 font-medium shadow-sm"
-                            placeholder="Indique marca, modelo exacto, capacidad o números seriales de la pieza..."
-                        ><?= htmlspecialchars($componente['descripcion']) ?></textarea>
+                        >
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                            Estado Actual *
+                        </label>
+                        <div class="relative">
+                            <select 
+                                name="estado" 
+                                required
+                                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition appearance-none text-slate-700 font-medium cursor-pointer"
+                            >
+                                <option value="Bueno" <?= ($componente['estado'] == 'Bueno') ? 'selected' : '' ?>>Bueno</option>
+                                <option value="Regular" <?= ($componente['estado'] == 'Regular') ? 'selected' : '' ?>>Regular</option>
+                                <option value="Dañado" <?= ($componente['estado'] == 'Dañado' || $componente['estado'] == 'Malo') ? 'selected' : '' ?>>Dañado</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                                <i class="ph ph-caret-down text-lg"></i>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -123,7 +153,7 @@ $equipos = $equipos ?? [];
 
                     <button
                         type="submit"
-                        class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-100 hover:shadow-blue-200"
+                        class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-100"
                     >
                         Guardar Cambios
                     </button>

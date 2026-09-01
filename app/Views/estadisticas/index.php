@@ -271,13 +271,14 @@
 
 <script>
     <?php
-        // 1. Procesamiento de Hardware por tipo
-        $hwLabels = []; $hwValues = [];
+        // 1. Procesamiento de Hardware por tipo 🚀 (CORREGIDO: Ahora extrae e inyecta cantidades)
+        $hwLabels = []; $hwValues = []; $hwCantidades = [];
         if (!empty($graficoHardware)) {
             foreach ($graficoHardware as $row) {
                 $rowClean = array_change_key_case($row, CASE_LOWER);
                 $hwLabels[] = $rowClean['tipo'] ?? 'Desconocido';
                 $hwValues[] = (float)($rowClean['inversion_subtotal'] ?? 0);
+                $hwCantidades[] = (int)($rowClean['cantidad'] ?? 0); // Captura el conteo nativo del modelo
             }
         }
 
@@ -310,12 +311,12 @@
             }
         }
 
-        // 4. Procesamiento de Telefonía por Operador
+      // 4. Procesamiento de Telefonía por Plan 📱
         $celLabels = []; $celValues = [];
         if (!empty($graficoCelulares)) {
             foreach ($graficoCelulares as $row) {
                 $rowClean = array_change_key_case($row, CASE_LOWER);
-                $celLabels[] = $rowClean['operador'] ?? 'Otros';
+                $celLabels[] = !empty($rowClean['plan']) ? $rowClean['plan'] : 'Sin Nombre';
                 $celValues[] = (float)($rowClean['gasto_subtotal'] ?? 0);
             }
         }
@@ -326,7 +327,8 @@
         activeTab: '<?= $_GET['active_tab'] ?? "hardware" ?>',
         hardware: {
             labels: <?= json_encode($hwLabels) ?>,
-            values: <?= json_encode($hwValues) ?>
+            values: <?= json_encode($hwValues) ?>,
+            cantidades: <?= json_encode($hwCantidades) ?> // 👈 Inyectado con éxito al entorno JS
         },
         modelos: {
             labels: <?= json_encode($modLabels) ?>,

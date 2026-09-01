@@ -26,6 +26,7 @@ class EquiposAsignadosModel {
                         e.marca AS equipo_marca,
                         e.modelo AS equipo_modelo,
                         e.serie AS equipo_serie,
+                        e.seccion AS equipo_seccion, -- 🏢 Agregado aquí para los equipos físicos
                         c.nombres AS colaborador_nombre,
                         c.cargo AS colaborador_cargo,
                         c.area AS colaborador_area,
@@ -52,6 +53,7 @@ class EquiposAsignadosModel {
                         p.celular_marca AS equipo_marca,     -- Mapeado a la columna Marca
                         p.celular_modelo AS equipo_modelo,   -- Mapeado a la columna Modelo
                         CONCAT(p.numero_celular, ' (', p.celular_imei_1, ')') AS equipo_serie, -- Mapeado a Serie (Muestra Número e IMEI)
+                        NULL AS equipo_seccion,              -- 📱 NULL para mantener el balance de columnas en el UNION
                         c.nombres AS colaborador_nombre,
                         c.cargo AS colaborador_cargo,
                         c.area AS colaborador_area,

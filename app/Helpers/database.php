@@ -9,11 +9,11 @@ class Database
     {
         if (self::$instance === null) {
             try {
-                $host = getenv('DB_HOST') ?: 'mariadb';
-                $db = getenv('DB_NAME') ?: 'superar1_parque_informatico';
-                $user = getenv('DB_USER') ?: 'root';
-                $pass = getenv('DB_PASS') ?: '';
-                $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+                $host = "localhost";
+                $db   = "superar1_parque_informatico";
+                $user = "root";
+                $pass = "Superarse.2025";
+                $charset = 'utf8mb4';
 
                 $dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
 

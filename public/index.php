@@ -386,10 +386,10 @@ case '/planes-celulares/actualizar':
         break;
    
        
-    // ===========================
+// ===========================
     // ASIGNACIONES
     // ===========================
-  case '/asignaciones':
+    case '/asignaciones':
         validarSesion();
         (new \App\Controllers\AsignacionesController())->index();
         break;
@@ -407,6 +407,18 @@ case '/planes-celulares/actualizar':
     case '/asignaciones/devolverEquipo':
         validarSesion();
         (new \App\Controllers\AsignacionesController())->devolverEquipo();
+        break;
+
+    // 📱 NUEVA RUTA: Procesa las devoluciones exclusivamente para celulares y líneas
+    case '/asignaciones/devolverCelular':
+        validarSesion();
+        (new \App\Controllers\AsignacionesController())->devolverCelular();
+        break;
+
+    // 🔧 RUTA OPCIONAL: Por si manejas devolución de componentes en el futuro
+    case '/asignaciones/devolverComponente':
+        validarSesion();
+        (new \App\Controllers\AsignacionesController())->devolverEquipo(); // O crear devolverComponente()
         break;
 
     case '/asignaciones/eliminar':
@@ -460,6 +472,11 @@ case '/planes-celulares/actualizar':
     case '/documentos':
         validarSesion();
         (new \App\Controllers\Documentos\DocumentoController())->index();
+        break;
+    // 👁️ AGREGAR ESTA NUEVA RUTA AQUÍ:
+    case '/documentos/ver':
+        validarSesion();
+        (new \App\Controllers\Documentos\DocumentoController())->ver();
         break;
     case '/documentos/guardar':
         validarSesion();
@@ -604,8 +621,8 @@ function validarSesion()
             '/documentos/eliminar' => ['module' => 'documentos', 'action' => 'eliminar'],
 
             '/inventario' => ['module' => 'inventario', 'action' => 'ver'],
-            '/equipos-asignados' => ['module' => 'equipos_asignados', 'action' => 'ver'],
-            '/equipos-baja' => ['module' => 'equipos_baja', 'action' => 'ver'],
+            '/equipos-asignados' => ['module' => 'equipos-asignados', 'action' => 'ver'],
+            '/equipos-baja' => ['module' => 'equipos-baja', 'action' => 'ver'],
             '/mantenimientos' => ['module' => 'mantenimientos', 'action' => 'ver'],
             '/mantenimientos/guardar' => ['module' => 'mantenimientos', 'action' => 'crear'],
             '/mantenimientos/editar' => ['module' => 'mantenimientos', 'action' => 'editar'],

@@ -42,7 +42,7 @@ class EstadisticasController {
         // 📱 4. Consultas dinámicas para la sección de TELEFONÍA (Usan el $sede_id_cel de su propio formulario)
         $resumenCelulares = $this->estadisticaModel->getEstadisticasCelulares($sede_id_cel, $operador);
         $listadoCelulares = $this->estadisticaModel->getListadoPlanesReporte($sede_id_cel, $operador);
-        $graficoCelulares = $this->estadisticaModel->getGastoPorOperador($sede_id_cel);
+        $graficoCelulares = $this->estadisticaModel->getGastoPorPlan($sede_id_cel);
 
         // 📦 Empaquetar todo en un array y extraerlo para forzar el alcance global en las vistas
         $data = [

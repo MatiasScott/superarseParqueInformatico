@@ -65,8 +65,6 @@ class Equipo {
 
     /**
      * LISTAR TODOS LOS EQUIPOS OPERATIVOS
-     * 🛡️ MODIFICADO: Excluye los equipos dados de baja y los borrados lógicamente (estado_id = null o marcado).
-     * Para hacerlo infalible, añadimos una bandera o usamos la exclusión del ID de baja y nombres nulos.
      */
     public function getAll()
     {
@@ -89,7 +87,6 @@ class Equipo {
 
     /**
      * HISTORIAL DE EQUIPOS DE BAJA
-     * 🚀 INCLUIDO: Muestra el precio final y la última sede donde quedó registrado el activo.
      */
     public function getBajas()
     {
@@ -135,7 +132,6 @@ class Equipo {
 
     /**
      * BUSCAR UN EQUIPO POR ID
-     * 🛡️ MODIFICADO: Trae el nombre de la sede para el detalle o la vista de "Ver Equipo".
      */
     public function find($id)
     {
@@ -152,7 +148,6 @@ class Equipo {
 
     /**
      * CREAR UN NUEVO EQUIPO
-     * 🚀 MODIFICADO: Inserta campos nativos 'precio' y 'sede_id'.
      */
     public function create($data)
     {
@@ -161,12 +156,15 @@ class Equipo {
             return false;
         }
 
+        // Si 'seccion' viene vacío o no está definido, se guarda como NULL en la base de datos
+        $seccion = !empty($data['seccion']) ? trim((string)$data['seccion']) : null;
+
         $sql = "
             INSERT INTO equipos
             (
-                tipo, nombre, marca, modelo, serie, descripcion, precio, estado_id, sede_id, fecha_baja, motivo_baja
+                tipo, nombre, marca, modelo, serie, descripcion, precio, estado_id, sede_id, seccion, fecha_baja, motivo_baja
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ";
 
         $stmt = $this->db->prepare($sql);
@@ -180,6 +178,7 @@ class Equipo {
             $data['precio'],    
             $estadoId, 
             $data['sede_id'],   
+            $seccion,
             $data['fecha_baja'], 
             $data['motivo_baja']
         ]);
@@ -187,7 +186,7 @@ class Equipo {
         if ($result) {
             $idNuevoEquipo = $this->db->lastInsertId();
 
-            // ⚠️ AUTOMATIZACIÓN: Si ingresa directo a mantenimiento, genera su orden técnica
+            // Corregido de getItemsEstadoNombreById a getEstadoNombreById
             $nombreEstado = mb_strtolower((string)($this->getEstadoNombreById($estadoId) ?? ''), 'UTF-8');
             if ($nombreEstado === 'mantenimiento') {
                 $this->crearOrdenMantenimientoAutomatica($idNuevoEquipo, $data['descripcion']);
@@ -201,7 +200,6 @@ class Equipo {
 
     /**
      * ACTUALIZAR UN EQUIPO EXISTENTE
-     * 🚀 MODIFICADO: Permite cambiar el precio y trasladar el equipo de Sede.
      */
     public function update($id, $data)
     {
@@ -212,11 +210,14 @@ class Equipo {
             return false;
         }
 
+        // Si 'seccion' viene vacío o no está definido, se guarda como NULL en la base de datos
+        $seccion = !empty($data['seccion']) ? trim((string)$data['seccion']) : null;
+
         $sql = "
             UPDATE equipos
             SET
                 tipo = ?, nombre = ?, marca = ?, modelo = ?, serie = ?, 
-                descripcion = ?, precio = ?, estado_id = ?, sede_id = ?, fecha_baja = ?, motivo_baja = ?
+                descripcion = ?, precio = ?, estado_id = ?, sede_id = ?, seccion = ?, fecha_baja = ?, motivo_baja = ?
             WHERE id = ?
         ";
 
@@ -231,13 +232,13 @@ class Equipo {
             $data['precio'],    
             $estadoId, 
             $data['sede_id'],   
+            $seccion,
             $data['fecha_baja'], 
             $data['motivo_baja'], 
             $id
         ]);
 
         if ($result && $equipoAntes) {
-            // ⚠️ AUTOMATIZACIÓN: Si cambia a mantenimiento ahora y antes no lo estaba
             $nombreEstadoNuevo = mb_strtolower((string)($this->getEstadoNombreById($estadoId) ?? ''), 'UTF-8');
             $nombreEstadoAnterior = mb_strtolower((string)($this->getEstadoNombreById($equipoAntes['estado_id'] ?? null) ?? ''), 'UTF-8');
             if ($nombreEstadoNuevo === 'mantenimiento' && $nombreEstadoAnterior !== 'mantenimiento') {
@@ -251,7 +252,7 @@ class Equipo {
     }
 
     /**
-     * 🛠️ MÉTODO AUXILIAR PARA GENERAR LA ORDEN TÉCNICA AUTOMÁTICA
+     * MÉTODO AUXILIAR PARA GENERAR LA ORDEN TÉCNICA AUTOMÁTICA
      */
     private function crearOrdenMantenimientoAutomatica($equipo_id, $detalles_falla) {
         $sql = "INSERT INTO mantenimientos 
@@ -279,8 +280,6 @@ class Equipo {
 
     /**
      * ELIMINAR EQUIPO (BORRADO LÓGICO SEGURO)
-     * 🛡️ CORREGIDO: Buscamos si existe un estado 'Eliminado' en tu tabla relacional.
-     * Si no existe, desvincula temporalmente el estado asignándole NULL o un ID seguro para ocultarlo.
      */
     public function delete($id)
     {
@@ -288,27 +287,22 @@ class Equipo {
 
         if ($equipoAntes) {
             try {
-                // 1. Archivamos los mantenimientos asociados de forma segura
                 $stmtMantenimientos = $this->db->prepare("UPDATE mantenimientos SET estado = 'Archivado' WHERE equipo_id = ?");
                 $stmtMantenimientos->execute([$id]);
 
-                // 2. Buscamos dinámicamente si existe el ID del estado "Eliminado" en tu tabla maestra
                 $stmtEstado = $this->db->prepare("SELECT id FROM estados_equipo WHERE nombre = 'Eliminado' LIMIT 1");
                 $stmtEstado->execute();
                 $idEliminado = $stmtEstado->fetchColumn();
 
                 if (!$idEliminado) {
-                    // Si el estado 'Eliminado' no existe en tu BD, insertémoslo automáticamente para no romper tus llaves foráneas
                     $insertEstado = $this->db->prepare("INSERT INTO estados_equipo (nombre) VALUES ('Eliminado')");
                     $insertEstado->execute();
                     $idEliminado = $this->db->lastInsertId();
                 }
 
-                // 3. APLICAMOS EL BORRADO LÓGICO usando el ID numérico correcto de la Foreign Key
                 $stmtEquipo = $this->db->prepare("UPDATE equipos SET estado_id = ? WHERE id = ?");
                 $result = $stmtEquipo->execute([$idEliminado, $id]);
 
-                // 4. Registro forense del borrado lógico
                 if ($result) {
                     AuditoriaModel::registrar('DELETE', 'equipos', (int)$id, $equipoAntes, ['estado_id' => (int)$idEliminado]);
                 }
@@ -342,7 +336,7 @@ class Equipo {
     }
 
     /**
-     * LISTAR ESTADOS DISPONIBLES (Excluyendo el estado de borrado lógico)
+     * LISTAR ESTADOS DISPONIBLES
      */
     public function getEstados()
     {
@@ -367,5 +361,31 @@ class Equipo {
         $sql = "UPDATE equipos SET estado_id = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$nuevo_estado_id, $id]);
+    }
+
+    /**
+     * ⚡ NUEVO: MARCAR UN EQUIPO COMO 'ASIGNADO' DE FORMA DINÁMICA
+     * Requerido por AsignacionesModel al crear un lote.
+     */
+    public function marcarComoAsignado($id)
+    {
+        $idEstado = $this->getEstadoIdByNombre('Asignado');
+        if ($idEstado) {
+            return $this->updateEstadoSolamente($id, $idEstado);
+        }
+        return false;
+    }
+
+    /**
+     * ⚡ NUEVO: MARCAR UN EQUIPO COMO 'DISPONIBLE' DE FORMA DINÁMICA
+     * Requerido por AsignacionesModel al realizar devoluciones individuales.
+     */
+    public function marcarComoDisponible($id)
+    {
+        $idEstado = $this->getEstadoIdByNombre('Disponible');
+        if ($idEstado) {
+            return $this->updateEstadoSolamente($id, $idEstado);
+        }
+        return false;
     }
 }

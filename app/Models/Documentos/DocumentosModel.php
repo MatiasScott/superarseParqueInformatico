@@ -18,7 +18,6 @@ class DocumentosModel {
      * 📋 LISTAR TODOS LOS DOCUMENTOS REGISTRADOS
      */
     public function getAll() {
-        // Consultamos directo a tu tabla documentos_adjuntos
         $sql = "SELECT d.id, 
                        d.tipo_entidad, 
                        d.entidad_id, 
@@ -49,10 +48,21 @@ class DocumentosModel {
     }
 
     /**
-     * ➕ REGISTRAR UN NUEVO ARCHIVO ADJUNTO (CON AUDITORÍA)
+     * ➕ REGISTRAR UN NUEVO ARCHIVO ADJUNTO (DINÁMICO SEGÚN EL USUARIO AUTENTICADO)
      */
     public function create($data) {
         try {
+            // 1. Obtener dinámicamente el usuario autenticado
+            $usuarioId = !empty($data['usuario_id']) 
+                ? $data['usuario_id'] 
+                : (!empty($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null);
+
+            // 2. Si no hay usuario en sesión ni en $data, cancelamos antes de fallar en BD
+            if (empty($usuarioId)) {
+                error_log("Error en DocumentosModel::create -> Operación cancelada: No hay una sesión de usuario activa.");
+                return false;
+            }
+
             $sql = "INSERT INTO documentos_adjuntos 
                         (tipo_entidad, entidad_id, tipo_documento, nombre_archivo, ruta_almacenamiento, usuario_id) 
                     VALUES 
@@ -65,7 +75,7 @@ class DocumentosModel {
                 $data['tipo_documento'],      // 'Acta Entrega', 'Informe Técnico', etc.
                 $data['nombre_archivo'],      // Título descriptivo o nombre original
                 $data['ruta_almacenamiento'], // Ruta física (uploads/documentos/...)
-                $data['usuario_id'] ?? $_SESSION['usuario_id'] ?? 3
+                $usuarioId                    // ID dinámico de la persona autenticada
             ]);
 
             if ($result) {

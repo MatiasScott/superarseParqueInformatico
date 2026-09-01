@@ -11,10 +11,10 @@ class HistorialController {
     {
         $model = new HistorialModel();
 
-        // Obtenemos todos los movimientos ordenados cronol√≥gicamente
+        // Obtenemos todos los movimientos ordenados cronol®Ægicamente
         $historial = $model->getHistorialCompleto();
 
-        // Iniciamos el almacenamiento en b√∫fer para renderizar la vista
+        // Iniciamos el almacenamiento en b®≤fer para renderizar la vista
         ob_start();
 
         // Cargamos la vista correspondiente al historial

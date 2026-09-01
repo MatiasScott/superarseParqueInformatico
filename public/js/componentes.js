@@ -37,13 +37,23 @@ function agregarFilaComponente() {
             <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Tipo *</label>
             <select name="componentes[${contadorFilas}][tipo]" required class="w-full mt-1.5 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 <option value="RAM">RAM</option>
-                <option value="Disco Duro">Disco Duro</option>
-                <option value="SSD">SSD</option>
-                <option value="Procesador">Procesador</option>
-                <option value="Tarjeta de Video">Tarjeta de Video</option>
-                <option value="Batería">Batería</option>
-                <option value="Cargador">Cargador</option>
-                <option value="Otro">Otro</option>
+                            <option value="Disco Duro">Disco Duro</option>
+                            <option value="SSD">SSD</option>
+                            <option value="Procesador">Procesador</option>
+                            <option value="Tarjeta de Video">Tarjeta de Video</option>
+                            <option value="Batería">Batería</option>
+                            <option value="Cargador">Cargador</option>
+                            <option value="Mouse">Mouse</option>
+                            <option value="Teclado">Teclado</option>
+                            <option value="Mouse Pad">Mouse Pad</option>
+                            <option value="Ventilador">Ventilador</option>
+                            <option value="Monitor">Monitor</option>
+                            <option value="Proyector">Proyector</option>
+                            <option value="Cortina de proyección">Cortina de proyección</option>
+                            <option value="Adaptadores de red">Adaptadores de red</option>
+                            <option value="TV">TV</option>
+                            <option value="Otro">Otro</option>
+                
             </select>
         </div>
 

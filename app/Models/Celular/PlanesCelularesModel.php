@@ -16,15 +16,11 @@ class PlanesCelularesModel {
     }
 
     /**
-     * Obtener el inventario global de telefonía y terminales
-     */
- /**
      * Obtener el inventario global de telefonía con soporte para búsquedas dinámicas
      */
     public function getAll($search = '') {
         try {
             if (!empty($search)) {
-                // Si hay una palabra clave, buscamos coincidencias parciales
                 $sql = "SELECT * FROM planes_celulares 
                         WHERE numero_celular LIKE :search 
                            OR celular_marca LIKE :search 
@@ -37,7 +33,6 @@ class PlanesCelularesModel {
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
 
-            // Si no hay búsqueda, se comporta exactamente igual que antes
             $sql = "SELECT * FROM planes_celulares ORDER BY created_at DESC";
             return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
             
@@ -140,7 +135,7 @@ class PlanesCelularesModel {
             
             $stmt = $this->db->prepare($sql);
 
-                    $result = $stmt->execute([
+            $result = $stmt->execute([
                 ':id'                     => (int)$id,
                 ':numero_celular'         => $data['numero_celular'],
                 ':operador'               => $data['operador'],
@@ -191,5 +186,23 @@ class PlanesCelularesModel {
             error_log("Error en PlanesCelularesModel::delete -> " . $e->getMessage());
             throw new Exception("El activo celular está vinculado a un historial.");
         }
+    }
+
+    /**
+     * ⚡ NUEVO: MARCAR UN PLAN/CELULAR COMO 'ASIGNADO'
+     */
+    public function marcarComoAsignado($id) {
+        $sql = "UPDATE planes_celulares SET estado_plan = 'Asignado' WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
+    /**
+     * ⚡ NUEVO: MARCAR UN PLAN/CELULAR COMO 'DISPONIBLE'
+     */
+    public function marcarComoDisponible($id) {
+        $sql = "UPDATE planes_celulares SET estado_plan = 'Disponible' WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
     }
 }

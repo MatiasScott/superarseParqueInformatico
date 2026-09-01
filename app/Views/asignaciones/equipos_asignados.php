@@ -54,7 +54,7 @@ $totalCelulares = $metricas['total_celulares'] ?? count(array_filter($equipos, f
             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 <i class="ph ph-magnifying-glass text-lg"></i>
             </span>
-            <input type="text" x-model="search" placeholder="Buscar por custodio, serie, operadora, plan, imei o acta..." 
+            <input type="text" x-model="search" placeholder="Buscar por custodio, serie, operadora, sección, imei o acta..." 
                    class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-white transition-colors">
         </div>
         
@@ -115,7 +115,13 @@ $totalCelulares = $metricas['total_celulares'] ?? count(array_filter($equipos, f
                         </td>
                         <td class="py-4 px-6">
                             <p class="font-semibold text-slate-700" x-text="item.colaborador_area || 'Sin Área'"></p>
-                            <p class="text-xs text-slate-400 mt-0.5" x-text="item.colaborador_cargo || 'Sin Cargo'"></p>
+                            <div class="flex flex-col gap-0.5 mt-0.5">
+                                <p class="text-xs text-slate-400" x-text="item.colaborador_cargo || 'Sin Cargo'"></p>
+                                <!-- Sección / Aula agregada aquí de manera visual -->
+                                <template x-if="item.equipo_seccion">
+                                    <span class="text-[10px] text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded w-max mt-1" x-text="'Sección: ' + item.equipo_seccion"></span>
+                                </template>
+                            </div>
                         </td>
                         <td class="py-4 px-6">
                             <span class="inline-flex items-center gap-1.5 text-xs text-blue-600 font-bold bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-xl">
@@ -159,6 +165,7 @@ function reporteAsignadosComponent() {
                     (item.equipo_tipo || '').toLowerCase().includes(searchTxt) ||
                     (item.equipo_marca || '').toLowerCase().includes(searchTxt) ||
                     (item.equipo_serie || '').toLowerCase().includes(searchTxt) ||
+                    (item.equipo_seccion || '').toLowerCase().includes(searchTxt) || // Búsqueda integrada por Sección / Aula
                     (item.colaborador_nombre || '').toLowerCase().includes(searchTxt) ||
                     (item.codigo_acta || '').toLowerCase().includes(searchTxt);
                     

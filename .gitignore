@@ -1,2 +1,7 @@
 .env
+<<<<<<< HEAD
 *.log
+=======
+public/uploads
+node_modules
+>>>>>>> 9fb2b6c (arreglo de bug hecho en produccion)

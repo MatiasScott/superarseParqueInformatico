@@ -10,7 +10,6 @@ class PlanesCelularesController {
     private $planesModel;
 
     public function __construct() {
-        // Tu autoloader ahora encontrará la clase perfectamente
         $this->planesModel = new PlanesCelularesModel();
     }
 
@@ -18,17 +17,11 @@ class PlanesCelularesController {
      * Muestra la tabla principal del inventario de telefonía con soporte de búsqueda
      */
     public function index() {
-        // 1. Capturamos el texto de búsqueda si el usuario escribió algo
         $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-
-        // 2. Pasamos el término al modelo (usando la función modificada en el paso anterior)
         $items = $this->planesModel->getAll($search);
-        
         $activePage = 'planes-celulares'; 
         
-        // Renderizado usando almacenamiento en búfer para inyectar en el layout maestro
         ob_start();
-        // Nota: La variable $search ahora está disponible dentro de tu archivo de vista automáticamente
         require_once __DIR__ . '/../../Views/celular/planes_celulares.php';
         $content = ob_get_clean();
         
@@ -41,7 +34,10 @@ class PlanesCelularesController {
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $this->planesModel->create($_POST);
+                // 🛠️ Saneamos los datos antes de enviarlos al modelo
+                $data = $this->sanearDatosCelular($_POST);
+
+                $this->planesModel->create($data);
                 $_SESSION['flash_success'] = "Dispositivo y Plan celular registrados correctamente.";
             } catch (Exception $e) {
                 $_SESSION['flash_error'] = "Error al guardar el registro: " . $e->getMessage();
@@ -55,7 +51,6 @@ class PlanesCelularesController {
      * Procesa la eliminación mediante el ID recibido por parámetro GET
      */
     public function destroy() {
-        // Captura del ID tal como lo haces en tu ejemplo
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         if ($id <= 0) {
@@ -105,7 +100,10 @@ class PlanesCelularesController {
             }
 
             try {
-                $this->planesModel->update($id, $_POST);
+                // 🛠️ Saneamos los datos antes de enviarlos al modelo
+                $data = $this->sanearDatosCelular($_POST);
+
+                $this->planesModel->update($id, $data);
                 $_SESSION['flash_success'] = "Los cambios del dispositivo fueron guardados con éxito.";
             } catch (Exception $e) {
                 $_SESSION['flash_error'] = "Error al actualizar el registro: " . $e->getMessage();
@@ -114,5 +112,30 @@ class PlanesCelularesController {
             header('Location: /planes-celulares');
             exit;
         }
+    }
+
+    /**
+     * 💡 MÉTODO AUXILIAR: Convierte valores vacíos o 'N/D' en NULL reales
+     * para evitar errores de duplicación en la base de datos.
+     */
+    private function sanearDatosCelular(array $datosOriginales) {
+        $datosSaneados = $datosOriginales;
+
+        // Lista de los campos críticos del hardware del teléfono
+        $camposCriticos = ['celular_serie', 'celular_imei_1', 'celular_imei_2', 'celular_marca', 'celular_modelo', 'celular_color'];
+
+        foreach ($camposCriticos as $campo) {
+            if (isset($datosSaneados[$campo])) {
+                $valor = trim($datosSaneados[$campo]);
+                // Si el campo está vacío, contiene solo espacios, o dice explicitamente 'N/D' (mayúscula o minúscula)
+                if ($valor === '' || strtoupper($valor) === 'N/D') {
+                    $datosSaneados[$campo] = null; // Lo transformamos en NULL real
+                } else {
+                    $datosSaneados[$campo] = $valor;
+                }
+            }
+        }
+
+        return $datosSaneados;
     }
 }

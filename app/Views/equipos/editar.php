@@ -1,7 +1,7 @@
 <?php
 $equipo = $equipo ?? [];
 $estados = $estados ?? [];
-$sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opciones
+$sedes = $sedes ?? []; // Recibido desde el controlador para listar las opciones
 ?>
 
 <div class="max-w-5xl mx-auto">
@@ -47,14 +47,20 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opc
                             class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 font-medium transition cursor-pointer">
                             
                             <option value="" disabled>Seleccione Tipo</option>
-                            <option value="Laptop" <?= ($equipo['tipo'] === 'Laptop') ? 'selected' : '' ?>>Laptop / Portátil</option>
-                            <option value="Desktop" <?= ($equipo['tipo'] === 'Desktop') ? 'selected' : '' ?>>Desktop / Escritorio</option>
-                            <option value="Monitor" <?= ($equipo['tipo'] === 'Monitor') ? 'selected' : '' ?>>Monitor</option>
-                            <option value="Teclado" <?= ($equipo['tipo'] === 'Teclado') ? 'selected' : '' ?>>Teclado</option>
-                            <option value="Mouse" <?= ($equipo['tipo'] === 'Mouse') ? 'selected' : '' ?>>Mouse</option>
-                            <option value="Impresora" <?= ($equipo['tipo'] === 'Impresora') ? 'selected' : '' ?>>Impresora</option>
-                            <option value="Servidor" <?= ($equipo['tipo'] === 'Servidor') ? 'selected' : '' ?>>Servidor</option>
-                            <option value="Otro" <?= ($equipo['tipo'] === 'Otro') ? 'selected' : '' ?>>Otro / Componente</option>
+                        <option value="Laptop" <?= ($equipo['tipo'] === 'Laptop') ? 'selected' : '' ?>>Laptop / Portátil</option>
+                        <option value="Desktop" <?= ($equipo['tipo'] === 'Desktop') ? 'selected' : '' ?>>Desktop / Escritorio</option>
+                        <option value="Monitor" <?= ($equipo['tipo'] === 'Monitor') ? 'selected' : '' ?>>Monitor</option>
+                        <option value="Impresora" <?= ($equipo['tipo'] === 'Impresora') ? 'selected' : '' ?>>Impresora</option>
+                        <option value="Servidor" <?= ($equipo['tipo'] === 'Servidor') ? 'selected' : '' ?>>Servidor</option>
+                        <option value="Proyector" <?= ($equipo['tipo'] === 'Proyector') ? 'selected' :  '' ?>>Proyector</option>
+                        <option value="Televisor" <?= ($equipo['tipo'] === 'Televisor') ? 'selected' : '' ?>>Televisor</option>
+                        <option value="Scanner" <?= ($equipo['tipo'] === 'Scanner') ? 'selected' : '' ?>>Scanner</option>
+                        <option value="Ventilador" <?= ($equipo['tipo'] === 'Ventilador') ? 'selected' : '' ?>>Ventilador</option>
+                        <option value="EcoFlow" <?= ($equipo['tipo'] === 'EcoFlow') ? 'selected' : '' ?>>EcoFlow</option>
+                        <option value="MP3" <?= ($equipo['tipo'] === 'MP3') ? 'selected' : '' ?>>MP3</option>
+                        <option value="DVR" <?= ($equipo['tipo'] === 'DVR') ? 'selected' : '' ?>>DVR</option>
+                        </select>
+                         <option value="Otro" <?= ($equipo['tipo'] === 'Otro') ? 'selected' : '' ?>>Otro</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400">
                             <i class="ph ph-caret-down text-base"></i>
@@ -131,6 +137,18 @@ $sedes = $sedes ?? []; // 🏢 Recibido desde el controlador para listar las opc
                             <i class="ph ph-caret-down text-base"></i>
                         </div>
                     </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-slate-700 block mb-1">
+                        Sección / Área / Aula
+                    </label>
+                    <input
+                        type="text"
+                        name="seccion"
+                        value="<?= htmlspecialchars($equipo['seccion'] ?? '') ?>"
+                        placeholder="Ej. Aula 5, TI, Contabilidad"
+                        class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 transition">
                 </div>
 
                 <div>

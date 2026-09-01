@@ -5,7 +5,7 @@ namespace App\Controllers;
 // ⬇️ Importaciones de Modelos base y telefonía móvil
 use App\Models\Asignaciones\AsignacionesModel;
 use App\Models\Colaboradores\ColaboradorModel; 
-use App\Models\Equipos\Equipo;                
+use App\Models\Equipos\Equipo;             
 use App\Models\Celular\PlanesCelularesModel;
 
 class AsignacionesController {
@@ -19,7 +19,7 @@ class AsignacionesController {
         // 🔍 1. Capturamos el filtro si viene por la URL (?colaborador_id=X)
         $colaboradorSeleccionado = $_GET['colaborador_id'] ?? null;
 
-        // 📋 2. Obtenemos las actas pasándole el ID del colaborador (La subconsulta del Modelo ya cuenta los componentes internos)
+        // 📋 2. Obtenemos las actas pasándole el ID del colaborador
         $actas = $model->getAll($colaboradorSeleccionado);
         
         // Cargamos todos los colaboradores (Servirá para el filtro principal y para el modal de creación)
@@ -59,8 +59,6 @@ class AsignacionesController {
                     'estado_entrega_equipo' => $_POST['estado_entrega_' . $equipo_id] ?? 'Bueno',
                     'observacion_item'      => !empty($_POST['observacion_' . $equipo_id]) ? trim($_POST['observacion_' . $equipo_id]) : null
                 ];
-                // 💡 NOTA ARQUITECTÓNICA: Los componentes vinculados a este equipo_id en la tabla 
-                // `componentes_equipo` se transfieren implícitamente al colaborador al estar asignado su equipo contenedor.
             }
 
             // 2. 📱 Recolección estructurada para actas_planes_detalle
@@ -90,7 +88,7 @@ class AsignacionesController {
             $data = [
                 'codigo_acta'         => $model->generarCodigoActa(), 
                 'colaborador_id'      => $_POST['colaborador_id'],
-                'usuario_id'          => $_SESSION['usuario_id'] ?? 3, // ID por defecto de respaldo
+                'usuario_id'          => $_SESSION['usuario_id'] ?? null,
                 'fecha_entrega'       => $_POST['fecha_entrega'],
                 'observacion_general' => !empty($_POST['observacion_general']) ? trim($_POST['observacion_general']) : null,
                 'equipos'             => $equiposDetalle,
@@ -118,7 +116,6 @@ class AsignacionesController {
 
         $model = new AsignacionesModel();
         
-        // 💡 CLAVE: El método find($id) ya busca y anida internamente los componentes de cada equipo
         $acta = $model->find($id); 
 
         if (!$acta) {
@@ -130,28 +127,53 @@ class AsignacionesController {
         require_once __DIR__ . '/../../Views/asignaciones/ver.php';
         $content = ob_get_clean();
 
-        // 💡 CLAVE: Incluso al estar inspeccionando un acta, el menú de asignaciones debe seguir azul
         $activePage = 'asignaciones';
 
         require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     /**
-     * ↩️ REGISTRAR LA DEVOLUCIÓN INDIVIDUAL DE UN ACTIVO DEL ACTA (EQUIPO O CELULAR)
+     * ↩️ REGISTRAR LA DEVOLUCIÓN INDIVIDUAL DE UN EQUIPO DE CÓMPUTO
      */
     public function devolverEquipo() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $detalle_id = $_POST['detalle_id'];
-            $acta_id = $_POST['acta_id'];
-            $observacion_devolucion = !empty($_POST['observacion_devolucion']) ? trim($_POST['observacion_devolucion']) : 'Devolución estándar';
+            $detalle_id = $_POST['detalle_id'] ?? null;
+            $acta_id = $_POST['acta_id'] ?? null;
+            $observacion_devolucion = !empty($_POST['observacion_devolucion']) ? trim($_POST['observacion_devolucion']) : 'Devolución estándar de equipo';
 
-            $model = new AsignacionesModel();
-            $result = $model->updateItemDevolucion($detalle_id, $observacion_devolucion);
+            if ($detalle_id && $acta_id) {
+                $model = new AsignacionesModel();
+                $result = $model->updateItemDevolucion($detalle_id, $observacion_devolucion);
 
-            $msg = $result ? 'devuelto' : 'error';
-            header("Location: /asignaciones/ver?id=" . $acta_id . "&msg=" . $msg);
-            exit();
+                $msg = $result ? 'devuelto' : 'error';
+                header("Location: /asignaciones/ver?id=" . $acta_id . "&msg=" . $msg);
+                exit();
+            }
         }
+        header("Location: /asignaciones?msg=error");
+        exit();
+    }
+
+    /**
+     * 📱 REGISTRAR LA DEVOLUCIÓN INDIVIDUAL DE UNA LÍNEA / CELULAR
+     */
+    public function devolverCelular() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $detalle_id = $_POST['detalle_id'] ?? null;
+            $acta_id = $_POST['acta_id'] ?? null;
+            $observacion_devolucion = !empty($_POST['observacion_devolucion']) ? trim($_POST['observacion_devolucion']) : 'Devolución de línea/celular';
+
+            if ($detalle_id && $acta_id) {
+                $model = new AsignacionesModel();
+                $result = $model->updateCelularDevolucion($detalle_id, $observacion_devolucion);
+
+                $msg = $result ? 'devuelto' : 'error';
+                header("Location: /asignaciones/ver?id=" . $acta_id . "&msg=" . $msg);
+                exit();
+            }
+        }
+        header("Location: /asignaciones?msg=error");
+        exit();
     }
 
     /**
