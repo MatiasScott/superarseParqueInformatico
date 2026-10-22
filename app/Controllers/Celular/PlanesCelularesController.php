@@ -121,6 +121,14 @@ class PlanesCelularesController {
     private function sanearDatosCelular(array $datosOriginales) {
         $datosSaneados = $datosOriginales;
 
+        $nombrePlan = trim((string)($datosSaneados['nombre_plan'] ?? ''));
+        if ($nombrePlan === '') {
+            $datosSaneados['nombre_plan'] = 'Sin plan';
+            $datosSaneados['costo_mensual'] = 0;
+        } else {
+            $datosSaneados['nombre_plan'] = $nombrePlan;
+        }
+
         // Lista de los campos críticos del hardware del teléfono
         $camposCriticos = ['celular_serie', 'celular_imei_1', 'celular_imei_2', 'celular_marca', 'celular_modelo', 'celular_color'];
 

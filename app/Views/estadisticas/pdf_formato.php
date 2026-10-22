@@ -115,7 +115,7 @@
                             <td class="p-2 font-mono font-bold text-slate-900"><?= htmlspecialchars($cel['numero_celular']) ?></td>
                             <td class="p-2 font-bold uppercase text-slate-700 text-[9px]"><?= htmlspecialchars($cel['operador']) ?></td>
                             <td class="p-2">
-                                <strong class="block text-slate-800"><?= htmlspecialchars($cel['nombre_plan']) ?></strong>
+                                <strong class="block text-slate-800"><?= htmlspecialchars($cel['nombre_plan'] ?: 'Sin plan') ?></strong>
                                 <span class="text-[9px] text-slate-400 block font-mono">Eq: <?= htmlspecialchars($cel['celular_marca'] ?? 'N/A') ?></span>
                             </td>
                             <td class="p-2 text-center uppercase text-slate-600">

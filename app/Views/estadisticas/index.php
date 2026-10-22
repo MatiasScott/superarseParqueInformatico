@@ -225,7 +225,7 @@
                         <tr class="hover:bg-slate-50">
                             <td class="p-3 font-mono font-bold text-slate-900"><?= htmlspecialchars($cel['numero_celular']) ?></td>
                             <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100"><?= htmlspecialchars($cel['operador']) ?></span></td>
-                            <td class="p-3"><span class="block font-bold"><?= htmlspecialchars($cel['nombre_plan']) ?></span><span class="text-[10px] text-slate-400">📱 <?= htmlspecialchars($cel['celular_marca'] ?? 'N/D') ?></span></td>
+                            <td class="p-3"><span class="block font-bold"><?= htmlspecialchars($cel['nombre_plan'] ?: 'Sin plan') ?></span><span class="text-[10px] text-slate-400">📱 <?= htmlspecialchars($cel['celular_marca'] ?? 'N/D') ?></span></td>
                             <td class="p-3"><span class="font-bold block"><?= htmlspecialchars($cel['sede_nombre'] ?? 'BODEGA') ?></span><span class="text-[10px] text-slate-400"><?= htmlspecialchars($cel['responsable'] ?? '') ?></span></td>
                             <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700"><?= htmlspecialchars($cel['estado_plan']) ?></span></td>
                             <td class="p-3 text-right font-bold text-blue-600 font-mono">$<?= number_format($cel['costo_mensual'] ?? 0, 2) ?></td>

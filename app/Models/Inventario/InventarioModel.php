@@ -42,7 +42,7 @@ class InventarioModel {
                     SELECT 
                         p.id,
                         'Celular' AS tipo,
-                        CONCAT('Celular ', p.operador, ' - ', p.nombre_plan) AS equipo_nombre,
+                        CONCAT('Celular ', p.operador, ' - ', COALESCE(NULLIF(TRIM(p.nombre_plan), ''), 'Sin plan')) AS equipo_nombre,
                         p.celular_marca AS marca,
                         p.celular_modelo AS modelo,
                         p.numero_celular AS serie,

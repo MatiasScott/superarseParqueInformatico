@@ -194,7 +194,7 @@ $permisoRecibir = !empty($_SESSION['rol']) && $_SESSION['rol'] === 'admin'
                                         <div class="text-[10px] font-mono text-slate-400">IMEI: <?= htmlspecialchars($cel['imei'] ?? 'N/A') ?></div>
                                     </td>
                                     <td class="p-4 text-xs">
-                                        <span class="font-semibold text-slate-700 block"><?= htmlspecialchars($cel['nombre_plan'] ?? '') ?></span>
+                                        <span class="font-semibold text-slate-700 block"><?= htmlspecialchars($cel['nombre_plan'] ?: 'Sin plan') ?></span>
                                         <span class="text-slate-400 font-mono"><?= htmlspecialchars($cel['operador'] ?? '') ?></span>
                                     </td>
                                     <td class="p-4 text-slate-600 font-medium text-xs">

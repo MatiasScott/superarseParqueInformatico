@@ -4,7 +4,7 @@ $canCreateTelefonia = sessionHasPermission('celular', 'crear');
 $canEditTelefonia = sessionHasPermission('celular', 'editar');
 $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
 ?>
-<div x-data="{ openCrear: false, openEditar: false, selectItem: null, editItem: {}, entregaCelular: true, editEntregaCelular: true }" class="space-y-6 col-span-3">
+<div x-data="{ openCrear: false, openEditar: false, selectItem: null, editItem: {}, entregaCelular: true, editEntregaCelular: true, tienePlan: true, editTienePlan: true, nombrePlan: '', costoPlan: '' }" class="space-y-6 col-span-3">
 
     <?php if (isset($_SESSION['flash_success'])): ?>
         <div class="p-4 mb-4 text-sm text-emerald-800 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center gap-2 shadow-sm">
@@ -32,7 +32,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                 <h3 class="text-xl font-black text-slate-800"><?= !empty($items) ? count($items) : 0 ?></h3>
             </div>
             <?php if ($canCreateTelefonia): ?>
-            <button @click="openCrear = true; entregaCelular = true" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md shadow-blue-500/10 transition-all whitespace-nowrap">
+            <button @click="openCrear = true; entregaCelular = true; tienePlan = true; nombrePlan = ''; costoPlan = ''" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md shadow-blue-500/10 transition-all whitespace-nowrap">
                 <i class="ph-bold ph-plus text-sm"></i>
                 Registrar Línea & Celular
             </button>
@@ -87,8 +87,10 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                                 </span>
                             </td>
                             <td class="p-4">
-                                <div class="text-slate-900 font-bold"><?= htmlspecialchars($item['nombre_plan']) ?></div>
-                                <div class="text-slate-400 text-[11px] mt-0.5">$<?= number_format($item['costo_mensual'], 2) ?> / mes</div>
+                                <div class="text-slate-900 font-bold"><?= htmlspecialchars($item['nombre_plan'] ?: 'Sin plan') ?></div>
+                                <?php if (!empty($item['nombre_plan']) && $item['nombre_plan'] !== 'Sin plan'): ?>
+                                    <div class="text-slate-400 text-[11px] mt-0.5">$<?= number_format($item['costo_mensual'], 2) ?> / mes</div>
+                                <?php endif; ?>
                                 <div class="text-[10px] text-slate-500 italic mt-0.5"><?= htmlspecialchars($item['tipo_sim']) ?></div>
                             </td>
                             <td class="p-4">
@@ -132,7 +134,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                                     <?php if ($canEditTelefonia): ?>
                                     <button 
                                         type="button"
-                                        @click="editItem = <?= htmlspecialchars(json_encode($item)) ?>; editEntregaCelular = !!editItem.celular_marca; openEditar = true" 
+                                        @click="editItem = <?= htmlspecialchars(json_encode($item)) ?>; editEntregaCelular = !!editItem.celular_marca; editTienePlan = !!editItem.nombre_plan && editItem.nombre_plan !== 'Sin plan'; openEditar = true"
                                         class="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" 
                                         title="Editar / Cambiar Estado">
                                         <i class="ph ph-pencil-line text-lg"></i>
@@ -171,7 +173,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
             </div>
             <form action="/planes-celulares/guardar" method="POST" class="p-6 space-y-4">
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Número de Celular</label>
                         <input type="text" name="numero_celular" required placeholder="09xxxxxxxx" class="w-full border border-slate-200 p-2 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
@@ -185,23 +187,39 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                             <option value="Otro">Otro</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Costo Mensual</label>
-                        <input type="number" step="0.01" name="costo_mensual" placeholder="0.00" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-info text-blue-600 text-base"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">¿Esta línea tiene un plan contratado?</p>
+                            <p class="text-[11px] text-slate-500">Actívalo para ingresar el nombre y costo mensual del plan.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" x-model="tienePlan" @change="if (!tienePlan) { nombrePlan = ''; costoPlan = '' }" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <div x-show="tienePlan" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nombre del Plan contratado</label>
-                        <input type="text" name="nombre_plan" required placeholder="Pyme Corporativo Ilimitado" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                        <input type="text" name="nombre_plan" x-model="nombrePlan" :required="tienePlan" :disabled="!tienePlan" placeholder="Pyme Corporativo Ilimitado" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Tipo de SIM</label>
-                        <select name="tipo_sim" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
-                            <option value="Física (Nano-SIM)">Física (Nano-SIM)</option>
-                            <option value="Virtual (eSIM)">Virtual (eSIM)</option>
-                        </select>
+                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Costo Mensual</label>
+                        <input type="number" step="0.01" name="costo_mensual" x-model="costoPlan" :disabled="!tienePlan" placeholder="0.00" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Tipo de SIM</label>
+                    <select name="tipo_sim" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
+                        <option value="Física (Nano-SIM)">Física (Nano-SIM)</option>
+                        <option value="Virtual (eSIM)">Virtual (eSIM)</option>
+                    </select>
                 </div>
 
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center justify-between my-2">
@@ -287,7 +305,7 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
             <form action="/planes-celulares/actualizar" method="POST" class="p-6 space-y-4">
                 <input type="hidden" name="id" x-model="editItem.id">
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Número de Celular</label>
                         <input type="text" name="numero_celular" required x-model="editItem.numero_celular" class="w-full border border-slate-200 p-2 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none">
@@ -301,23 +319,39 @@ $canDeleteTelefonia = sessionHasPermission('celular', 'eliminar');
                             <option value="Otro">Otro</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-info text-amber-600 text-base"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">¿Esta línea tiene un plan contratado?</p>
+                            <p class="text-[11px] text-slate-500">Actívalo para ingresar el nombre y costo mensual del plan.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" x-model="editTienePlan" @change="if (!editTienePlan) { editItem.nombre_plan = ''; editItem.costo_mensual = 0 }" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div x-show="editTienePlan" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nombre del Plan contratado</label>
+                        <input type="text" name="nombre_plan" x-model="editItem.nombre_plan" :required="editTienePlan" :disabled="!editTienePlan" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                    </div>
                     <div>
                         <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Costo Mensual</label>
-                        <input type="number" step="0.01" name="costo_mensual" x-model="editItem.costo_mensual" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
+                        <input type="number" step="0.01" name="costo_mensual" x-model="editItem.costo_mensual" :disabled="!editTienePlan" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Nombre del Plan contratado</label>
-                        <input type="text" name="nombre_plan" required x-model="editItem.nombre_plan" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Tipo de SIM</label>
-                        <select name="tipo_sim" x-model="editItem.tipo_sim" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
-                            <option value="Física (Nano-SIM)">Física (Nano-SIM)</option>
-                            <option value="Virtual (eSIM)">Virtual (eSIM)</option>
-                        </select>
-                    </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Tipo de SIM</label>
+                    <select name="tipo_sim" x-model="editItem.tipo_sim" class="w-full border border-slate-200 p-2 rounded-xl text-xs outline-none cursor-pointer">
+                        <option value="Física (Nano-SIM)">Física (Nano-SIM)</option>
+                        <option value="Virtual (eSIM)">Virtual (eSIM)</option>
+                    </select>
                 </div>
 
                 <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex items-center justify-between my-2">

@@ -265,7 +265,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
                                     <input type="checkbox" name="celulares_seleccionados[]" value="<?= $cel['id'] ?>" class="mt-1 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" onchange="toggleDetalleCelular(this, <?= $cel['id'] ?>)">
                                     <div>
                                         <span class="font-bold text-slate-800">📱 <?= htmlspecialchars($cel['numero_celular']) ?></span> — <?= htmlspecialchars($cel['celular_marca'] ?? 'Sin Terminal') ?> <?= htmlspecialchars($cel['celular_modelo'] ?? '') ?>
-                                        <span class="block text-xs font-mono text-slate-400">Plan: <?= htmlspecialchars($cel['nombre_plan']) ?> | Op: <?= htmlspecialchars($cel['operador']) ?></span>
+                                        <span class="block text-xs font-mono text-slate-400">Plan: <?= htmlspecialchars($cel['nombre_plan'] ?: 'Sin plan') ?> | Op: <?= htmlspecialchars($cel['operador']) ?></span>
                                     </div>
                                 </label>
                                 
