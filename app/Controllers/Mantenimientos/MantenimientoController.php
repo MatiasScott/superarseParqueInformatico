@@ -20,7 +20,7 @@ class MantenimientoController {
 
         $activePage = 'mantenimientos';
 
-        require_once __DIR__ . '/../../Views/Layouts/main.php';
+        require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     public function guardar() {
@@ -61,7 +61,7 @@ class MantenimientoController {
 
         $activePage = 'mantenimientos';
 
-        require_once __DIR__ . '/../../Views/Layouts/main.php';
+        require_once __DIR__ . '/../../Views/layouts/main.php';
     }
 
     /**
