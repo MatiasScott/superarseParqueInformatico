@@ -30,6 +30,7 @@ class AsignacionesModel {
                        c.nombres AS colaborador_nombre, 
                        c.cargo AS colaborador_cargo,
                        c.area AS colaborador_area,
+                       c.estado AS colaborador_estado,
                        u.nombre AS usuario_tecnico,
                        (SELECT COUNT(*) FROM actas_asignacion_detalle WHERE acta_id = a.id) as total_equipos,
                        (SELECT COUNT(*) FROM actas_planes_detalle WHERE acta_id = a.id) as total_celulares,

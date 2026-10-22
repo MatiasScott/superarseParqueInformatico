@@ -3,8 +3,8 @@ $actas = $actas ?? [];
 $colaboradores = $colaboradores ?? [];
 $equipos = $equipos ?? []; 
 $celularesDisponibles = $celularesDisponibles ?? []; 
-$totalColaboradoresActivos = count(array_filter($colaboradores, fn($c) => (int)($c['estado'] ?? 0) === 1));
-$totalColaboradoresInactivos = count($colaboradores) - $totalColaboradoresActivos;
+$actasActivos = count(array_filter($actas, fn($a) => (int)($a['colaborador_estado'] ?? 0) === 1));
+$actasInactivos = count($actas) - $actasActivos;
 
 $canCreateAsignaciones = sessionHasPermission('asignaciones', 'crear');
 $canEditAsignaciones = sessionHasPermission('asignaciones', 'editar');
@@ -38,6 +38,10 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
             <div class="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl flex items-center gap-2 text-sm font-semibold">
                 <i class="ph ph-warning text-lg"></i> Debe seleccionar al menos un equipo informático para procesar el acta.
             </div>
+        <?php elseif ($_GET['msg'] === 'colaborador_inactivo'): ?>
+            <div class="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl flex items-center gap-2 text-sm font-semibold">
+                <i class="ph ph-warning text-lg"></i> No se puede generar un acta nueva para un colaborador inactivo.
+            </div>
         <?php elseif ($_GET['msg'] === 'eliminado'): ?>
             <div class="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl flex items-center gap-2 text-sm font-semibold">
                 <i class="ph ph-info text-lg"></i> El acta ha sido anulada y los activos volvieron a estar Disponibles.
@@ -49,7 +53,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
         <?php endif; ?>
     <?php endif; ?>
 
-    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
+    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
         <div class="flex items-center gap-3">
             <div class="p-2.5 bg-slate-50 text-slate-500 rounded-xl border border-slate-100">
                 <i class="ph ph-sliders text-xl"></i>
@@ -60,7 +64,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
             </div>
         </div>
 
-        <form method="GET" action="/asignaciones" id="formFiltroColaborador" class="w-full sm:w-80">
+        <form method="GET" action="/asignaciones" id="formFiltroColaborador" class="w-full lg:w-80">
             <div class="relative">
                 <select 
                     name="colaborador_id" 
@@ -84,6 +88,20 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
                 </div>
             </div>
         </form>
+        <div class="flex flex-wrap gap-2">
+            <button type="button" data-filtro-acta="todos" aria-pressed="true"
+                class="btn-filtro-acta px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white">
+                Todas las actas (<?= count($actas) ?>)
+            </button>
+            <button type="button" data-filtro-acta="1" aria-pressed="false"
+                class="btn-filtro-acta px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-emerald-50">
+                De colaboradores activos (<?= $actasActivos ?>)
+            </button>
+            <button type="button" data-filtro-acta="0" aria-pressed="false"
+                class="btn-filtro-acta px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
+                De colaboradores inactivos (<?= $actasInactivos ?>)
+            </button>
+        </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
@@ -103,7 +121,7 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
                 <tbody class="divide-y divide-slate-100">
                     <?php if (count($actas) > 0): ?>
                         <?php foreach ($actas as $a): ?>
-                        <tr class="hover:bg-slate-50 transition text-sm text-slate-700">
+                        <tr class="fila-acta hover:bg-slate-50 transition text-sm text-slate-700" data-estado-colaborador="<?= (int)($a['colaborador_estado'] ?? 0) ?>">
                             <td class="p-4 font-mono font-bold text-emerald-600">
                                 <?= htmlspecialchars($a['codigo_acta']) ?>
                             </td>
@@ -185,6 +203,11 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
                     <?php else: ?>
                         <tr><td colspan="7" class="p-10 text-center text-slate-400">No hay actas de asignación registradas para los criterios seleccionados.</td></tr>
                     <?php endif; ?>
+                    <?php if (count($actas) > 0): ?>
+                        <tr id="sinActasEstado" class="hidden">
+                            <td colspan="7" class="p-10 text-center text-slate-400">No hay actas para el estado de colaborador seleccionado.</td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -206,24 +229,12 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
         <form action="/asignaciones/guardar" method="POST" class="space-y-4">
             <div>
                 <label class="text-sm font-bold text-slate-700">Colaborador / Custodio Responsable</label>
-                <div class="flex flex-wrap gap-2 mt-2 mb-2">
-                    <button type="button" data-filtro-colaborador="1" aria-pressed="true"
-                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white">
-                        Activos (<?= $totalColaboradoresActivos ?>)
-                    </button>
-                    <button type="button" data-filtro-colaborador="0" aria-pressed="false"
-                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
-                        Inactivos (<?= $totalColaboradoresInactivos ?>)
-                    </button>
-                    <button type="button" data-filtro-colaborador="todos" aria-pressed="false"
-                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
-                        Todos (<?= count($colaboradores) ?>)
-                    </button>
-                </div>
                 <select id="colaboradorAsignacion" name="colaborador_id" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 text-sm">
                     <option value="" disabled selected>Seleccione el empleado</option>
                     <?php foreach($colaboradores as $c): ?>
-                        <option value="<?= $c['id'] ?>" data-estado="<?= (int)($c['estado'] ?? 0) ?>"><?= htmlspecialchars($c['nombres']) ?> (<?= htmlspecialchars($c['cargo'] ?? 'Sin cargo') ?>)</option>
+                        <?php if ((int)($c['estado'] ?? 0) === 1): ?>
+                        <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nombres']) ?> (<?= htmlspecialchars($c['cargo'] ?? 'Sin cargo') ?>)</option>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -326,21 +337,20 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
 function openModal() { document.getElementById('modalAsig').classList.remove('hidden'); }
 function closeModal() { document.getElementById('modalAsig').classList.add('hidden'); }
 
-document.querySelectorAll('.btn-filtro-colaborador-asignacion').forEach(boton => {
+document.querySelectorAll('.btn-filtro-acta').forEach(boton => {
     boton.addEventListener('click', () => {
-        const filtro = boton.dataset.filtroColaborador;
-        const selector = document.getElementById('colaboradorAsignacion');
-        const opciones = selector.querySelectorAll('option[data-estado]');
-
-        opciones.forEach(opcion => {
-            opcion.hidden = filtro !== 'todos' && opcion.dataset.estado !== filtro;
+        const filtro = boton.dataset.filtroActa;
+        let actasVisibles = 0;
+        document.querySelectorAll('.fila-acta').forEach(fila => {
+            const visible = filtro === 'todos' || fila.dataset.estadoColaborador === filtro;
+            fila.classList.toggle('hidden', !visible);
+            if (visible) actasVisibles++;
         });
 
-        if (selector.selectedOptions.length && selector.selectedOptions[0].hidden) {
-            selector.value = '';
-        }
+        const filaSinActas = document.getElementById('sinActasEstado');
+        if (filaSinActas) filaSinActas.classList.toggle('hidden', actasVisibles > 0);
 
-        document.querySelectorAll('.btn-filtro-colaborador-asignacion').forEach(opcion => {
+        document.querySelectorAll('.btn-filtro-acta').forEach(opcion => {
             const seleccionado = opcion === boton;
             opcion.setAttribute('aria-pressed', seleccionado ? 'true' : 'false');
             opcion.classList.toggle('bg-emerald-600', seleccionado);
@@ -350,8 +360,6 @@ document.querySelectorAll('.btn-filtro-colaborador-asignacion').forEach(boton =>
         });
     });
 });
-
-document.querySelector('.btn-filtro-colaborador-asignacion[aria-pressed="true"]')?.click();
 
 function toggleDetalleEquipo(checkbox, equipoId) {
     const contenedorDetalle = document.getElementById('detalles_equipo_' + equipoId);

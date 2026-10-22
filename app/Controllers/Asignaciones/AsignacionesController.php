@@ -46,6 +46,11 @@ class AsignacionesController {
      */
     public function guardar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $colaborador = (new ColaboradorModel())->find((int)($_POST['colaborador_id'] ?? 0));
+            if (!$colaborador || (int)$colaborador['estado'] !== 1) {
+                header("Location: /asignaciones?msg=colaborador_inactivo");
+                exit();
+            }
             
             $model = new AsignacionesModel();
 
