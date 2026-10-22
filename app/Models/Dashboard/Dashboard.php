@@ -64,6 +64,18 @@ class Dashboard
         return $stmt->fetch()['total'];
     }
 
+    // EQUIPOS DADOS DE BAJA: usa el mismo criterio que el historial de bajas
+    public function equiposBaja()
+    {
+        $sql = "SELECT COUNT(*) as total
+                FROM equipos
+                WHERE fecha_baja IS NOT NULL";
+
+        $stmt = $this->db->query($sql);
+
+        return $stmt->fetch()['total'];
+    }
+
     /**
      * Cuenta los componentes agrupados por su estado físico (Bueno, Regular, Malo)
      * 🛡️ MODIFICADO: Ignora por completo los componentes con estado 'Eliminado'

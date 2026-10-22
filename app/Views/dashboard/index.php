@@ -12,7 +12,7 @@ $equiposMantenimiento = $equiposMantenimiento ?? 0;
 $equiposBaja = $equiposBaja ?? 0;
 
 // Cálculos dinámicos internos basados en la nueva estructura
-$equiposDisponibles = ($totalEquipos - $equiposAsignados - $equiposMantenimiento);
+$equiposDisponibles = ($totalEquipos - $equiposAsignados - $equiposMantenimiento - $equiposBaja);
 $tasaUso = $totalEquipos > 0 ? round(($equiposAsignados / $totalEquipos) * 100) : 0;
 $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos) * 100) : 0;
 ?>

@@ -15,6 +15,7 @@ class DashboardController
         $equiposAsignados = $dashboard->equiposAsignados();
         $totalColaboradores = $dashboard->totalColaboradores();
         $equiposMantenimiento = $dashboard->equiposMantenimiento();
+        $equiposBaja = $dashboard->equiposBaja();
 
         // 🛠️ 2. Obtener datos analíticos de componentes en stock
         $compInfo = $dashboard->infoComponentes();
