@@ -59,11 +59,25 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
         </div>
     </div>
 
-    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-        <div class="relative w-full sm:w-96">
+    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
+        <div class="relative w-full sm:flex-1">
             <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-lg"></i>
             <input type="text" id="buscadorColaborador" placeholder="Buscar por nombre, cargo, área o sede..."
                 class="w-full bg-slate-50 pl-11 pr-4 py-3 rounded-2xl text-sm border border-slate-100 focus:outline-none focus:border-blue-500 focus:bg-white transition-all shadow-inner">
+        </div>
+        <div class="flex gap-2 overflow-x-auto">
+            <button type="button" data-filtro-estado="todos" aria-pressed="true"
+                class="btn-filtro-colaborador px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap bg-blue-600 text-white">
+                Todos (<?= $totalColaboradores ?>)
+            </button>
+            <button type="button" data-filtro-estado="1" aria-pressed="false"
+                class="btn-filtro-colaborador px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700">
+                Activos (<?= $activos ?>)
+            </button>
+            <button type="button" data-filtro-estado="0" aria-pressed="false"
+                class="btn-filtro-colaborador px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+                Inactivos (<?= $inactivos ?>)
+            </button>
         </div>
     </div>
 
@@ -84,7 +98,7 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                 <tbody class="divide-y divide-slate-100">
                     <?php if (!empty($colaboradores)): ?>
                         <?php foreach ($colaboradores as $c): ?>
-                            <tr class="fila-colaborador hover:bg-slate-50/80 transition-all text-sm">
+                            <tr class="fila-colaborador hover:bg-slate-50/80 transition-all text-sm" data-estado="<?= (int)$c['estado'] ?>">
                                 <td class="p-5">
                                     <div class="flex items-center gap-3">
                                         <div class="w-9 h-9 bg-gradient-to-tr from-slate-100 to-slate-200 text-slate-700 rounded-xl flex items-center justify-center font-bold text-xs uppercase tracking-tighter shadow-inner">
@@ -155,6 +169,12 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
                             </td>
                         </tr>
                     <?php endif; ?>
+                    <tr id="sinResultadosFiltro" class="hidden">
+                        <td colspan="7" class="p-10 text-center text-slate-400">
+                            <i class="ph ph-magnifying-glass text-2xl mb-2 text-slate-300 block mx-auto"></i>
+                            <span class="text-sm">No hay colaboradores que coincidan con el filtro seleccionado.</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -247,17 +267,45 @@ $canDeleteColaborador = sessionHasPermission('colaboradores', 'eliminar');
     document.addEventListener("DOMContentLoaded", () => {
         const buscador = document.getElementById("buscadorColaborador");
         const filas = document.querySelectorAll(".fila-colaborador");
+        const botonesFiltro = document.querySelectorAll(".btn-filtro-colaborador");
+        const sinResultados = document.getElementById("sinResultadosFiltro");
+        let estadoSeleccionado = "todos";
 
-        if (buscador) {
-            buscador.addEventListener("input", (e) => {
-                const termino = e.target.value.toLowerCase().trim();
-                filas.forEach(fila => {
-                    const targets = fila.querySelectorAll(".target-buscar");
-                    const textos = Array.from(targets).map(el => el.textContent.toLowerCase());
-                    // Al agregar la clase target-buscar en la sede, el buscador también filtrará por sedes de forma reactiva
-                    fila.style.display = textos.some(t => t.includes(termino)) ? "" : "none";
-                });
+        const aplicarFiltros = () => {
+            const termino = buscador ? buscador.value.toLowerCase().trim() : "";
+            let filasVisibles = 0;
+
+            filas.forEach(fila => {
+                const targets = fila.querySelectorAll(".target-buscar");
+                const textos = Array.from(targets).map(el => el.textContent.toLowerCase());
+                const coincideTexto = textos.some(texto => texto.includes(termino));
+                const coincideEstado = estadoSeleccionado === "todos" || fila.dataset.estado === estadoSeleccionado;
+                const visible = coincideTexto && coincideEstado;
+
+                fila.style.display = visible ? "" : "none";
+                if (visible) filasVisibles++;
             });
-        }
+
+            if (sinResultados) {
+                sinResultados.classList.toggle("hidden", filasVisibles > 0 || filas.length === 0);
+            }
+        };
+
+        if (buscador) buscador.addEventListener("input", aplicarFiltros);
+
+        botonesFiltro.forEach(boton => {
+            boton.addEventListener("click", () => {
+                estadoSeleccionado = boton.dataset.filtroEstado;
+                botonesFiltro.forEach(opcion => {
+                    const seleccionado = opcion === boton;
+                    opcion.setAttribute("aria-pressed", seleccionado ? "true" : "false");
+                    opcion.classList.toggle("bg-blue-600", seleccionado);
+                    opcion.classList.toggle("text-white", seleccionado);
+                    opcion.classList.toggle("bg-slate-100", !seleccionado);
+                    opcion.classList.toggle("text-slate-600", !seleccionado);
+                });
+                aplicarFiltros();
+            });
+        });
     });
 </script>
