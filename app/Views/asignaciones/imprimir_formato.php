@@ -226,14 +226,19 @@ foreach ($detalles as $eq) {
                             </thead>
                             <tbody>
                                 <?php 
-                                $tienePlan = !empty($celulares);
-                                if ($tienePlan): 
+                                $hayCelulares = !empty($celulares);
+                                $tienePlan = false;
+                                if ($hayCelulares):
                                     foreach ($celulares as $cel):
                                         $marca = $cel['celular_marca'] ?? 'Celular';
                                         $modelo = $cel['celular_modelo'] ?? 'Institucional';
                                         $numero = $cel['numero_celular'] ?? 'S/N';
                                         $operador = $cel['operador'] ?? 'S/O';
-                                        $plan = $cel['nombre_plan'] ?? 'Sin Plan';
+                                        $plan = trim((string)($cel['nombre_plan'] ?? ''));
+                                        $tienePlanContratado = $plan !== '' && strcasecmp($plan, 'Sin plan') !== 0;
+                                        if ($tienePlanContratado) {
+                                            $tienePlan = true;
+                                        }
                                         $estado = $cel['estado_entrega_celular'] ?? ($cel['estado_entrega'] ?? 'Bueno');
                                         $obs = $cel['observacion_item'] ?? ($cel['observacion_entrega'] ?? '');
                                 ?>
@@ -243,7 +248,7 @@ foreach ($detalles as $eq) {
                                         </td>
                                         <td class="p-1.5 text-center font-mono uppercase" colspan="3">
                                             <span class="font-bold text-blue-600 block text-sm"><?= htmlspecialchars($numero) ?></span>
-                                            <span class="text-[10px] text-gray-600"><?= htmlspecialchars($operador) ?> (<?= htmlspecialchars($plan) ?>)</span>
+                                            <span class="text-[10px] text-gray-600"><?= htmlspecialchars($operador) ?> (<?= htmlspecialchars($tienePlanContratado ? $plan : 'Sin plan') ?>)</span>
                                         </td>
                                         <td class="p-1.5 text-center uppercase text-gray-700">
                                             <span class="block font-bold"><?= htmlspecialchars($estado) ?></span>
