@@ -3,6 +3,8 @@ $actas = $actas ?? [];
 $colaboradores = $colaboradores ?? [];
 $equipos = $equipos ?? []; 
 $celularesDisponibles = $celularesDisponibles ?? []; 
+$totalColaboradoresActivos = count(array_filter($colaboradores, fn($c) => (int)($c['estado'] ?? 0) === 1));
+$totalColaboradoresInactivos = count($colaboradores) - $totalColaboradoresActivos;
 
 $canCreateAsignaciones = sessionHasPermission('asignaciones', 'crear');
 $canEditAsignaciones = sessionHasPermission('asignaciones', 'editar');
@@ -204,10 +206,24 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
         <form action="/asignaciones/guardar" method="POST" class="space-y-4">
             <div>
                 <label class="text-sm font-bold text-slate-700">Colaborador / Custodio Responsable</label>
-                <select name="colaborador_id" required class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 text-sm">
+                <div class="flex flex-wrap gap-2 mt-2 mb-2">
+                    <button type="button" data-filtro-colaborador="1" aria-pressed="true"
+                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white">
+                        Activos (<?= $totalColaboradoresActivos ?>)
+                    </button>
+                    <button type="button" data-filtro-colaborador="0" aria-pressed="false"
+                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        Inactivos (<?= $totalColaboradoresInactivos ?>)
+                    </button>
+                    <button type="button" data-filtro-colaborador="todos" aria-pressed="false"
+                        class="btn-filtro-colaborador-asignacion px-3 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
+                        Todos (<?= count($colaboradores) ?>)
+                    </button>
+                </div>
+                <select id="colaboradorAsignacion" name="colaborador_id" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 text-sm">
                     <option value="" disabled selected>Seleccione el empleado</option>
                     <?php foreach($colaboradores as $c): ?>
-                        <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nombres']) ?> (<?= htmlspecialchars($c['cargo'] ?? 'Sin cargo') ?>)</option>
+                        <option value="<?= $c['id'] ?>" data-estado="<?= (int)($c['estado'] ?? 0) ?>"><?= htmlspecialchars($c['nombres']) ?> (<?= htmlspecialchars($c['cargo'] ?? 'Sin cargo') ?>)</option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -309,6 +325,33 @@ $canViewAsignaciones = sessionHasPermission('asignaciones', 'ver');
 <script>
 function openModal() { document.getElementById('modalAsig').classList.remove('hidden'); }
 function closeModal() { document.getElementById('modalAsig').classList.add('hidden'); }
+
+document.querySelectorAll('.btn-filtro-colaborador-asignacion').forEach(boton => {
+    boton.addEventListener('click', () => {
+        const filtro = boton.dataset.filtroColaborador;
+        const selector = document.getElementById('colaboradorAsignacion');
+        const opciones = selector.querySelectorAll('option[data-estado]');
+
+        opciones.forEach(opcion => {
+            opcion.hidden = filtro !== 'todos' && opcion.dataset.estado !== filtro;
+        });
+
+        if (selector.selectedOptions.length && selector.selectedOptions[0].hidden) {
+            selector.value = '';
+        }
+
+        document.querySelectorAll('.btn-filtro-colaborador-asignacion').forEach(opcion => {
+            const seleccionado = opcion === boton;
+            opcion.setAttribute('aria-pressed', seleccionado ? 'true' : 'false');
+            opcion.classList.toggle('bg-emerald-600', seleccionado);
+            opcion.classList.toggle('text-white', seleccionado);
+            opcion.classList.toggle('bg-slate-100', !seleccionado);
+            opcion.classList.toggle('text-slate-600', !seleccionado);
+        });
+    });
+});
+
+document.querySelector('.btn-filtro-colaborador-asignacion[aria-pressed="true"]')?.click();
 
 function toggleDetalleEquipo(checkbox, equipoId) {
     const contenedorDetalle = document.getElementById('detalles_equipo_' + equipoId);

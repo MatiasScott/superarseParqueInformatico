@@ -31,7 +31,8 @@ class ComponenteModel {
                     c.marca_modelo,
                     c.capacidad_detalle AS descripcion,
                     CASE WHEN c.estado = 'Malo' THEN 'Danado' ELSE c.estado END AS estado,
-                    e.nombre AS equipo_nombre
+                    e.nombre AS equipo_nombre,
+                    e.serie AS equipo_serie
                 FROM componentes_equipo c
                 INNER JOIN equipos e ON c.equipo_id = e.id
                 WHERE c.estado <> 'Eliminado'

@@ -56,17 +56,9 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
             
             <div class="flex items-center gap-2 min-w-[250px]">
                 <div class="w-full relative">
-                    <select id="filtro-equipo" onchange="filtrarPorEquipo()" class="w-full p-3 pl-4 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer">
-                        <option value="">🔍 Todos los equipos</option>
-                        <?php foreach($equipos as $eq): ?>
-                            <option value="<?= $eq['id'] ?>" <?= (isset($equipo_seleccionado) && $equipo_seleccionado == $eq['id']) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($eq['nombre']) ?> (<?= htmlspecialchars($eq['serie'] ?? 'S/N') ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                        <i class="ph ph-caret-down font-bold"></i>
-                    </div>
+                    <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-slate-400"></i>
+                    <input type="search" id="buscador-componentes" placeholder="Buscar por equipo, serie o componente..."
+                        class="w-full p-3 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 
                 <?php if (!empty($equipo_seleccionado)): ?>
@@ -82,7 +74,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                 </div>
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">COMPONENTES</p>
-                    <h3 class="text-lg font-black text-slate-800 leading-none"><?= $totalComponentes ?></h3>
+                    <h3 id="contador-componentes" class="text-lg font-black text-slate-800 leading-none"><?= $totalComponentes ?></h3>
                 </div>
             </div>
 
@@ -110,7 +102,17 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                 <tbody class="divide-y divide-slate-100">
                     <?php if(count($componentes) > 0): ?>
                         <?php foreach($componentes as $c): ?>
-                            <tr class="hover:bg-slate-50/80 transition text-sm text-slate-700">
+                            <?php
+                                $textoBusqueda = implode(' ', array_filter([
+                                    $c['equipo_nombre'] ?? '',
+                                    $c['equipo_serie'] ?? '',
+                                    $c['tipo'] ?? '',
+                                    $c['marca_modelo'] ?? '',
+                                    $c['descripcion'] ?? '',
+                                    $c['estado'] ?? ''
+                                ]));
+                            ?>
+                            <tr class="fila-componente hover:bg-slate-50/80 transition text-sm text-slate-700" data-busqueda="<?= htmlspecialchars($textoBusqueda, ENT_QUOTES, 'UTF-8') ?>">
                                 <td class="p-4 pl-6 font-bold text-slate-800">
                                     <div class="flex items-center gap-2.5">
                                         <div class="w-8 h-8 rounded-lg flex items-center justify-center <?= isset($c['equipo_nombre']) ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-400' ?>">
@@ -165,6 +167,12 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                             </td>
                         </tr>
                     <?php endif; ?>
+                    <tr id="sin-resultados-componentes" class="hidden">
+                        <td colspan="5" class="p-12 text-center text-slate-400">
+                            <i class="ph ph-magnifying-glass text-3xl mb-2 text-slate-300 block"></i>
+                            <span class="font-medium">No se encontraron componentes con esa búsqueda.</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

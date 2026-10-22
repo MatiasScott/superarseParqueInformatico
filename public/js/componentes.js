@@ -101,12 +101,32 @@ function eliminarFilaComponente(idFila) {
     }
 }
 
-function filtrarPorEquipo() {
-    const idEquipo = document.getElementById('filtro-equipo').value;
-    const base = typeof window.APP_BASE_PATH === 'string' ? window.APP_BASE_PATH : '';
-    if (idEquipo) {
-        window.location.href = `${base}/componentes?equipo_id=${idEquipo}`;
-    } else {
-        window.location.href = `${base}/componentes`;
-    }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const buscador = document.getElementById('buscador-componentes');
+    const filas = Array.from(document.querySelectorAll('.fila-componente[data-busqueda]'));
+    const sinResultados = document.getElementById('sin-resultados-componentes');
+    const contador = document.getElementById('contador-componentes');
+
+    if (!buscador) return;
+
+    const normalizar = texto => texto
+        .toLocaleLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    buscador.addEventListener('input', () => {
+        const termino = normalizar(buscador.value.trim());
+        let visibles = 0;
+
+        filas.forEach(fila => {
+            const coincide = normalizar(fila.dataset.busqueda || '').includes(termino);
+            fila.classList.toggle('hidden', !coincide);
+            if (coincide) visibles++;
+        });
+
+        if (contador) contador.textContent = String(visibles);
+        if (sinResultados) {
+            sinResultados.classList.toggle('hidden', visibles > 0 || filas.length === 0);
+        }
+    });
+});
