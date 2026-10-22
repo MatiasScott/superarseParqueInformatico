@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filas = Array.from(document.querySelectorAll('.fila-componente[data-busqueda]'));
     const sinResultados = document.getElementById('sin-resultados-componentes');
     const contador = document.getElementById('contador-componentes');
+    const contadorBajas = document.getElementById('contador-componentes-baja');
 
     if (!buscador) return;
 
@@ -116,17 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buscador.addEventListener('input', () => {
         const termino = normalizar(buscador.value.trim());
-        let visibles = 0;
+        let operativosVisibles = 0;
+        let bajasVisibles = 0;
 
         filas.forEach(fila => {
             const coincide = normalizar(fila.dataset.busqueda || '').includes(termino);
             fila.classList.toggle('hidden', !coincide);
-            if (coincide) visibles++;
+            if (coincide && fila.dataset.operativo === '1') operativosVisibles++;
+            if (coincide && fila.dataset.baja === '1') bajasVisibles++;
         });
 
-        if (contador) contador.textContent = String(visibles);
+        if (contador) contador.textContent = String(operativosVisibles);
+        if (contadorBajas) contadorBajas.textContent = String(bajasVisibles);
         if (sinResultados) {
-            sinResultados.classList.toggle('hidden', visibles > 0 || filas.length === 0);
+            sinResultados.classList.toggle('hidden', operativosVisibles + bajasVisibles > 0 || filas.length === 0);
         }
     });
 });

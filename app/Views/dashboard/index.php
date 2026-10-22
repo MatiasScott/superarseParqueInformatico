@@ -97,8 +97,8 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
     <div class="bg-white rounded-3xl shadow-sm p-5 hover:shadow-md border border-slate-100 transition duration-300 flex flex-col justify-between">
         <div class="flex justify-between items-start">
             <div>
-                <p class="text-slate-400 font-bold text-[11px] uppercase tracking-wider">Componentes</p>
-                <h3 class="text-3xl font-black text-slate-800 mt-2"><?= $totalComponentes > 0 ? $totalComponentes : ($componentesBuenos + $componentesRegulares + $componentesDanados); ?></h3>
+                <p class="text-slate-400 font-bold text-[11px] uppercase tracking-wider">Componentes Operativos</p>
+                <h3 class="text-3xl font-black text-slate-800 mt-2"><?= $totalComponentes > 0 ? $totalComponentes : ($componentesBuenos + $componentesRegulares); ?></h3>
             </div>
             <div class="bg-purple-50 text-purple-600 p-2.5 rounded-xl">
                 <i class="ph ph-cpu text-xl"></i>
@@ -194,7 +194,7 @@ $tasaSoporte = $totalEquipos > 0 ? round(($equiposMantenimiento / $totalEquipos)
 
             <div>
                 <div class="flex justify-between text-xs mb-1">
-                    <span class="font-semibold text-slate-600 flex items-center gap-1">● Inoperativos / Dañados</span>
+                    <span class="font-semibold text-slate-600 flex items-center gap-1">● De baja / Dañados</span>
                     <span class="text-slate-700 font-bold"><?= $componentesDanados; ?> u.</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">

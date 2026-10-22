@@ -83,7 +83,7 @@ class Dashboard
     public function infoComponentes()
     {
         $sql = "SELECT 
-                    COUNT(*) as total,
+                    SUM(CASE WHEN estado NOT IN ('Eliminado', 'Malo') THEN 1 ELSE 0 END) as total,
                     SUM(CASE WHEN estado = 'Bueno' THEN 1 ELSE 0 END) as buenos,
                     SUM(CASE WHEN estado = 'Regular' THEN 1 ELSE 0 END) as regulares,
                     SUM(CASE WHEN estado = 'Malo' THEN 1 ELSE 0 END) as danados

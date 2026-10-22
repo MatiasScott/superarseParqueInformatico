@@ -30,7 +30,7 @@ class ComponenteModel {
                     c.tipo_componente AS tipo,
                     c.marca_modelo,
                     c.capacidad_detalle AS descripcion,
-                    CASE WHEN c.estado = 'Malo' THEN 'Danado' ELSE c.estado END AS estado,
+                    CASE WHEN c.estado = 'Malo' THEN 'Dañado' ELSE c.estado END AS estado,
                     e.nombre AS equipo_nombre,
                     e.serie AS equipo_serie
                 FROM componentes_equipo c
@@ -72,7 +72,7 @@ class ComponenteModel {
                     tipo_componente AS tipo,
                     marca_modelo,
                     capacidad_detalle AS descripcion,
-                    CASE WHEN estado = 'Malo' THEN 'Danado' ELSE estado END AS estado
+                    CASE WHEN estado = 'Malo' THEN 'Dañado' ELSE estado END AS estado
                 FROM componentes_equipo
                 WHERE id = ?
             ");
@@ -209,13 +209,36 @@ class ComponenteModel {
     }
 
     /**
-     * 🔢 CONTAR TOTAL DE COMPONENTES ACTIVOS (CON FILTRO OPCIONAL)
-     * Ignora las filas marcadas con borrado lógico.
+     * 🔢 CONTAR COMPONENTES OPERATIVOS (CON FILTRO OPCIONAL)
      */
     public function count($equipo_id = null)
     {
         try {
-            $sql = "SELECT COUNT(*) as total FROM componentes_equipo WHERE estado <> 'Eliminado'";
+            $sql = "SELECT COUNT(*) as total
+                    FROM componentes_equipo
+                    WHERE estado NOT IN ('Eliminado', 'Malo')";
+
+            if ($equipo_id) {
+                $sql .= " AND equipo_id = ?";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([$equipo_id]);
+            } else {
+                $stmt = $this->db->query($sql);
+            }
+
+            $result = $stmt->fetch();
+            return $result ? (int)$result['total'] : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function countBaja($equipo_id = null)
+    {
+        try {
+            $sql = "SELECT COUNT(*) as total
+                    FROM componentes_equipo
+                    WHERE estado = 'Malo'";
 
             if ($equipo_id) {
                 $sql .= " AND equipo_id = ?";

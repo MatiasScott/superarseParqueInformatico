@@ -38,11 +38,11 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-blue-50 text-blue-600 rounded-lg text-lg">🧩</div>
             <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Componentes en Hardware</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Componentes operativos</p>
                 <h4 class="text-base font-black text-slate-700"><?= number_format($resumenComponentes['total_componentes'] ?? 0) ?> Unds.</h4>
             </div>
         </div>
@@ -58,6 +58,13 @@
             <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase">Estado de Componentes</p>
                 <h4 class="text-base font-black text-emerald-600"><?= number_format($resumenComponentes['componentes_buenos'] ?? 0) ?> Operativos</h4>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-rose-50 text-rose-600 rounded-lg text-lg">⚠️</div>
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Componentes de baja</p>
+                <h4 class="text-base font-black text-rose-600"><?= number_format($resumenComponentes['componentes_baja'] ?? 0) ?> Unds.</h4>
             </div>
         </div>
     </div>
@@ -158,7 +165,7 @@
                                                     </div>
                                                     <div class="flex items-center justify-between mt-2 pt-1 border-t border-slate-200/60 text-[10px]">
                                                         <span class="font-mono text-slate-400">S/N: <?= htmlspecialchars($comp['serie'] ?: 'S/S') ?></span>
-                                                        <span class="font-bold <?= $comp['estado'] === 'Bueno' ? 'text-emerald-600' : 'text-amber-600' ?>"><?= htmlspecialchars($comp['estado']) ?></span>
+                                                        <span class="font-bold <?= $comp['estado'] === 'Bueno' ? 'text-emerald-600' : ($comp['estado'] === 'De baja' ? 'text-rose-600' : 'text-amber-600') ?>"><?= htmlspecialchars($comp['estado']) ?></span>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>

@@ -88,7 +88,8 @@ class AsignacionModel {
      */
     public function obtenerComponentesPorEquipoId(int $equipo_id): array {
         try {
-            $sql = "SELECT id, tipo_componente, marca_modelo, capacidad_detalle, estado 
+            $sql = "SELECT id, tipo_componente, marca_modelo, capacidad_detalle,
+                           CASE WHEN estado = 'Malo' THEN 'De baja' ELSE estado END AS estado
                     FROM componentes_equipo 
                     WHERE equipo_id = :equipo_id 
                       AND estado != 'Eliminado'";

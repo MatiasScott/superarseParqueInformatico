@@ -20,6 +20,7 @@ class ComponenteController {
         // Pasamos el filtro al Modelo (este ya filtra internamente para no traer componentes 'Eliminados')
         $componentes = $model->getAll($equipo_seleccionado);
         $totalComponentes = $model->count($equipo_seleccionado);
+        $componentesBaja = $model->countBaja($equipo_seleccionado);
         
         // 🛡️ Trae los equipos para el select de filtros cotidianos
         $equipos = $equipoModel->getAll(); 

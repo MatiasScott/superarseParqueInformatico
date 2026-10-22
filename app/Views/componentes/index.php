@@ -1,6 +1,7 @@
 <?php
 $componentes = $componentes ?? [];
 $totalComponentes = $totalComponentes ?? 0;
+$componentesBaja = $componentesBaja ?? 0;
 $equipos = $equipos ?? []; 
 
 $canCreateComponentes = sessionHasPermission('componentes', 'crear');
@@ -73,8 +74,18 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                     <i class="ph ph-cpu text-lg"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">COMPONENTES</p>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">OPERATIVOS</p>
                     <h3 id="contador-componentes" class="text-lg font-black text-slate-800 leading-none"><?= $totalComponentes ?></h3>
+                </div>
+            </div>
+
+            <div class="bg-rose-50 border border-rose-200/60 px-5 py-2.5 rounded-xl flex items-center gap-3">
+                <div class="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center">
+                    <i class="ph ph-warning-circle text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-rose-500">DE BAJA</p>
+                    <h3 id="contador-componentes-baja" class="text-lg font-black text-rose-700 leading-none"><?= $componentesBaja ?></h3>
                 </div>
             </div>
 
@@ -103,16 +114,18 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                     <?php if(count($componentes) > 0): ?>
                         <?php foreach($componentes as $c): ?>
                             <?php
-                                $textoBusqueda = implode(' ', array_filter([
-                                    $c['equipo_nombre'] ?? '',
-                                    $c['equipo_serie'] ?? '',
+                                                $esBaja = in_array($c['estado'], ['Dañado', 'Malo'], true);
+                                                $textoBusqueda = implode(' ', array_filter([
+                                                    $esBaja ? 'De baja' : '',
+                                                    $c['equipo_nombre'] ?? '',
+                                                    $c['equipo_serie'] ?? '',
                                     $c['tipo'] ?? '',
                                     $c['marca_modelo'] ?? '',
                                     $c['descripcion'] ?? '',
                                     $c['estado'] ?? ''
                                 ]));
                             ?>
-                            <tr class="fila-componente hover:bg-slate-50/80 transition text-sm text-slate-700" data-busqueda="<?= htmlspecialchars($textoBusqueda, ENT_QUOTES, 'UTF-8') ?>">
+                            <tr class="fila-componente hover:bg-slate-50/80 transition text-sm text-slate-700" data-busqueda="<?= htmlspecialchars($textoBusqueda, ENT_QUOTES, 'UTF-8') ?>" data-operativo="<?= $esBaja ? '0' : '1' ?>" data-baja="<?= $esBaja ? '1' : '0' ?>">
                                 <td class="p-4 pl-6 font-bold text-slate-800">
                                     <div class="flex items-center gap-2.5">
                                         <div class="w-8 h-8 rounded-lg flex items-center justify-center <?= isset($c['equipo_nombre']) ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-400' ?>">
@@ -133,12 +146,12 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                                         $badgeClass = match($c['estado']) {
                                             'Bueno'   => 'bg-green-50 text-green-700 border-green-200',
                                             'Regular' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
-                                            'Dañado', 'Malo' => 'bg-red-50 text-red-700 border-red-200',
+                                            'Dañado', 'Malo' => 'bg-rose-50 text-rose-700 border-rose-200',
                                             default   => 'bg-slate-50 text-slate-700 border-slate-200'
                                         };
                                     ?>
                                     <span class="px-3 py-1 border rounded-full text-xs font-bold uppercase tracking-wider <?= $badgeClass ?>">
-                                        <?= ($c['estado'] === 'Malo') ? 'Dañado' : $c['estado'] ?>
+                                        <?= in_array($c['estado'], ['Dañado', 'Malo'], true) ? 'De baja' : htmlspecialchars($c['estado']) ?>
                                     </span>
                                 </td>
                                 <td class="p-4 text-center pr-6">

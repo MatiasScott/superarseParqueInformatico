@@ -30,7 +30,8 @@ class InventarioModel {
                         e.estado_id,
                         c.nombres AS colaborador_asignado,
                         c.area AS colaborador_area,
-                        (SELECT COUNT(*) FROM componentes_equipo ce WHERE ce.equipo_id = e.id) as total_componentes
+                        (SELECT COUNT(*) FROM componentes_equipo ce
+                         WHERE ce.equipo_id = e.id AND ce.estado NOT IN ('Eliminado', 'Malo')) as total_componentes
                     FROM equipos e
                     INNER JOIN estados_equipo ee ON e.estado_id = ee.id
                     LEFT JOIN actas_asignacion_detalle aad ON e.id = aad.equipo_id AND aad.estado_item = 'En Uso'

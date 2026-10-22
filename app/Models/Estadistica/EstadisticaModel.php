@@ -154,7 +154,7 @@ class EstadisticaModel {
             $whereClauses = [];
             $params = [];
 
-            // ⚠️ SIEMPRE excluir componentes eliminados
+            // Las bajas se cuentan por separado y no forman parte del inventario operativo.
             $whereClauses[] = "ce.estado <> 'Eliminado'";
 
             if (!empty($sedeId) && $sedeId > 0) {
@@ -165,19 +165,20 @@ class EstadisticaModel {
             $whereSql = "WHERE " . implode(" AND ", $whereClauses);
 
             $sql = "SELECT 
-                        COUNT(ce.id) as total_componentes,
-                        SUM(CASE WHEN ce.tipo_componente = 'RAM' THEN 1 ELSE 0 END) as total_ram,
-                        SUM(CASE WHEN ce.tipo_componente IN ('SSD', 'Disco Duro') THEN 1 ELSE 0 END) as total_almacenamiento,
-                        SUM(CASE WHEN ce.estado = 'Bueno' THEN 1 ELSE 0 END) as componentes_buenos
+                        SUM(CASE WHEN ce.estado <> 'Malo' THEN 1 ELSE 0 END) as total_componentes,
+                        SUM(CASE WHEN ce.estado <> 'Malo' AND ce.tipo_componente = 'RAM' THEN 1 ELSE 0 END) as total_ram,
+                        SUM(CASE WHEN ce.estado <> 'Malo' AND ce.tipo_componente IN ('SSD', 'Disco Duro') THEN 1 ELSE 0 END) as total_almacenamiento,
+                        SUM(CASE WHEN ce.estado = 'Bueno' THEN 1 ELSE 0 END) as componentes_buenos,
+                        SUM(CASE WHEN ce.estado = 'Malo' THEN 1 ELSE 0 END) as componentes_baja
                     FROM componentes_equipo ce
                     INNER JOIN equipos e ON ce.equipo_id = e.id
                     $whereSql";
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: ['total_componentes' => 0, 'total_ram' => 0, 'total_almacenamiento' => 0, 'componentes_buenos' => 0];
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: ['total_componentes' => 0, 'total_ram' => 0, 'total_almacenamiento' => 0, 'componentes_buenos' => 0, 'componentes_baja' => 0];
         } catch (Exception $e) {
-            return ['total_componentes' => 0, 'total_ram' => 0, 'total_almacenamiento' => 0, 'componentes_buenos' => 0];
+            return ['total_componentes' => 0, 'total_ram' => 0, 'total_almacenamiento' => 0, 'componentes_buenos' => 0, 'componentes_baja' => 0];
         }
     }
 
@@ -189,8 +190,7 @@ class EstadisticaModel {
             $whereClauses = [];
             $params = [];
 
-            // ⚠️ SIEMPRE excluir componentes eliminados
-            $whereClauses[] = "ce.estado <> 'Eliminado'";
+            $whereClauses[] = "ce.estado NOT IN ('Eliminado', 'Malo')";
 
             if (!empty($sedeId) && $sedeId > 0) {
                 $whereClauses[] = "e.sede_id = :sede_id";
@@ -219,7 +219,8 @@ class EstadisticaModel {
      */
     public function getComponentesPorEquipo(int $equipoId): array {
         try {
-            $sql = "SELECT tipo_componente, marca_modelo, capacidad_detalle, serie, estado 
+            $sql = "SELECT tipo_componente, marca_modelo, capacidad_detalle, serie,
+                           CASE WHEN estado = 'Malo' THEN 'De baja' ELSE estado END AS estado
                     FROM componentes_equipo 
                     WHERE equipo_id = :equipo_id AND estado <> 'Eliminado'
                     ORDER BY tipo_componente ASC";

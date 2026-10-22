@@ -37,7 +37,7 @@ class AsignacionesModel {
  FROM componentes_equipo ce 
  INNER JOIN actas_asignacion_detalle ad ON ce.equipo_id = ad.equipo_id 
  WHERE ad.acta_id = a.id
-   AND ce.estado != 'Eliminado') as total_componentes -- 👈 🚫 FILTRO AGREGADO AQUÍ
+   AND ce.estado NOT IN ('Eliminado', 'Malo')) as total_componentes
                 FROM actas_asignacion a
                 INNER JOIN colaboradores c ON a.colaborador_id = c.id
                 INNER JOIN usuarios u ON a.usuario_id = u.id";
@@ -129,7 +129,8 @@ class AsignacionesModel {
  * 🔍 🔌 OBTENER COMPONENTES INTERNOS DE UN EQUIPO ESPECÍFICO
  */
 public function getComponentesPorEquipo($equipo_id) {
-    $sql = "SELECT id, tipo_componente, marca_modelo, capacidad_detalle, estado 
+    $sql = "SELECT id, tipo_componente, marca_modelo, capacidad_detalle,
+                   CASE WHEN estado = 'Malo' THEN 'De baja' ELSE estado END AS estado
             FROM componentes_equipo 
             WHERE equipo_id = ?
               AND estado != 'Eliminado'"; // 👈 🚫 FILTRO AGREGADO AQUÍ
@@ -146,7 +147,7 @@ public function obtenerComponentesPorActaId($acta_id) {
                    ce.tipo_componente AS nombre, 
                    '' AS serie, -- 🌟 Se envía vacío para mantener compatibilidad en el frontend
                    ce.marca_modelo AS marca, 
-                   ce.estado AS estado_item, 
+                   CASE WHEN ce.estado = 'Malo' THEN 'De baja' ELSE ce.estado END AS estado_item,
                    e.nombre AS equipo_padre,
                    ad.estado_entrega_equipo AS estado_entrega
             FROM componentes_equipo ce
