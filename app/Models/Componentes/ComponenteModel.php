@@ -34,7 +34,7 @@ class ComponenteModel {
                     e.nombre AS equipo_nombre,
                     e.serie AS equipo_serie
                 FROM componentes_equipo c
-                INNER JOIN equipos e ON c.equipo_id = e.id
+                LEFT JOIN equipos e ON c.equipo_id = e.id
                 WHERE c.estado <> 'Eliminado'
             ";
 
@@ -176,6 +176,35 @@ class ComponenteModel {
             }
 
             return $result;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Devuelve un componente asignado al stock disponible.
+     */
+    public function returnToStock($id)
+    {
+        try {
+            $antes = $this->find($id);
+            if (!$antes || $antes['equipo_id'] === null) {
+                return false;
+            }
+
+            $stmt = $this->db->prepare("
+                UPDATE componentes_equipo
+                SET equipo_id = NULL
+                WHERE id = ? AND equipo_id IS NOT NULL AND estado <> 'Eliminado'
+            ");
+            $result = $stmt->execute([$id]);
+
+            if ($result && $stmt->rowCount() > 0) {
+                AuditoriaModel::registrar('UPDATE', 'componentes_equipo', (int)$id, $antes, $this->find($id));
+                return true;
+            }
+
+            return false;
         } catch (Exception $e) {
             return false;
         }

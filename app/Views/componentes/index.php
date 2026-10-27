@@ -17,6 +17,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                 echo match($_GET['msg']) {
                     'guardado'   => 'bg-green-50 text-green-500',
                     'actualizado'=> 'bg-blue-50 text-blue-500',
+                    'devuelto'   => 'bg-emerald-50 text-emerald-500',
                     'eliminado'  => 'bg-red-50 text-red-500',
                     default      => 'bg-slate-50 text-slate-500'
                 };
@@ -25,6 +26,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                     echo match($_GET['msg']) {
                         'guardado'   => 'ph-check-circle',
                         'actualizado'=> 'ph-arrows-counter-clockwise',
+                        'devuelto'   => 'ph-arrow-u-up-left',
                         'eliminado'  => 'ph-trash',
                         default      => 'ph-info'
                     };
@@ -35,7 +37,9 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                     echo match($_GET['msg']) {
                         'guardado'   => '¡Componentes guardados con éxito!',
                         'actualizado'=> '¡El componente fue actualizado correctamente!',
+                        'devuelto'   => '¡El componente está disponible en bodega!',
                         'eliminado'  => 'Componente removido del inventario.',
+                        'error_devolver' => 'No se pudo devolver el componente. Verifica que siga asignado a un equipo.',
                         default      => 'Acción procesada.'
                     };
                 ?>
@@ -50,7 +54,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
         <div>
             <h2 class="text-3xl font-bold text-slate-800">Gestión de Componentes</h2>
-            <p class="text-slate-500 mt-1 text-sm">Control detallado de piezas, hardware y periféricos asignados a equipos</p>
+            <p class="text-slate-500 mt-1 text-sm">Control de componentes asignados a equipos o disponibles en bodega</p>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-wrap">
@@ -103,7 +107,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50/75 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-bold">
-                        <th class="p-4 pl-6">Equipo Asociado</th>
+                        <th class="p-4 pl-6">Disponibilidad / Equipo</th>
                         <th class="p-4">Tipo Hardware</th>
                         <th class="p-4">Capacidad / Detalle</th>
                         <th class="p-4">Estado</th>
@@ -114,9 +118,11 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                     <?php if(count($componentes) > 0): ?>
                         <?php foreach($componentes as $c): ?>
                             <?php
+                                                $estaDisponible = empty($c['equipo_id']);
                                                 $esBaja = in_array($c['estado'], ['Dañado', 'Malo'], true);
                                                 $textoBusqueda = implode(' ', array_filter([
                                                     $esBaja ? 'De baja' : '',
+                                                    $estaDisponible ? 'Disponible Bodega' : 'Asignado Ocupado',
                                                     $c['equipo_nombre'] ?? '',
                                                     $c['equipo_serie'] ?? '',
                                     $c['tipo'] ?? '',
@@ -131,7 +137,13 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                                         <div class="w-8 h-8 rounded-lg flex items-center justify-center <?= isset($c['equipo_nombre']) ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-400' ?>">
                                             <i class="ph ph-desktop font-bold"></i>
                                         </div>
-                                        <?= isset($c['equipo_nombre']) ? htmlspecialchars($c['equipo_nombre']) : '<span class="text-slate-400 font-normal italic">Sin equipo asignado</span>' ?>
+                                        <?php if ($estaDisponible): ?>
+                                            <span class="text-emerald-700 font-semibold">Disponible</span>
+                                            <span class="block text-xs text-slate-400 font-normal">En bodega</span>
+                                        <?php else: ?>
+                                            <span class="block"><?= htmlspecialchars($c['equipo_nombre'] ?? 'Equipo no encontrado') ?></span>
+                                            <span class="block text-xs text-blue-600 font-semibold">Ocupado · Asignado a equipo</span>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="p-4 font-semibold text-slate-800">
@@ -160,6 +172,14 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                                         <a href="/componentes/editar?id=<?= $c['id'] ?>" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Editar Componente">
                                             <i class="ph ph-pencil-line text-lg"></i>
                                         </a>
+                                        <?php if (!$estaDisponible): ?>
+                                        <form action="/componentes/devolver" method="POST" onsubmit="return confirm('¿Devolver este componente a bodega y dejarlo disponible?')">
+                                            <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
+                                            <button type="submit" class="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Devolver a bodega">
+                                                <i class="ph ph-arrow-u-up-left text-lg"></i>
+                                            </button>
+                                        </form>
+                                        <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if ($canDeleteComponentes): ?>
                                         <a href="/componentes/eliminar?id=<?= $c['id'] ?>" onclick="return confirm('¿Estás seguro de que deseas eliminar este componente por completo?')" class="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Eliminar Componente">
@@ -198,7 +218,7 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
         <div class="flex justify-between items-center mb-5 flex-shrink-0">
             <div>
                 <h3 class="text-2xl font-bold text-slate-800">Registrar Componentes en Lote</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Agrega múltiples piezas de hardware asignadas a tus equipos de manera simultánea.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Agrega varias piezas asignadas a equipos o disponibles en bodega.</p>
             </div>
             <button onclick="closeModal()" class="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-all text-xl">
                 <i class="ph ph-x"></i>
@@ -212,9 +232,9 @@ $canDeleteComponentes = sessionHasPermission('componentes', 'eliminar');
                 <div class="fila-componente grid grid-cols-1 md:grid-cols-12 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 relative items-end">
                     
                     <div class="md:col-span-3">
-                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Asignar a Equipo *</label>
-                        <select name="componentes[0][equipo_id]" required class="w-full mt-1.5 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                            <option value="">-- Seleccione Equipo Destino --</option>
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Equipo asignado (opcional)</label>
+                        <select name="componentes[0][equipo_id]" class="w-full mt-1.5 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            <option value="">-- Disponible en bodega --</option>
                             <?php foreach($equipos as $eq): ?>
                                 <option value="<?= $eq['id'] ?>"><?= htmlspecialchars($eq['nombre']) ?> (<?= htmlspecialchars($eq['serie']) ?>)</option>
                             <?php endforeach; ?>

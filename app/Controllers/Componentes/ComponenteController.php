@@ -44,13 +44,13 @@ class ComponenteController {
                 $model = new ComponenteModel();
 
                 foreach ($componentesEnviados as $item) {
-                    // Validar campos requeridos para evitar excepciones de FK en la BD
-                    if (empty($item['tipo']) || empty($item['equipo_id'])) {
+                    // El equipo es opcional: un componente puede registrarse directamente en bodega.
+                    if (empty($item['tipo'])) {
                         continue; 
                     }
 
                     $data = [
-                        'equipo_id'    => intval($item['equipo_id']),
+                        'equipo_id'    => !empty($item['equipo_id']) ? intval($item['equipo_id']) : null,
                         'tipo'         => trim($item['tipo']), 
                         'marca_modelo' => !empty($item['marca_modelo']) ? trim($item['marca_modelo']) : 'Genérico',
                         'descripcion'  => isset($item['descripcion']) ? trim($item['descripcion']) : '', 
@@ -106,6 +106,23 @@ class ComponenteController {
                 exit();
             }
         }
+    }
+
+    /**
+     * Devuelve un componente asignado al stock disponible.
+     */
+    public function devolver()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: /componentes?msg=error_devolver");
+            exit();
+        }
+
+        $id = !empty($_POST['id']) ? intval($_POST['id']) : null;
+        $devuelto = $id ? (new ComponenteModel())->returnToStock($id) : false;
+
+        header("Location: /componentes?msg=" . ($devuelto ? 'devuelto' : 'error_devolver'));
+        exit();
     }
     
     /**

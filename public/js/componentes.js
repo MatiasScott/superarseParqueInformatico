@@ -16,7 +16,7 @@ function agregarFilaComponente() {
     nuevaFila.id = `fila-${contadorFilas}`;
     
     // Generamos las opciones de equipos usando el array global mapeado de forma segura
-    let opcionesEquipos = `<option value="">-- Seleccione Equipo Destino --</option>`;
+    let opcionesEquipos = `<option value="">-- Disponible en bodega --</option>`;
     if (typeof listaEquiposGlobal !== 'undefined' && Array.isArray(listaEquiposGlobal)) {
         opcionesEquipos += listaEquiposGlobal.map(eq => {
             const nombreSafe = eq.nombre.replace(/"/g, '&quot;');
@@ -27,8 +27,8 @@ function agregarFilaComponente() {
     
     nuevaFila.innerHTML = `
         <div class="md:col-span-3">
-            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Asignar a Equipo *</label>
-            <select name="componentes[${contadorFilas}][equipo_id]" required class="w-full mt-1.5 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Equipo asignado (opcional)</label>
+            <select name="componentes[${contadorFilas}][equipo_id]" class="w-full mt-1.5 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 ${opcionesEquipos}
             </select>
         </div>

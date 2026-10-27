@@ -459,6 +459,11 @@ case '/planes-celulares/actualizar':
         (new \App\Controllers\Componentes\ComponenteController())->actualizar();
         break;
 
+    case '/componentes/devolver':
+        validarSesion();
+        (new \App\Controllers\Componentes\ComponenteController())->devolver();
+        break;
+
     // ⬇️ ESTA ES LA QUE BORRA EL COMPONENTE ⬇️
     case '/componentes/eliminar':
         validarSesion();
@@ -593,6 +598,7 @@ function validarSesion()
             '/componentes/guardar' => ['module' => 'componentes', 'action' => 'crear'],
             '/componentes/editar' => ['module' => 'componentes', 'action' => 'editar'],
             '/componentes/actualizar' => ['module' => 'componentes', 'action' => 'editar'],
+            '/componentes/devolver' => ['module' => 'componentes', 'action' => 'editar'],
             '/componentes/eliminar' => ['module' => 'componentes', 'action' => 'eliminar'],
 
             '/planes-celulares' => ['module' => 'planes_celulares', 'action' => 'ver'],
